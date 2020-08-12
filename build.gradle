@@ -1,0 +1,101 @@
+buildscript {
+	repositories {
+		jcenter()
+		maven { url = "https://files.minecraftforge.net/maven" }
+		maven { url = "https://repo.spongepowered.org/maven" }
+		maven { url = "https://plugins.gradle.org/m2" }
+	}
+	dependencies {
+		classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
+		classpath "org.spongepowered:mixingradle:0.6-SNAPSHOT"
+		classpath "com.github.jengelman.gradle.plugins:shadow:2.0.4"
+	}
+}
+
+apply plugin: "net.minecraftforge.gradle.forge"
+apply plugin: "org.spongepowered.mixin"
+apply plugin: "com.github.johnrengelman.shadow"
+
+version = "0.0.1"
+def modName = "CutelessMod".toString()
+def modId = modName.toLowerCase()
+group = "net.dugged.${modId}"
+def loadingPlugin = "${group}.${modName}LoadingPlugin"
+archivesBaseName = modName
+sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = "1.8"
+
+minecraft {
+	version = "1.12.2-14.23.5.2847"
+	mappings = "stable_39"
+	coreMod = loadingPlugin
+	runDir = "run"
+	makeObfSourceJar = false
+
+	replaceIn "Reference.java"
+	replace "@VERSION@", project.version
+	replace "@MODNAME@", modName
+	replace "@MODID@", modId
+
+	def args = [
+			"-Dmixin.hotSwap=true",
+			"-Dmixin.debug=true"
+	]
+	clientJvmArgs.addAll(args)
+	serverJvmArgs.addAll(args)
+}
+
+jar.manifest.attributes(
+		"FMLCorePluginContainsFMLMod": true,
+		"FMLCorePlugin": loadingPlugin,
+		"ForceLoadAsMod": true,
+		"TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
+)
+
+repositories {
+	mavenCentral()
+	maven { url = "https://repo.spongepowered.org/maven" }
+}
+
+dependencies {
+	compile "org.spongepowered:mixin:0.8.1-SNAPSHOT"
+}
+
+mixin {
+	add sourceSets.main, "mixins.cuteless.refmap.json"
+}
+
+shadowJar {
+	exclude "dummyThing"
+	exclude "LICENSE.txt"
+	classifier = ""
+}
+build.dependsOn(shadowJar)
+
+reobf {
+	shadowJar {
+		mappingType = "SEARGE"
+	}
+}
+
+processResources {
+	inputs.property "modName", modName
+	inputs.property "modId", modId
+	inputs.property "version", project.version
+	inputs.property "mcversion", project.minecraft.version
+
+	from(sourceSets.main.resources.srcDirs) {
+		include "mcmod.info"
+		include "pack.mcmeta"
+
+		expand "version": project.version, "mcversion": project.minecraft.version, "modName": modName, "modId": modId
+	}
+
+	from(sourceSets.main.resources.srcDirs) {
+		exclude "mcmod.info"
+		exclude "pack.mcmeta"
+	}
+}
+
+runClient {
+	jvmArgs "-Dmixin.debug=true"
+}

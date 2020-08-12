@@ -1,0 +1,6 @@
+key.cutelessmod.reload_audio=Reload audio engine
+key.cutelessmod.toggle_scoreboard=Hide sidebar scoreboard
+key.cutelessmod.toggle_beacon_area=Toggle to show beacon area of effect
+key.cutelessmod.highlight_entities=Highlight Entities (Spectators)
+menu.relog=Relog
+text.cutelessmod.reload_audio=Reloaded audio engine

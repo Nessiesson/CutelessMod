@@ -1,0 +1,19 @@
+[
+	{
+		"modid": "${modId}",
+		"name": "${modName}",
+		"description": "Hyperuseful features.",
+		"version": "${version}",
+		"mcversion": "${mcversion}",
+		"url": "",
+		"updateUrl": "",
+		"authorList": [
+			"nessiesson",
+			"robitobi01"
+		],
+		"credits": "",
+		"logoFile": "",
+		"screenshots": [],
+		"dependencies": []
+	}
+]
