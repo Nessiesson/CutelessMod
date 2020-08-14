@@ -71,7 +71,7 @@ public class AreaSelectionRenderer {
 			if (args[0].equals("/clone")) {
 				if (p2 != null && origin != null) {
 					final AxisAlignedBB target = new AxisAlignedBB(p2, p2.add(origin.maxX - origin.minX + 1, origin.maxY - origin.minY + 1, origin.maxZ - origin.minZ + 1));
-					RenderGlobal.drawSelectionBoundingBox(target.grow(0.005).offset(-d0, -d1, -d2), 0.99F, 0.99F, 0.99F, 1F);
+					RenderGlobal.drawSelectionBoundingBox(target.grow(0.005F).offset(-d0, -d1, -d2), 0.99F, 0.99F, 0.99F, 1F);
 				}
 			}
 		}

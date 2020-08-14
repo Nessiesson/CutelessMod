@@ -44,35 +44,35 @@ public abstract class MixinDebugRendererChunkBorder {
 		GlStateManager.glLineWidth(1F);
 		bufferbuilder.begin(GL11.GL_CURRENT_BIT | GL11.GL_POINT_BIT, DefaultVertexFormats.POSITION_COLOR);
 
-		for (int i = -16; i <= 32; i += 16) {
-			for (int j = -16; j <= 32; j += 16) {
-				bufferbuilder.pos(d5 + i, d3, d6 + j).color(1F, 0F, 0F, 0F).endVertex();
-				bufferbuilder.pos(d5 + i, d3, d6 + j).color(1F, 0F, 0F, 0.5F).endVertex();
-				bufferbuilder.pos(d5 + i, d4, d6 + j).color(1F, 0F, 0F, 0.5F).endVertex();
-				bufferbuilder.pos(d5 + i, d4, d6 + j).color(1F, 0F, 0F, 0F).endVertex();
+		for (int x = -16; x <= 32; x += 16) {
+			for (int z = -16; z <= 32; z += 16) {
+				bufferbuilder.pos(d5 + x, d3, d6 + z).color(1F, 0F, 0F, 0F).endVertex();
+				bufferbuilder.pos(d5 + x, d3, d6 + z).color(1F, 0F, 0F, 0.5F).endVertex();
+				bufferbuilder.pos(d5 + x, d4, d6 + z).color(1F, 0F, 0F, 0.5F).endVertex();
+				bufferbuilder.pos(d5 + x, d4, d6 + z).color(1F, 0F, 0F, 0F).endVertex();
 			}
 		}
 
-		for (int k = 2; k < 16; k += 2) {
-			bufferbuilder.pos(d5 + k, d3, d6).color(1F, 1F, 0F, 0F).endVertex();
-			bufferbuilder.pos(d5 + k, d3, d6).color(1F, 1F, 0F, 1F).endVertex();
-			bufferbuilder.pos(d5 + k, d4, d6).color(1F, 1F, 0F, 1F).endVertex();
-			bufferbuilder.pos(d5 + k, d4, d6).color(1F, 1F, 0F, 0F).endVertex();
-			bufferbuilder.pos(d5 + k, d3, d6 + 16D).color(1F, 1F, 0F, 0F).endVertex();
-			bufferbuilder.pos(d5 + k, d3, d6 + 16D).color(1F, 1F, 0F, 1F).endVertex();
-			bufferbuilder.pos(d5 + k, d4, d6 + 16D).color(1F, 1F, 0F, 1F).endVertex();
-			bufferbuilder.pos(d5 + k, d4, d6 + 16D).color(1F, 1F, 0F, 0F).endVertex();
+		for (int x = 2; x < 16; x += 2) {
+			bufferbuilder.pos(d5 + x, d3, d6).color(1F, 1F, 0F, 0F).endVertex();
+			bufferbuilder.pos(d5 + x, d3, d6).color(1F, 1F, 0F, 1F).endVertex();
+			bufferbuilder.pos(d5 + x, d4, d6).color(1F, 1F, 0F, 1F).endVertex();
+			bufferbuilder.pos(d5 + x, d4, d6).color(1F, 1F, 0F, 0F).endVertex();
+			bufferbuilder.pos(d5 + x, d3, d6 + 16D).color(1F, 1F, 0F, 0F).endVertex();
+			bufferbuilder.pos(d5 + x, d3, d6 + 16D).color(1F, 1F, 0F, 1F).endVertex();
+			bufferbuilder.pos(d5 + x, d4, d6 + 16D).color(1F, 1F, 0F, 1F).endVertex();
+			bufferbuilder.pos(d5 + x, d4, d6 + 16D).color(1F, 1F, 0F, 0F).endVertex();
 		}
 
-		for (int l = 2; l < 16; l += 2) {
-			bufferbuilder.pos(d5, d3, d6 + l).color(1F, 1F, 0F, 0F).endVertex();
-			bufferbuilder.pos(d5, d3, d6 + l).color(1F, 1F, 0F, 1F).endVertex();
-			bufferbuilder.pos(d5, d4, d6 + l).color(1F, 1F, 0F, 1F).endVertex();
-			bufferbuilder.pos(d5, d4, d6 + l).color(1F, 1F, 0F, 0F).endVertex();
-			bufferbuilder.pos(d5 + 16D, d3, d6 + l).color(1F, 1F, 0F, 0F).endVertex();
-			bufferbuilder.pos(d5 + 16D, d3, d6 + l).color(1F, 1F, 0F, 1F).endVertex();
-			bufferbuilder.pos(d5 + 16D, d4, d6 + l).color(1F, 1F, 0F, 1F).endVertex();
-			bufferbuilder.pos(d5 + 16D, d4, d6 + l).color(1F, 1F, 0F, 0F).endVertex();
+		for (int z = 2; z < 16; z += 2) {
+			bufferbuilder.pos(d5, d3, d6 + z).color(1F, 1F, 0F, 0F).endVertex();
+			bufferbuilder.pos(d5, d3, d6 + z).color(1F, 1F, 0F, 1F).endVertex();
+			bufferbuilder.pos(d5, d4, d6 + z).color(1F, 1F, 0F, 1F).endVertex();
+			bufferbuilder.pos(d5, d4, d6 + z).color(1F, 1F, 0F, 0F).endVertex();
+			bufferbuilder.pos(d5 + 16D, d3, d6 + z).color(1F, 1F, 0F, 0F).endVertex();
+			bufferbuilder.pos(d5 + 16D, d3, d6 + z).color(1F, 1F, 0F, 1F).endVertex();
+			bufferbuilder.pos(d5 + 16D, d4, d6 + z).color(1F, 1F, 0F, 1F).endVertex();
+			bufferbuilder.pos(d5 + 16D, d4, d6 + z).color(1F, 1F, 0F, 0F).endVertex();
 		}
 
 		for (int i1 = 0; i1 <= 256; i1 += 2) {

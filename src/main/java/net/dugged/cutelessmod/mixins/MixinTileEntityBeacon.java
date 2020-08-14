@@ -20,16 +20,16 @@ public abstract class MixinTileEntityBeacon extends TileEntityLockable {
 
 	//TODO: Decide which kind of highlighting is wanted for beacons...
 	@Inject(method = "update", at = @At("HEAD"), cancellable = true)
-	private void onUpdate(CallbackInfo ci) {
+	private void onUpdate(final CallbackInfo ci) {
 		if (CutelessMod.toggleBeaconArea && this.isComplete && this.levels > 0) {
-			double radius = this.levels * 10 + 10;
-			int x = this.pos.getX();
-			int y = this.pos.getY();
-			int z = this.pos.getZ();
-			BlockPos minPos = new BlockPos(x - radius, y - radius, z - radius);
-			BlockPos maxPos = new BlockPos(x + radius + 1, this.world.getHeight(), z + radius + 1);
-			AxisAlignedBB axisalignedbb = new AxisAlignedBB(minPos, maxPos);
-			CutelessMod.beaconsToRender.put(axisalignedbb, 5);
+			final double radius = this.levels * 10 + 10;
+			final int x = this.pos.getX();
+			final int y = this.pos.getY();
+			final int z = this.pos.getZ();
+			final BlockPos min = new BlockPos(x - radius, y - radius, z - radius);
+			final BlockPos max = new BlockPos(x + radius + 1, this.world.getHeight(), z + radius + 1);
+			final AxisAlignedBB bb = new AxisAlignedBB(min, max);
+			CutelessMod.beaconsToRender.put(bb, 5);
 		}
 	}
 }

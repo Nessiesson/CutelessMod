@@ -4,11 +4,11 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.MobEffects;
 
 public class StepAssistHelper {
-	public void update(EntityPlayer player) {
+	public void update(final EntityPlayer player) {
 		player.stepHeight = getStepAmount(player);
 	}
 
-	private float getStepAmount(EntityPlayer player) {
+	private float getStepAmount(final EntityPlayer player) {
 		if (Configuration.stepAssist) {
 			return player.isSneaking() ? 0.9F : 1.5F;
 		}

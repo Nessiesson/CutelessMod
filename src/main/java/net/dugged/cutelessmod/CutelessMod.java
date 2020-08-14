@@ -38,6 +38,11 @@ import java.util.Map;
 @Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION, clientSideOnly = true)
 public class CutelessMod {
 	public static final KeyBinding highlightEntities = new KeyBinding("key.cutelessmod.highlight_entities", KeyConflictContext.IN_GAME, Keyboard.KEY_C, Reference.NAME);
+	private static final KeyBinding reloadAudioEngineKey = new KeyBinding("key.cutelessmod.reload_audio", KeyConflictContext.IN_GAME, Keyboard.KEY_B, Reference.NAME);
+	private static final KeyBinding toggleBeaconAreaKey = new KeyBinding("key.cutelessmod.toggle_beacon_area", KeyConflictContext.IN_GAME, Keyboard.KEY_J, Reference.NAME);
+	private static final KeyBinding spyKey = new KeyBinding("key.cutelessmod.spy", KeyConflictContext.IN_GAME, Keyboard.KEY_Y, Reference.NAME);
+	private static final Minecraft mc = Minecraft.getMinecraft();
+	private static final StepAssistHelper stepAssistHelper = new StepAssistHelper();
 	public static Map<AxisAlignedBB, Integer> beaconsToRender = new HashMap<>();
 	public static Map<String, List<ChatLine>> chatHistory = new HashMap<>();
 	public static Map<String, List<String>> tabCompleteHistory = new HashMap<>();
@@ -51,12 +56,6 @@ public class CutelessMod {
 	public static int[] receivedPackets = new int[20];
 	public static ServerData currentServer;
 	public static long tickCounter = 0;
-
-	private static final KeyBinding reloadAudioEngineKey = new KeyBinding("key.cutelessmod.reload_audio", KeyConflictContext.IN_GAME, Keyboard.KEY_B, Reference.NAME);
-	private static final KeyBinding toggleBeaconAreaKey = new KeyBinding("key.cutelessmod.toggle_beacon_area", KeyConflictContext.IN_GAME, Keyboard.KEY_J, Reference.NAME);
-	private static final KeyBinding spyKey = new KeyBinding("key.cutelessmod.spy", KeyConflictContext.IN_GAME, Keyboard.KEY_Y, Reference.NAME);
-	private static final Minecraft mc = Minecraft.getMinecraft();
-	private static final StepAssistHelper stepAssistHelper = new StepAssistHelper();
 	private String originalTitle;
 
 	@Mod.EventHandler
@@ -104,10 +103,10 @@ public class CutelessMod {
 
 	@SubscribeEvent
 	public void onTick(TickEvent.ClientTickEvent event) {
-		this.tickCounter++;
+		tickCounter++;
 		if (mc.world != null) {
-			if (!this.mc.isIntegratedServerRunning()) {
-				CutelessMod.currentServer = this.mc.getCurrentServerData();
+			if (!mc.isIntegratedServerRunning()) {
+				CutelessMod.currentServer = mc.getCurrentServerData();
 			}
 
 			for (AxisAlignedBB axisalignedbb : CutelessMod.beaconsToRender.keySet()) {
@@ -130,14 +129,16 @@ public class CutelessMod {
 
 		if (event.phase == TickEvent.Phase.END) {
 			final EntityPlayerSP player = mc.player;
-			if (player != null) {
-				stepAssistHelper.update(player);
+			if (player == null) {
+				return;
 			}
+
+			stepAssistHelper.update(player);
 			if (Configuration.noFall && player.fallDistance > 2F && !player.isElytraFlying()) {
 				player.connection.sendPacket(new CPacketPlayer(true));
 			}
 
-			if (Configuration.flightInertiaCancellation && player != null && player.capabilities.isFlying) {
+			if (Configuration.flightInertiaCancellation && player.capabilities.isFlying) {
 				final GameSettings settings = mc.gameSettings;
 				if (!(GameSettings.isKeyDown(settings.keyBindForward) || GameSettings.isKeyDown(settings.keyBindBack) || GameSettings.isKeyDown(settings.keyBindLeft) || GameSettings.isKeyDown(settings.keyBindRight))) {
 					player.motionX = player.motionZ = 0D;

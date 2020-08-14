@@ -44,6 +44,7 @@
 		"MixinGuiScreen",
 		"MixinInventoryEffectRenderer",
 		"MixinItemStack",
+		"MixinMinecraft",
 		"MixinNetHandlerPlayClient",
 		"MixinNetworkManager",
 		"MixinNetworkManager_5",

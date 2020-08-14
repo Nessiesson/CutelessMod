@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(TeleportToPlayer.class)
 public abstract class MixinTeleportToPlayer {
 	@Redirect(method = "<init>(Ljava/util/Collection;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/NetworkPlayerInfo;getGameType()Lnet/minecraft/world/GameType;"))
-	private GameType mc125157(NetworkPlayerInfo info) {
+	private GameType mc125157(final NetworkPlayerInfo info) {
 		return info.getGameProfile().getName().equals(Minecraft.getMinecraft().getSession().getUsername()) ? info.getGameType() : GameType.NOT_SET;
 	}
 }

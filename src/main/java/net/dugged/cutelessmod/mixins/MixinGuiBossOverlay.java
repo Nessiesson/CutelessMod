@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(GuiBossOverlay.class)
 public abstract class MixinGuiBossOverlay {
 	@Redirect(method = "renderBossHealth", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/ScaledResolution;getScaledHeight()I"))
-	private int onlyOneBossBar(ScaledResolution scaledResolution) {
-		return Configuration.showOneBossBar ? 36 : scaledResolution.getScaledHeight();
+	private int onlyOneBossBar(final ScaledResolution resolution) {
+		return Configuration.showOneBossBar ? 36 : resolution.getScaledHeight();
 	}
 }

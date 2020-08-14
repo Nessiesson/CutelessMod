@@ -61,7 +61,7 @@ dependencies {
 }
 
 mixin {
-	add sourceSets.main, "mixins.cuteless.refmap.json"
+	add sourceSets.main, "mixins.cutelessmod.refmap.json"
 }
 
 shadowJar {

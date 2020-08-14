@@ -1,4 +1,5 @@
 package net.dugged.cutelessmod.mixins;
+
 import net.dugged.cutelessmod.CutelessMod;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.Packet;

@@ -13,7 +13,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TileEntityChestRenderer.class)
 public abstract class MixinTileEntityChestRenderer extends TileEntitySpecialRenderer<TileEntityChest> {
-
 	//TODO add & apply the same for trapped and handle christmas
 	private static final ResourceLocation TEXTURE_NORMAL_FILLED = new ResourceLocation("cutelessmod", "textures/chest_normal_filled.png");
 	private static final ResourceLocation TEXTURE_NORMAL_FULL = new ResourceLocation("cutelessmod", "textures/chest_normal_full.png");
@@ -21,7 +20,7 @@ public abstract class MixinTileEntityChestRenderer extends TileEntitySpecialRend
 	private static final ResourceLocation TEXTURE_NORMAL_DOUBLE_FULL = new ResourceLocation("cutelessmod", "textures/chest_normal_double_full.png");
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;enableRescaleNormal()V"))
-	public void render(TileEntityChest te, double x, double y, double z, float partialTicks, int destroyStage, float alpha, CallbackInfo ci) {
+	public void render(final TileEntityChest te, final double x, final double y, final double z, final float partialTicks, final int destroyStage, final float alpha, final CallbackInfo ci) {
 		BlockPos pos = te.getPos();
 		int usedSlots = 0;
 		if (CutelessMod.spy.getChests().containsKey(pos)) {

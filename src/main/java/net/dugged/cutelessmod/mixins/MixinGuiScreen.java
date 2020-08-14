@@ -36,6 +36,7 @@ public abstract class MixinGuiScreen {
 	}
 
 	//TODO: Chat
+
 	/**
 	 * @author nessie
 	 * @reason Using @Overwrite is the simplest way to do this.

@@ -15,12 +15,12 @@ import java.util.Random;
 
 @Mixin(ParticleFirework.Spark.class)
 public abstract class MixinParticleFirework_Spark extends Particle {
+	@Unique
+	private static final Random cutelessmodRNG = new Random();
+
 	protected MixinParticleFirework_Spark(World world, double x, double y, double z) {
 		super(world, x, y, z);
 	}
-
-	@Unique
-	private static final Random cutelessmodRNG = new Random();
 
 	@Inject(method = "<init>", at = @At("RETURN"))
 	private void rainbowFireworksTrail(World world, double x, double y, double z, double dx, double dy, double dz, ParticleManager manager, CallbackInfo ci) {

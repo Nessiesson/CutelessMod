@@ -27,14 +27,14 @@ public abstract class MixinEntityLivingBase extends Entity {
 	}
 
 	@Inject(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/EntityLivingBase;setPosition(DDD)V"), locals = LocalCapture.CAPTURE_FAILHARD)
-	private void keepCopies(CallbackInfo ci, double d0, double d1, double d2, double d3) {
+	private void keepCopies(final CallbackInfo ci, final double d0, final double d1, final double d2) {
 		this.cutelessmodD0 = d0;
 		this.cutelessmodD1 = d1;
 		this.cutelessmodD2 = d2;
 	}
 
 	@Redirect(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/EntityLivingBase;setPosition(DDD)V"))
-	private void fixSquidAndWitherMovement(EntityLivingBase entity, double x, double y, double z) {
+	private void fixSquidAndWitherMovement(final EntityLivingBase entity, final double x, final double y, final double z) {
 		if (entity instanceof EntityWither) {
 			entity.move(MoverType.SELF, this.cutelessmodD0 - this.posX, this.cutelessmodD1 - this.posY, this.cutelessmodD2 - this.posZ);
 		} else {

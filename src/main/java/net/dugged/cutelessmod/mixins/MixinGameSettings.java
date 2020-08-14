@@ -15,20 +15,20 @@ public abstract class MixinGameSettings {
 	public float gammaSetting;
 
 	@Shadow
-	public abstract float getOptionFloatValue(GameSettings.Options settingOption);
+	public abstract float getOptionFloatValue(final GameSettings.Options settingOption);
 
 	@Inject(method = "setOptionFloatValue", at = @At("HEAD"), cancellable = true)
-	private void overrideGammaValue(GameSettings.Options settingsOption, float value, CallbackInfo ci) {
-		if (settingsOption != GameSettings.Options.GAMMA) {
+	private void overrideGammaValue(final GameSettings.Options option, float value, final CallbackInfo ci) {
+		if (option != GameSettings.Options.GAMMA) {
 			return;
 		}
 
 		if (value >= 0.95F) {
-			value = 1000.0F;
+			value = 1000F;
 		} else if (value >= 0.9F) {
-			value = 1.0F;
+			value = 1F;
 		} else {
-			value = Math.min(1.0F, value / 0.9F);
+			value = Math.min(1F, value / 0.9F);
 		}
 
 		ci.cancel();
@@ -36,20 +36,19 @@ public abstract class MixinGameSettings {
 	}
 
 	@Inject(method = "getKeyBinding", at = @At("HEAD"), cancellable = true)
-	private void overrideGammaText(GameSettings.Options settingOption, CallbackInfoReturnable<String> cir) {
-		if (settingOption != GameSettings.Options.GAMMA) {
+	private void overrideGammaText(final GameSettings.Options option, final CallbackInfoReturnable<String> cir) {
+		if (option != GameSettings.Options.GAMMA) {
 			return;
 		}
 
-		cir.cancel();
-		final float f = this.getOptionFloatValue(settingOption);
-		String s = I18n.format(settingOption.getTranslation()) + ": ";
-		if (f > 1.0F) {
+		final float f = this.getOptionFloatValue(option);
+		String s = I18n.format(option.getTranslation()) + ": ";
+		if (f > 1F) {
 			s += I18n.format("cuteless.options.gamma.fullbright");
 		} else if (f > 0.95F) {
 			s += I18n.format("options.gamma.max");
-		} else if (f > 0.0F) {
-			s += "+" + (int) (f * 100.0F) + "%";
+		} else if (f > 0F) {
+			s += "+" + (int) (f * 100F) + "%";
 		} else {
 			s += I18n.format("options.gamma.min");
 		}

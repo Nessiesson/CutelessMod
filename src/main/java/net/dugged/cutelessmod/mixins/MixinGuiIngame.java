@@ -14,9 +14,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GuiIngame.class)
-public abstract class MixinGuiIngame  extends Gui {
+public abstract class MixinGuiIngame extends Gui {
 	@Inject(method = "setOverlayMessage(Ljava/lang/String;Z)V", at = @At("HEAD"), cancellable = true)
-	private void onIncomingMSPT(String message, boolean animateColor, CallbackInfo ci) {
+	private void onIncomingMSPT(String message, final boolean animateColor, final CallbackInfo ci) {
 		if (Configuration.showMSPTandTPSinTab) {
 			ci.cancel();
 			message = message.replaceAll("\u00A7[0-9a-fklmnor]", "");
@@ -40,7 +40,7 @@ public abstract class MixinGuiIngame  extends Gui {
 	}
 
 	@Unique
-	private TextFormatting cutelessmodReturnColourForMSPT(int mspt) {
+	private TextFormatting cutelessmodReturnColourForMSPT(final int mspt) {
 		// not stolen from masa at all.
 		if (mspt <= 40) {
 			return TextFormatting.GREEN;

@@ -12,14 +12,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(InventoryEffectRenderer.class)
 public abstract class MixinInventoryEffectRenderer extends GuiContainer {
-    public MixinInventoryEffectRenderer(Container container) {
-        super(container);
-    }
+	public MixinInventoryEffectRenderer(Container container) {
+		super(container);
+	}
 
-    @Inject(method = "updateActivePotionEffects", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/InventoryEffectRenderer;guiLeft:I", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER))
-    private void noPotionShift(CallbackInfo ci) {
-        if (!Configuration.showPotionShift) {
-            this.guiLeft = (this.width - this.xSize) / 2;
-        }
-    }
+	@Inject(method = "updateActivePotionEffects", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/InventoryEffectRenderer;guiLeft:I", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER))
+	private void noPotionShift(CallbackInfo ci) {
+		if (!Configuration.showPotionShift) {
+			this.guiLeft = (this.width - this.xSize) / 2;
+		}
+	}
 }

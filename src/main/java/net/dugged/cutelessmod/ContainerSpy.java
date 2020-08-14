@@ -112,7 +112,7 @@ public class ContainerSpy {
 		this.mc.player.connection.sendPacket(new CPacketChatMessage("/help " + this.stopId));
 	}
 
-	public class SimpleContainer {
+	public static class SimpleContainer {
 		public int windowId;
 		public List<ItemStack> inv;
 
@@ -121,7 +121,7 @@ public class ContainerSpy {
 			this.inv = NonNullList.withSize(slotCount, ItemStack.EMPTY);
 		}
 
-		public int countUsedSlots () {
+		public int countUsedSlots() {
 			int i = 0;
 			for (ItemStack stack : this.inv) {
 				if (!stack.isEmpty()) {

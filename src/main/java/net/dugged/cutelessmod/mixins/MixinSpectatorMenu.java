@@ -16,7 +16,7 @@ public abstract class MixinSpectatorMenu {
 	public abstract ISpectatorMenuObject getItem(int index);
 
 	@Inject(method = "<init>", at = @At("RETURN"))
-	private void onlyShowPlayers(ISpectatorMenuRecipient menu, CallbackInfo ci) {
+	private void onlyShowPlayers(final ISpectatorMenuRecipient menu, final CallbackInfo ci) {
 		if (!Configuration.showSpectatorTeamMenu) {
 			this.getItem(0).selectItem((SpectatorMenu) (Object) this);
 		}

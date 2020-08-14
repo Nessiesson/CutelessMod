@@ -22,7 +22,7 @@ public class BeaconAreaRenderer {
 		for (AxisAlignedBB axisalignedbb : CutelessMod.beaconsToRender.keySet()) {
 
 			RenderGlobal.drawSelectionBoundingBox(axisalignedbb.offset(-playerX, -playerY, -playerZ), 0.9F, 0.9F, 0.9F, 1F);
-	}
+		}
 		CutelessMod.beaconsToRender.entrySet().removeIf(entry -> 1 > entry.getValue());
 		GlStateManager.glLineWidth(1F);
 		GlStateManager.enableTexture2D();

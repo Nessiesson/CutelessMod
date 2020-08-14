@@ -14,12 +14,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin({BlockBarrier.class, BlockCommandBlock.class, BlockDragonEgg.class, BlockStructure.class})
 public abstract class MixinExtraBlocksInCreativeMenu extends Block {
-	protected MixinExtraBlocksInCreativeMenu(Material material) {
+	protected MixinExtraBlocksInCreativeMenu(final Material material) {
 		super(material);
 	}
 
 	@Inject(method = "<init>", at = @At("RETURN"))
-	private void onInit(CallbackInfo ci) {
+	private void onInit(final CallbackInfo ci) {
 		this.setCreativeTab(CreativeTabs.REDSTONE);
 	}
 }

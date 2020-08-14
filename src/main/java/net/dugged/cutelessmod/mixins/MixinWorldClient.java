@@ -14,19 +14,19 @@ import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(value = WorldClient.class, priority = 1001)
 public abstract class MixinWorldClient extends World {
-	protected MixinWorldClient(ISaveHandler ish, WorldInfo wi, WorldProvider wp, Profiler p, boolean c) {
+	protected MixinWorldClient(final ISaveHandler ish, final WorldInfo wi, final WorldProvider wp, final Profiler p, final boolean c) {
 		super(ish, wi, wp, p, c);
 	}
 
 	@Override
-	public void updateEntity(Entity entity) {
+	public void updateEntity(final Entity entity) {
 		if (Configuration.clientEntityUpdates || entity instanceof EntityPlayer || entity instanceof EntityFireworkRocket) {
 			super.updateEntity(entity);
 		}
 	}
 
 	@Override
-	public float getRainStrength(float delta) {
+	public float getRainStrength(final float delta) {
 		return Configuration.showRain ? this.prevRainingStrength + (this.rainingStrength - this.prevRainingStrength) * delta : 0F;
 	}
 }

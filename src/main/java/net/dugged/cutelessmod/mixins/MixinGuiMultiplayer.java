@@ -1,4 +1,3 @@
-
 package net.dugged.cutelessmod.mixins;
 
 import net.dugged.cutelessmod.Configuration;
@@ -29,7 +28,7 @@ public abstract class MixinGuiMultiplayer {
 	private int cutelessmodTick = 0;
 
 	@Inject(method = "updateScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ServerPinger;pingPendingNetworks()V"))
-	private void dynamicListUpdates(CallbackInfo ci) {
+	private void dynamicListUpdates(final CallbackInfo ci) {
 		if (Configuration.dynamicServerListUpdates) {
 			final int visibleSlots = (this.serverListSelector.bottom - this.serverListSelector.top) / this.serverListSelector.getSlotHeight();
 			final int startIndex = this.serverListSelector.getAmountScrolled() / this.serverListSelector.getSlotHeight();
@@ -48,7 +47,7 @@ public abstract class MixinGuiMultiplayer {
 	}
 
 	@Inject(method = "connectToServer", at = @At(value = "HEAD"))
-	private void updateServerData(ServerData server, CallbackInfo ci) {
-		CutelessMod.currentServer = server;
+	private void updateServerData(final ServerData data, final CallbackInfo ci) {
+		CutelessMod.currentServer = data;
 	}
 }

@@ -22,7 +22,7 @@ public abstract class MixinTileEntityPiston extends TileEntity {
 	 */
 	@SideOnly(Side.CLIENT)
 	@Overwrite
-	public float getProgress(float partialTicks) {
+	public float getProgress(final float partialTicks) {
 		if (this.tileEntityInvalid && Math.abs(this.progress - 1F) < 1E-5F) {
 			return Ccutelessmod_MATH_NEXT_DOWN_OF_ONE;
 		}
