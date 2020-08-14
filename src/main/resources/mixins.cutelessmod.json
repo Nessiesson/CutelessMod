@@ -55,6 +55,7 @@
 		"MixinPlayerControllerMP",
 		"MixinPlayerMenuObject",
 		"MixinRainbowLeafBlockColors",
+		"MixinRecipeBook",
 		"MixinRenderGlobal",
 		"MixinRenderItem",
 		"MixinRenderItemFrame",
