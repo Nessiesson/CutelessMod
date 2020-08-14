@@ -44,7 +44,7 @@ public abstract class MixinGameSettings {
 		final float f = this.getOptionFloatValue(option);
 		String s = I18n.format(option.getTranslation()) + ": ";
 		if (f > 1F) {
-			s += I18n.format("cuteless.options.gamma.fullbright");
+			s += I18n.format("text.cutelessmod.options.gamma.fullbright");
 		} else if (f > 0.95F) {
 			s += I18n.format("options.gamma.max");
 		} else if (f > 0F) {
