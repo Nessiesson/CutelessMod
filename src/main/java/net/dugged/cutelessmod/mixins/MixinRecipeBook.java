@@ -12,7 +12,7 @@ public abstract class MixinRecipeBook {
 	@Shadow
 	protected boolean isFilteringCraftable;
 
-	@Inject(method = "<init>", at = @At("HEAD"))
+	@Inject(method = "<init>", at = @At("RETURN"))
 	private void onInit(CallbackInfo ci) {
 		this.isFilteringCraftable = true;
 	}
