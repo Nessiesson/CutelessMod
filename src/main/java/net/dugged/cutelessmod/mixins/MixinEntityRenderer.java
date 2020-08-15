@@ -18,7 +18,7 @@ public abstract class MixinEntityRenderer {
 	@Unique
 	private float cutelessmodEyeHeight;
 	@Unique
-	private float cuteless;
+	private float cutelessmodLastEyeHeight;
 
 	@Inject(method = "renderWorldPass", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/profiler/Profiler;endStartSection(Ljava/lang/String;)V", args = "ldc=litParticles"))
 	private void onPostRenderEntities(final int pass, final float partialTicks, final long finishTimeNano, final CallbackInfo ci) {
@@ -36,15 +36,15 @@ public abstract class MixinEntityRenderer {
 	@SuppressWarnings("ConstantConditions")
 	@Inject(method = "updateRenderer", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/client/multiplayer/WorldClient;getLightBrightness(Lnet/minecraft/util/math/BlockPos;)F"))
 	private void updateEyeHeights(final CallbackInfo ci) {
-		this.cuteless = this.cutelessmodEyeHeight;
+		this.cutelessmodLastEyeHeight = this.cutelessmodEyeHeight;
 		this.cutelessmodEyeHeight += (Minecraft.getMinecraft().getRenderViewEntity().getEyeHeight() - this.cutelessmodEyeHeight) * 0.5F;
 	}
 
 	@SuppressWarnings("ConstantConditions")
 	@Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;translate(FFF)V", ordinal = 4))
 	private void eyeHeightTranslate(final float x, float y, final float z, final float partialTicks) {
-		if (Configuration.showSneakEyeHeight) {
-			y += Minecraft.getMinecraft().getRenderViewEntity().getEyeHeight() - this.cuteless - partialTicks * (this.cutelessmodEyeHeight - this.cuteless);
+		if (Configuration.showSneakEyeHeight && !Minecraft.getMinecraft().playerController.isSpectator()) {
+			y += Minecraft.getMinecraft().getRenderViewEntity().getEyeHeight() - this.cutelessmodLastEyeHeight - partialTicks * (this.cutelessmodEyeHeight - this.cutelessmodLastEyeHeight);
 		}
 
 		GlStateManager.translate(x, y, z);
