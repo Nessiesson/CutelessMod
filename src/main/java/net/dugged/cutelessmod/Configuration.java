@@ -52,6 +52,7 @@ public class Configuration {
 	public static boolean alwaysShowPing = false;
 	public static boolean dynamicServerListUpdates = false;
 	public static boolean alwaysPickBlockMaxStack = false;
+	public static boolean lightUpdates = true;
 
 	// Ints
 	@Config.RangeInt(min = 0)
