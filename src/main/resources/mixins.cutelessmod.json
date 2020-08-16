@@ -45,6 +45,7 @@
 		"MixinGuiRecipeBook",
 		"MixinGuiScreen",
 		"MixinInventoryEffectRenderer",
+		"MixinItemFirework",
 		"MixinItemStack",
 		"MixinMinecraft",
 		"MixinNetHandlerPlayClient",

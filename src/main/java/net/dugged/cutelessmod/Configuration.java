@@ -51,6 +51,7 @@ public class Configuration {
 	public static boolean dynamicServerListUpdates = false;
 	public static boolean alwaysPickBlockMaxStack = false;
 	public static boolean lightUpdates = true;
+	public static boolean rocketCooldown = false;
 
 	// Ints
 	@Config.RangeInt(min = 0)
