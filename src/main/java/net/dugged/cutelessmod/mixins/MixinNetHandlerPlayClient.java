@@ -5,6 +5,7 @@ import net.dugged.cutelessmod.CutelessMod;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ChatLine;
+import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.init.Blocks;
@@ -67,14 +68,19 @@ public abstract class MixinNetHandlerPlayClient {
 		return time;
 	}
 
+	@Redirect(method = "handlePlayerListHeaderFooter", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiPlayerTabOverlay;setFooter(Lnet/minecraft/util/text/ITextComponent;)V"))
+	private void redirectTabFooter(GuiPlayerTabOverlay guiPlayerTabOverlay, ITextComponent footerIn) {
+		CutelessMod.tabFooter = footerIn;
+	}
+
 	@Inject(method = "handleTimeUpdate", at = @At("RETURN"))
 	private void onTimeUpdate(SPacketTimeUpdate packetIn, CallbackInfo ci) {
 		final long currentTime = System.nanoTime();
 		final long dt = currentTime - CutelessMod.lastTimeUpdate;
 		CutelessMod.lastTimeUpdate = currentTime;
-
-		if (dt > 0L) {
-			CutelessMod.mspt = Math.max(50D, dt * 5E-8D);
+		final IGuiIngame guiIngame = (IGuiIngame) Minecraft.getMinecraft().ingameGUI;
+		if (dt > 0L && CutelessMod.overlayTimer == 0) {
+			CutelessMod.mspt = (int) Math.max(50, dt * 5E-8D);
 		}
 	}
 

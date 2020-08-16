@@ -46,8 +46,6 @@ public class Configuration {
 	public static boolean derpyChicken = false;
 	@Config.Comment("Enables client-side start of elytra flight by Earthcomputer. May cause you to fall to your death randomly.")
 	public static boolean elytraFix = false;
-	@Config.Comment("This feature is only useful on DuggedSMP and does nothing elsewhere.")
-	public static boolean showMSPTandTPSinTab = true;
 	public static boolean colouredFireworksTrail = false;
 	public static boolean alwaysShowPing = false;
 	public static boolean dynamicServerListUpdates = false;

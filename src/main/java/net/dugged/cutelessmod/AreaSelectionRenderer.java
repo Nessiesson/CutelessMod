@@ -49,20 +49,34 @@ public class AreaSelectionRenderer {
 		GlStateManager.glLineWidth(3F);
 
 		if (Stream.of("/clone", "/fill", "/setblock").anyMatch(s -> args[0].equals(s))) {
+			boolean setblock = false;
 			if (args[0].equals("/setblock")) {
 				p1 = p0;
+				setblock = true;
 			}
 
 			AxisAlignedBB origin = null;
 			if (p0 != null && p1 != null) {
-				// maybe theres a better way to fix this but my brain isn't working with full neuron capacity due to 25+° at midnight
+				// man this shit is getting uglier every time i fix more bugs xd
 				if ((d0 >= 0 && d0 >= (int) d0 + 0.5) || (d0 < 0 && d0 >= (int) d0 - 0.5)) {
-					p0 = p0.add(-1, 0, 0);
-					p1 = p1.add(-1, 0, 0);
+					 if (args[1].contains("~")) {
+						p0 = p0.add(-1, 0, 0);
+						if (setblock) {
+							p1 = p1.add(-1, 0, 0);
+						}
+					} else if (!setblock && args[4].contains("~")) {
+						p1 = p1.add(-1, 0, 0);
+					}
 				}
 				if ((d2 >= 0 && d2 >= (int) d2 + 0.5) || (d2 < 0 && d2 >= (int) d2 - 0.5)) {
-					p0 = p0.add(0, 0, -1);
-					p1 = p1.add(0, 0, -1);
+					if (args[3].contains("~")) {
+						p0 = p0.add(0, 0, -1);
+						if (setblock) {
+							p1 = p1.add(0, 0, -1);
+						}
+					} else if (!setblock && args[6].contains("~")) {
+						p1 = p1.add(0, 0, -1);
+					}
 				}
 				origin = new AxisAlignedBB(p0, p1);
 				RenderGlobal.drawSelectionBoundingBox(origin.expand(1F, 1F, 1F).offset(-d0, -d1, -d2), 0.9F, 0.9F, 0.9F, 1F);
@@ -70,6 +84,16 @@ public class AreaSelectionRenderer {
 
 			if (args[0].equals("/clone")) {
 				if (p2 != null && origin != null) {
+					if ((d0 >= 0 && d0 >= (int) d0 + 0.5) || (d0 < 0 && d0 >= (int) d0 - 0.5)) {
+						if (args[7].contains("~")) {
+							p2 = p2.add(-1, 0, 0);
+						}
+					}
+					if ((d2 >= 0 && d2 >= (int) d2 + 0.5) || (d2 < 0 && d2 >= (int) d2 - 0.5)) {
+						if (args[9].contains("~")) {
+							p2 = p2.add(0, 0, -1);
+						}
+					}
 					final AxisAlignedBB target = new AxisAlignedBB(p2, p2.add(origin.maxX - origin.minX + 1, origin.maxY - origin.minY + 1, origin.maxZ - origin.minZ + 1));
 					RenderGlobal.drawSelectionBoundingBox(target.grow(0.005F).offset(-d0, -d1, -d2), 0.99F, 0.99F, 0.99F, 1F);
 				}

@@ -22,14 +22,6 @@ public abstract class MixinGuiOverlayDebug {
 	@Final
 	private Minecraft mc;
 
-	//TODO: Make sure this is accurate when possible
-	@Inject(method = "call", at = @At("RETURN"))
-	private void tpsDebugText(final CallbackInfoReturnable<List<String>> cir) {
-		final double mspt = CutelessMod.mspt;
-		final String currentLine = cir.getReturnValue().get(4);
-		cir.getReturnValue().set(4, String.format("%s, mspt: \u2248%.1f, tps: \u2248%.1f", currentLine, mspt, 1000D / mspt));
-	}
-
 	//TODO: Ensure correct packet count
 	@Inject(method = "call", at = @At("RETURN"))
 	private void packetCount(final CallbackInfoReturnable<List<String>> cir) {

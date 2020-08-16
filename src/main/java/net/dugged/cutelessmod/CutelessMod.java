@@ -30,7 +30,6 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,7 +48,9 @@ public class CutelessMod {
 	public static boolean toggleBeaconArea = false;
 	public static long lastTimeUpdate;
 	public static ContainerSpy spy;
-	public static double mspt;
+	public static int mspt;
+	public static int overlayTimer = 0;
+	public static ITextComponent tabFooter;
 	public static int sendPacketsThisTick = 0;
 	public static int[] sendPackets = new int[20];
 	public static int receivedPacketsThisTick = 0;
@@ -104,9 +105,35 @@ public class CutelessMod {
 	@SubscribeEvent
 	public void onTick(TickEvent.ClientTickEvent event) {
 		tickCounter++;
+		if (overlayTimer > 0) {
+			overlayTimer--;
+		}
 		if (mc.world != null) {
 			if (!mc.isIntegratedServerRunning()) {
-				CutelessMod.currentServer = mc.getCurrentServerData();
+				currentServer = mc.getCurrentServerData();
+			}
+			if (mspt > 0) {
+				final int tps = 1000 / mspt;
+				ITextComponent base = new TextComponentString("");
+				if (tabFooter != null && tabFooter.getUnformattedText().matches("(?s).*TPS: \\d*\\.\\d* MSPT: \\d*\\.\\d*.*")) {
+					mc.ingameGUI.getTabList().setFooter(tabFooter);
+				} else {
+					if (tabFooter != null) {
+						base.appendSibling(tabFooter).appendText("\n");
+					}
+					final ITextComponent tMSPT = new TextComponentString("MSPT: ");
+					final ITextComponent tTPS = new TextComponentString("TPS: ");
+					final ITextComponent MSPT = new TextComponentString(Integer.toString(mspt));
+					final ITextComponent TPS = new TextComponentString(Integer.toString(tps));
+
+					tMSPT.getStyle().setColor(TextFormatting.GRAY);
+					tTPS.getStyle().setColor(TextFormatting.GRAY);
+					MSPT.getStyle().setColor(CutelessModUtils.returnColourForMSPT(mspt));
+					TPS.getStyle().setColor(CutelessModUtils.returnColourForTPS(tps));
+
+					base.appendSibling(tMSPT).appendSibling(MSPT).appendSibling(new TextComponentString(" ")).appendSibling(tTPS).appendSibling(TPS);
+					mc.ingameGUI.getTabList().setFooter(base);
+				}
 			}
 
 			for (AxisAlignedBB axisalignedbb : CutelessMod.beaconsToRender.keySet()) {
