@@ -22,7 +22,6 @@ public abstract class MixinRenderGlobal {
 	@Final
 	private Minecraft mc;
 
-	//TODO: Make it actually not calculate __any__ light updates
 	@Inject(method = "notifyLightSet", at = @At("HEAD"), cancellable = true)
 	private void noLight(BlockPos pos, CallbackInfo ci) {
 		ci.cancel();
