@@ -14,10 +14,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinGuiIngame extends Gui {
 	@Inject(method = "setOverlayMessage(Ljava/lang/String;Z)V", at = @At("HEAD"), cancellable = true)
 	private void parseDuggedMSPT(String message, final boolean animateColor, final CallbackInfo ci) {
-		String s = message.replaceAll("\u00A7[0-9a-fk-or]", "");
-		if (StringUtils.isNumeric(s)) {
+		final String s = message.replaceAll("(\u00A7a|\u00A7r)", "");
+		if (message.matches("\u00A7a\\d*\u00A7r") && StringUtils.isNumeric(s)) {
 			CutelessMod.overlayTimer = 60;
-			CutelessMod.mspt = Integer.parseInt(message);
+			CutelessMod.mspt = Integer.parseInt(s);
 		} else {
 			Minecraft.getMinecraft().ingameGUI.setOverlayMessage(message, animateColor);
 		}

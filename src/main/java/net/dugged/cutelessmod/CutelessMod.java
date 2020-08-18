@@ -20,6 +20,7 @@ import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
@@ -103,6 +104,11 @@ public class CutelessMod {
 	}
 
 	@SubscribeEvent
+	public void onLoadWorld (WorldEvent.Load event) {
+		tabFooter = null;
+	}
+
+	@SubscribeEvent
 	public void onTick(TickEvent.ClientTickEvent event) {
 		tickCounter++;
 		if (overlayTimer > 0) {
@@ -113,7 +119,7 @@ public class CutelessMod {
 				currentServer = mc.getCurrentServerData();
 			}
 			if (mspt > 0) {
-				final int tps = 1000 / mspt;
+				final int tps = Math.min(20, 1000 / mspt);
 				ITextComponent base = new TextComponentString("");
 				if (tabFooter != null && tabFooter.getUnformattedText().matches("(?s).*TPS: \\d*\\.\\d* MSPT: \\d*\\.\\d*.*")) {
 					mc.ingameGUI.getTabList().setFooter(tabFooter);
