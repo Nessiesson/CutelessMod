@@ -31,6 +31,7 @@ import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,9 +39,10 @@ import java.util.Map;
 @Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION, clientSideOnly = true)
 public class CutelessMod {
 	public static final KeyBinding highlightEntities = new KeyBinding("key.cutelessmod.highlight_entities", KeyConflictContext.IN_GAME, Keyboard.KEY_C, Reference.NAME);
+	private static final KeyBinding emptyScreenKey = new KeyBinding("key.cutelessmod.emptyscreen", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	private static final KeyBinding reloadAudioEngineKey = new KeyBinding("key.cutelessmod.reload_audio", KeyConflictContext.IN_GAME, Keyboard.KEY_B, Reference.NAME);
-	private static final KeyBinding toggleBeaconAreaKey = new KeyBinding("key.cutelessmod.toggle_beacon_area", KeyConflictContext.IN_GAME, Keyboard.KEY_J, Reference.NAME);
 	private static final KeyBinding spyKey = new KeyBinding("key.cutelessmod.spy", KeyConflictContext.IN_GAME, Keyboard.KEY_Y, Reference.NAME);
+	private static final KeyBinding toggleBeaconAreaKey = new KeyBinding("key.cutelessmod.toggle_beacon_area", KeyConflictContext.IN_GAME, Keyboard.KEY_J, Reference.NAME);
 	private static final Minecraft mc = Minecraft.getMinecraft();
 	private static final StepAssistHelper stepAssistHelper = new StepAssistHelper();
 	public static Map<AxisAlignedBB, Integer> beaconsToRender = new HashMap<>();
@@ -69,10 +71,11 @@ public class CutelessMod {
 
 	@Mod.EventHandler
 	public void init(FMLInitializationEvent event) {
-		ClientRegistry.registerKeyBinding(reloadAudioEngineKey);
-		ClientRegistry.registerKeyBinding(toggleBeaconAreaKey);
 		ClientRegistry.registerKeyBinding(highlightEntities);
+		ClientRegistry.registerKeyBinding(emptyScreenKey);
+		ClientRegistry.registerKeyBinding(reloadAudioEngineKey);
 		ClientRegistry.registerKeyBinding(spyKey);
+		ClientRegistry.registerKeyBinding(toggleBeaconAreaKey);
 		spy = new ContainerSpy();
 	}
 
@@ -100,6 +103,10 @@ public class CutelessMod {
 			} else {
 				spy.startFindingInventories();
 			}
+		}
+
+		if (emptyScreenKey.isPressed()) {
+			mc.displayGuiScreen(new GuiEmptyScreen());
 		}
 	}
 

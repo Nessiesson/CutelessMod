@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"package": "net.dugged.cutelessmod.mixins.liteloader",
+	"refmap": "mixins.cutelessmod.refmap.json",
+	"minVersion": "0.7.3",
+	"compatibilityLevel": "JAVA_8",
+	"plugin": "net.dugged.cutelessmod.mixins.liteloader.LiteloaderMixinPlugin",
+	"mixins": [
+		"MixinMinecraft"
+	]
+}

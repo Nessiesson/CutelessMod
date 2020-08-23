@@ -13,6 +13,8 @@ public class CutelessModLoadingPlugin implements IFMLLoadingPlugin {
 	public CutelessModLoadingPlugin() {
 		MixinBootstrap.init();
 		Mixins.addConfiguration("mixins.cutelessmod.json");
+		Mixins.addConfiguration("mixins.forge.cutelessmod.json");
+		Mixins.addConfiguration("mixins.liteloader.cutelessmod.json");
 	}
 
 	// @formatter:off
