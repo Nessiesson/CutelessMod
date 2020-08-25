@@ -1,7 +1,8 @@
 package net.dugged.cutelessmod;
 
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.util.text.TextFormatting;
+
+import java.awt.*;
 
 public class GuiEmptyScreen extends GuiScreen {
 	@Override
@@ -13,7 +14,7 @@ public class GuiEmptyScreen extends GuiScreen {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		drawRect(this.width - 4, this.height - 4, this.width - 2, this.height - 2, TextFormatting.DARK_RED.getColorIndex());
+		drawRect(this.width - 4, this.height - 4, this.width - 2, this.height - 2, Color.RED.getRGB());
 	}
 
 	@Override
