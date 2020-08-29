@@ -37,7 +37,6 @@ minecraft {
 	replace "@MODID@", modId
 
 	def args = [
-			"-Dmixin.hotSwap=true",
 			"-Dmixin.debug=true"
 	]
 	clientJvmArgs.addAll(args)
@@ -99,3 +98,4 @@ processResources {
 runClient {
 	jvmArgs "-Dmixin.debug=true"
 }
+1
