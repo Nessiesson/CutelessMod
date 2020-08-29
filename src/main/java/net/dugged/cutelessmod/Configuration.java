@@ -1,5 +1,6 @@
 package net.dugged.cutelessmod;
 
+import net.minecraft.block.material.Material;
 import net.minecraftforge.common.config.Config;
 
 @Config(modid = Reference.MODID)
@@ -51,6 +52,7 @@ public class Configuration {
 	public static boolean smoothItemMovement = false;
 	public static boolean sortEnchantmentTooltip = false;
 	public static boolean stepAssist = false;
+	public static boolean waterModifiesFoV = true;
 
 	// Ints
 	@Config.RangeInt(min = 0)

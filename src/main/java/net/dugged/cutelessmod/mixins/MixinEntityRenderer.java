@@ -3,6 +3,8 @@ package net.dugged.cutelessmod.mixins;
 import net.dugged.cutelessmod.AreaSelectionRenderer;
 import net.dugged.cutelessmod.BeaconAreaRenderer;
 import net.dugged.cutelessmod.Configuration;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
@@ -48,5 +50,10 @@ public abstract class MixinEntityRenderer {
 		}
 
 		GlStateManager.translate(x, y, z);
+	}
+
+	@Redirect(method = "getFOVModifier", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/state/IBlockState;getMaterial()Lnet/minecraft/block/material/Material;"))
+	private Material staticWaterFov(final IBlockState state) {
+		return Configuration.waterModifiesFoV ? state.getMaterial() : Material.AIR;
 	}
 }
