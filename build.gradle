@@ -98,4 +98,3 @@ processResources {
 runClient {
 	jvmArgs "-Dmixin.debug=true"
 }
-1
