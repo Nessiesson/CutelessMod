@@ -42,6 +42,7 @@
 		"MixinGuiOverlayDebug",
 		"MixinGuiRecipeBook",
 		"MixinGuiScreen",
+		"MixinGuiStats",
 		"MixinInventoryEffectRenderer",
 		"MixinItemFirework",
 		"MixinItemStack",

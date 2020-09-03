@@ -2,6 +2,7 @@ package net.dugged.cutelessmod.mixins;
 
 import com.mojang.authlib.GameProfile;
 import net.dugged.cutelessmod.Configuration;
+import net.dugged.cutelessmod.CutelessMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -9,6 +10,7 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerMerchant;
+import net.minecraft.stats.StatBase;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -48,6 +50,15 @@ public abstract class MixinEntityPlayerSP extends AbstractClientPlayer {
 	public void onDeployElytra(final CallbackInfo ci) {
 		if (Configuration.elytraFix) {
 			this.setFlag(7, true);
+		}
+	}
+
+	@Inject(method = "addStat", at = @At("HEAD"))
+	private void addStat(StatBase stat, int amount, CallbackInfo ci) {
+		if (stat.statId.matches(CutelessMod.statPluginFilter)) {
+			if (CutelessMod.statPlugin.isConnected()) {
+				CutelessMod.statPlugin.sendStatIncrease(amount);
+			}
 		}
 	}
 }

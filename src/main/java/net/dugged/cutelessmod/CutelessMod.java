@@ -67,8 +67,11 @@ public class CutelessMod {
 	public static long tickCounter = 0;
 	private String originalTitle;
 	private static final List<KeyBinding> keybinds = new ArrayList<>();
+    public static String statPluginFilter = "stat.useItem.minecraft.diamond_pickaxe";
+    public static StatPlugin statPlugin = new StatPlugin();
 
-	@Mod.EventHandler
+
+    @Mod.EventHandler
 	public void preInit(final FMLPreInitializationEvent event) {
 		MinecraftForge.EVENT_BUS.register(this);
 		this.originalTitle = Display.getTitle();
