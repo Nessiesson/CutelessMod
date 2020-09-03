@@ -78,7 +78,6 @@ public abstract class MixinNetHandlerPlayClient {
 		final long currentTime = System.nanoTime();
 		final long dt = currentTime - CutelessMod.lastTimeUpdate;
 		CutelessMod.lastTimeUpdate = currentTime;
-		final IGuiIngame guiIngame = (IGuiIngame) Minecraft.getMinecraft().ingameGUI;
 		if (dt > 0L && CutelessMod.overlayTimer == 0) {
 			CutelessMod.mspt = (int) Math.max(50, dt * 5E-8D);
 		}

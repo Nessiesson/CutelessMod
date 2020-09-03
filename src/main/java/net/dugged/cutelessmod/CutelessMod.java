@@ -32,9 +32,14 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION, clientSideOnly = true)
 public class CutelessMod {
@@ -61,16 +66,26 @@ public class CutelessMod {
 	public static ServerData currentServer;
 	public static long tickCounter = 0;
 	private String originalTitle;
+	private static final List<KeyBinding> keybinds = new ArrayList<>();
 
 	@Mod.EventHandler
-	public void preInit(FMLPreInitializationEvent event) {
+	public void preInit(final FMLPreInitializationEvent event) {
 		MinecraftForge.EVENT_BUS.register(this);
 		this.originalTitle = Display.getTitle();
 		updateTitle();
 	}
 
 	@Mod.EventHandler
-	public void init(FMLInitializationEvent event) {
+	public void init(final FMLInitializationEvent event) {
+		final List<Field> fields = Arrays.stream(Configuration.class.getDeclaredFields()).filter(f -> boolean.class.equals(f.getType())).sorted(Comparator.comparing(Field::getName)).collect(Collectors.toList());
+		for (final Field f : fields) {
+			keybinds.add(new KeyBinding(f.getName(), Keyboard.KEY_NONE, Reference.NAME));
+		}
+
+		for (final KeyBinding key : keybinds) {
+			ClientRegistry.registerKeyBinding(key);
+		}
+
 		ClientRegistry.registerKeyBinding(highlightEntities);
 		ClientRegistry.registerKeyBinding(emptyScreenKey);
 		ClientRegistry.registerKeyBinding(reloadAudioEngineKey);
@@ -80,14 +95,28 @@ public class CutelessMod {
 	}
 
 	@SubscribeEvent
-	public void onConfigChangedEvent(ConfigChangedEvent.OnConfigChangedEvent event) {
+	public void onConfigChangedEvent(final ConfigChangedEvent.OnConfigChangedEvent event) {
 		if (event.getModID().equals(Reference.MODID)) {
 			ConfigManager.sync(Reference.MODID, Config.Type.INSTANCE);
 		}
 	}
 
 	@SubscribeEvent
-	public void onKeyPressed(InputEvent.KeyInputEvent event) {
+	public void onKeyPressed(final InputEvent.KeyInputEvent event) {
+		for (final KeyBinding key : keybinds) {
+			if (key.isPressed()) {
+				try {
+					final Field field = Configuration.class.getField(key.getKeyDescription());
+					final boolean state = !field.getBoolean(Configuration.class);
+					field.setBoolean(Configuration.class, state);
+					ConfigManager.sync(Reference.MODID, Config.Type.INSTANCE);
+					mc.ingameGUI.setOverlayMessage(String.format("%s %s.", field.getName(), state ? "enabled" : "disabled"), false);
+				} catch (NoSuchFieldException | IllegalAccessException ignored) {
+					// noop
+				}
+			}
+		}
+
 		if (reloadAudioEngineKey.isPressed()) {
 			((ISoundHandler) mc.getSoundHandler()).getSoundManager().reloadSoundSystem();
 			this.debugFeedback();
@@ -111,12 +140,12 @@ public class CutelessMod {
 	}
 
 	@SubscribeEvent
-	public void onLoadWorld (WorldEvent.Load event) {
+	public void onLoadWorld(final WorldEvent.Load event) {
 		tabFooter = null;
 	}
 
 	@SubscribeEvent
-	public void onTick(TickEvent.ClientTickEvent event) {
+	public void onTick(final TickEvent.ClientTickEvent event) {
 		tickCounter++;
 		if (overlayTimer > 0) {
 			overlayTimer--;
@@ -188,7 +217,7 @@ public class CutelessMod {
 	}
 
 	@SubscribeEvent
-	public void onGuiChanged(GuiOpenEvent event) {
+	public void onGuiChanged(final GuiOpenEvent event) {
 		if (event.getGui() instanceof GuiMultiplayer) {
 			this.updateTitle();
 		}

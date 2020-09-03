@@ -1,11 +1,9 @@
 package net.dugged.cutelessmod;
 
-import net.minecraft.block.material.Material;
 import net.minecraftforge.common.config.Config;
 
 @Config(modid = Reference.MODID)
 public class Configuration {
-
 	// Booleans
 	public static boolean alwaysDay = false;
 	public static boolean alwaysPickBlockMaxStack = false;

@@ -3,6 +3,7 @@ package net.dugged.cutelessmod.mixins;
 import net.dugged.cutelessmod.CutelessMod;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiIngameMenu;
+import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.GuiConnecting;
 import net.minecraft.client.resources.I18n;
@@ -29,8 +30,9 @@ public abstract class MixinGuiIngameMenu extends GuiScreen {
 	@Inject(method = "actionPerformed", at = @At("HEAD"))
 	public void saveChat(final GuiButton button, final CallbackInfo ci) {
 		final String currentServer = CutelessMod.currentServer != null ? CutelessMod.currentServer.serverIP : "SINGLEPLAYER";
-		CutelessMod.tabCompleteHistory.put(currentServer, new ArrayList<>(this.mc.ingameGUI.getChatGUI().getSentMessages()));
-		CutelessMod.chatHistory.put(currentServer, new ArrayList<>(((IGuiNewChat) this.mc.ingameGUI.getChatGUI()).getChatLines()));
+		final GuiNewChat chat = this.mc.ingameGUI.getChatGUI();
+		CutelessMod.tabCompleteHistory.put(currentServer, new ArrayList<>(chat.getSentMessages()));
+		CutelessMod.chatHistory.put(currentServer, new ArrayList<>(((IGuiNewChat) chat).getChatLines()));
 	}
 
 	@Inject(method = "actionPerformed", at = @At("RETURN"))

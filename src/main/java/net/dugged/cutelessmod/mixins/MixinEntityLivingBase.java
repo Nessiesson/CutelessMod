@@ -27,7 +27,7 @@ public abstract class MixinEntityLivingBase extends Entity {
 	}
 
 	@Inject(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/EntityLivingBase;setPosition(DDD)V"), locals = LocalCapture.CAPTURE_FAILHARD)
-	private void keepCopies(final CallbackInfo ci, final double d0, final double d1, final double d2) {
+	private void keepCopies(final CallbackInfo ci, final double d0, final double d1, final double d2, final double d3) {
 		this.cutelessmodD0 = d0;
 		this.cutelessmodD1 = d1;
 		this.cutelessmodD2 = d2;
