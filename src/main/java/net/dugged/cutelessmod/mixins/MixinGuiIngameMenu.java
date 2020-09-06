@@ -21,7 +21,7 @@ public abstract class MixinGuiIngameMenu extends GuiScreen {
 		if (!this.mc.isIntegratedServerRunning()) {
 			CutelessMod.currentServer = this.mc.getCurrentServerData();
 			if (GuiScreen.isShiftKeyDown()) {
-				(this.buttonList.get(0)).displayString = I18n.format("menu.relog");
+				(this.buttonList.get(0)).displayString = I18n.format("text.cutelessmod.relog");
 			} else
 				(this.buttonList.get(0)).displayString = I18n.format("menu.disconnect");
 		}

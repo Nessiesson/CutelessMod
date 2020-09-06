@@ -8,6 +8,7 @@ import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.network.play.client.CPacketClientStatus;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.text.ITextComponent;
@@ -157,6 +158,12 @@ public class CutelessMod {
 			if (!mc.isIntegratedServerRunning()) {
 				currentServer = mc.getCurrentServerData();
 			}
+			// If connected to OBS request & update stat every 5 mins
+			if (statPlugin.isConnected() && tickCounter > statPlugin.lastTick + 1000) {
+				statPlugin.lastTick = tickCounter;
+				mc.world.sendPacketToServer(new CPacketClientStatus(CPacketClientStatus.State.REQUEST_STATS));
+			}
+
 			if (mspt > 0) {
 				final int tps = Math.min(20, 1000 / mspt);
 				ITextComponent base = new TextComponentString("");

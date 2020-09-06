@@ -10,12 +10,8 @@ import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.init.Blocks;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.play.server.SPacketChat;
-import net.minecraft.network.play.server.SPacketCombatEvent;
-import net.minecraft.network.play.server.SPacketJoinGame;
-import net.minecraft.network.play.server.SPacketOpenWindow;
-import net.minecraft.network.play.server.SPacketTimeUpdate;
-import net.minecraft.network.play.server.SPacketWindowItems;
+import net.minecraft.network.play.server.*;
+import net.minecraft.stats.StatBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityPiston;
 import net.minecraft.util.math.BlockPos;
@@ -30,10 +26,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 @Mixin(NetHandlerPlayClient.class)
 public abstract class MixinNetHandlerPlayClient {
@@ -161,6 +159,13 @@ public abstract class MixinNetHandlerPlayClient {
 			for (ChatLine message : history) {
 				mc.ingameGUI.getChatGUI().printChatMessage(message.getChatComponent());
 			}
+		}
+	}
+
+	@Inject(method = "handleStatistics", at = @At(value = "INVOKE", target = "Lnet/minecraft/stats/StatisticsManager;unlockAchievement(Lnet/minecraft/entity/player/EntityPlayer;Lnet/minecraft/stats/StatBase;I)V"), locals = LocalCapture.CAPTURE_FAILHARD)
+	private void addStat(final SPacketStatistics packetIn, final CallbackInfo ci, final Iterator<Map.Entry<StatBase, Integer>> it, final Map.Entry<StatBase, Integer> b, final StatBase key, final int value) {
+		if (key.statId.matches(CutelessMod.statPluginFilter)) {
+			CutelessMod.statPlugin.sendStatIncrease(value, true);
 		}
 	}
 }

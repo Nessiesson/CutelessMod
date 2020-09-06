@@ -57,7 +57,7 @@ public abstract class MixinEntityPlayerSP extends AbstractClientPlayer {
 	private void addStat(StatBase stat, int amount, CallbackInfo ci) {
 		if (stat.statId.matches(CutelessMod.statPluginFilter)) {
 			if (CutelessMod.statPlugin.isConnected()) {
-				CutelessMod.statPlugin.sendStatIncrease(amount);
+				CutelessMod.statPlugin.sendStatIncrease(amount, false);
 			}
 		}
 	}

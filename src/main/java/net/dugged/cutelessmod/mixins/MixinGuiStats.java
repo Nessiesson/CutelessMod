@@ -26,7 +26,7 @@ public class MixinGuiStats extends GuiScreen {
 
     @Inject(method = "initGui", at = @At("HEAD"))
     public void initGui(CallbackInfo ci) {
-        textField = new GuiTextField(0, this.fontRenderer, this.width / 2 + 170, this.height - 28, 120, 20);
+        textField = new GuiTextField(0, this.fontRenderer, this.width / 2 - 4 - 150, this.height - 28, 150, 20);
         textField.setText(CutelessMod.statPluginFilter);
         textField.setMaxStringLength(32500);
         textField.setFocused(true);
@@ -35,9 +35,9 @@ public class MixinGuiStats extends GuiScreen {
     @Inject(method = "initButtons", at = @At("HEAD"))
     private void addButons(final CallbackInfo ci) {
         if (CutelessMod.statPlugin.isConnected()) {
-            this.buttonList.add(new GuiButton(5, this.width / 2 + 210, this.height - 52, 80, 20, I18n.format("Disconnect")));
+            this.buttonList.add(new GuiButton(5, this.width / 2 - 154 - 86, this.height - 28, 80, 20, I18n.format("text.cutelessmod.disconnect")));
         } else {
-            this.buttonList.add(new GuiButton(5, this.width / 2 + 210, this.height - 52, 80, 20, I18n.format("Connect")));
+            this.buttonList.add(new GuiButton(5, this.width / 2 - 154 - 86, this.height - 28, 80, 20, I18n.format("text.cutelessmod.connect")));
         }
     }
 
@@ -48,10 +48,10 @@ public class MixinGuiStats extends GuiScreen {
             {
                 if (CutelessMod.statPlugin.isConnected()) {
                     CutelessMod.statPlugin.disconnect();
-                    button.displayString = I18n.format("Connect");
+                    button.displayString = I18n.format("text.cutelessmod.connect");
                 } else {
                     CutelessMod.statPlugin.connect();
-                    button.displayString = I18n.format("Disconnect");
+                    button.displayString = I18n.format("text.cutelessmod.disconnect");
                 }
             }
             catch (Exception exception)
