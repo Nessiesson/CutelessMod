@@ -159,7 +159,7 @@ public class CutelessMod {
 				currentServer = mc.getCurrentServerData();
 			}
 			// If connected to OBS request & update stat every 5 mins
-			if (statPlugin.isConnected() && tickCounter > statPlugin.lastTick + 1000) {
+			if (statPlugin.isConnected() && tickCounter > statPlugin.lastTick + 1200) {
 				statPlugin.lastTick = tickCounter;
 				mc.world.sendPacketToServer(new CPacketClientStatus(CPacketClientStatus.State.REQUEST_STATS));
 			}

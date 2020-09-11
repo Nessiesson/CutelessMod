@@ -12,6 +12,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerMerchant;
 import net.minecraft.stats.StatBase;
 import net.minecraft.world.World;
+import org.lwjgl.input.Keyboard;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -53,9 +54,17 @@ public abstract class MixinEntityPlayerSP extends AbstractClientPlayer {
 		}
 	}
 
+	@Inject(method = "onLivingUpdate", at = @At("HEAD"))
+	private void enableElytraCancelation(final CallbackInfo ci) {
+		if (Configuration.elytraCancellation && this.getFlag(7) &&(Keyboard.isKeyDown(42) || Keyboard.isKeyDown(54)) && Keyboard.isKeyDown(57)) {
+			this.setFlag(7, false);
+			Minecraft.getMinecraft().ingameGUI.setOverlayMessage("Cancelled elytra flight forcefully", false);
+		}
+	}
+
 	@Inject(method = "addStat", at = @At("HEAD"))
 	private void addStat(StatBase stat, int amount, CallbackInfo ci) {
-		if (stat.statId.matches(CutelessMod.statPluginFilter)) {
+		if (stat != null && stat.statId != null && stat.statId.matches(CutelessMod.statPluginFilter)) {
 			if (CutelessMod.statPlugin.isConnected()) {
 				CutelessMod.statPlugin.sendStatIncrease(amount, false);
 			}

@@ -18,6 +18,7 @@ public class Configuration {
 	public static boolean derpyChicken = false;
 	public static boolean dynamicServerListUpdates = false;
 	public static boolean elytraFix = false;
+	public static boolean elytraCancellation = false;
 	public static boolean extendedChat = false;
 	public static boolean fixBlock36Particles = false;
 	public static boolean flightInertiaCancellation = false;
