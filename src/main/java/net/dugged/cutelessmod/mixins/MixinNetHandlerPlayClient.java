@@ -138,7 +138,6 @@ public abstract class MixinNetHandlerPlayClient {
 		}
 	}
 
-	//TODO: Improve xd
 	@Inject(method = "handleJoinGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkManager;sendPacket(Lnet/minecraft/network/Packet;)V"), cancellable = true)
 	private void addChatHistory(SPacketJoinGame packetIn, CallbackInfo ci) {
 		final Minecraft mc = Minecraft.getMinecraft();

@@ -7,7 +7,6 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 
-//TODO: Fix chat
 // Inspired/stolen by https://github.com/Sk1erLLC/CompactChat
 public class CompactChat {
 	private ITextComponent lastMessage = new TextComponentString("");

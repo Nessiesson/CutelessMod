@@ -8,7 +8,6 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 
 @Mixin(GuiChat.class)
 public abstract class MixinGuiChat {
-	//TODO: Chat
 	@ModifyConstant(method = "initGui", constant = @Constant(intValue = 256))
 	private int increaseLimit(final int orig) {
 		return Configuration.extendedChat ? 2048 : orig;

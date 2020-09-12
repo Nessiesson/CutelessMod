@@ -56,7 +56,7 @@ public class MixinGuiStats extends GuiScreen {
             }
             catch (Exception exception)
             {
-                LOGGER.warn("Unable to execute StatPlugin: {}", (Object)exception.getMessage());
+                LOGGER.warn("Unable to execute StatPlugin: {}", exception.getMessage());
             }
             cooldown = 10;
             ci.cancel();
@@ -75,11 +75,7 @@ public class MixinGuiStats extends GuiScreen {
         }
         for (GuiButton button : buttonList) {
             if (button.id == 5) {
-                if (cooldown > 0) {
-                    button.enabled = false;
-                } else {
-                    button.enabled = true;
-                }
+                button.enabled = cooldown <= 0;
             }
         }
     }

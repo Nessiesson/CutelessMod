@@ -58,7 +58,6 @@ public abstract class MixinEntityPlayerSP extends AbstractClientPlayer {
 	private void enableElytraCancelation(final CallbackInfo ci) {
 		if (Configuration.elytraCancellation && this.getFlag(7) &&(Keyboard.isKeyDown(42) || Keyboard.isKeyDown(54)) && Keyboard.isKeyDown(57)) {
 			this.setFlag(7, false);
-			Minecraft.getMinecraft().ingameGUI.setOverlayMessage("Cancelled elytra flight forcefully", false);
 		}
 	}
 

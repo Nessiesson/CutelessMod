@@ -14,7 +14,6 @@ public abstract class MixinGuiNewChat {
 	@Unique
 	private static final CompactChat cutelessmodCompactChat = new CompactChat();
 
-	//TODO: Chat
 	@Inject(method = "printChatMessage", at = @At("HEAD"), cancellable = true)
 	private void onChat(final ITextComponent component, final CallbackInfo ci) {
 		if (cutelessmodCompactChat.onChat(component)) {

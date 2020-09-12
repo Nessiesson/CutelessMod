@@ -22,7 +22,6 @@ public abstract class MixinGuiOverlayDebug {
 	@Final
 	private Minecraft mc;
 
-	//TODO: Ensure correct packet count
 	@Inject(method = "call", at = @At("RETURN"))
 	private void packetCount(final CallbackInfoReturnable<List<String>> cir) {
 		final int rx_per_second = Arrays.stream(CutelessMod.receivedPackets).sum();

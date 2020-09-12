@@ -35,8 +35,6 @@ public abstract class MixinGuiScreen {
 		DesktopApi.browse(url);
 	}
 
-	//TODO: Chat
-
 	/**
 	 * @author nessie
 	 * @reason Using @Overwrite is the simplest way to do this.
