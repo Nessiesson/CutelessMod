@@ -30,6 +30,7 @@ public class Configuration {
 	public static boolean respawnOnDeath = false;
 	public static boolean rocketCooldown = false;
 	public static boolean showBlockBreakingParticles = true;
+	public static boolean showBlockSelectorUnderwater = false;
 	public static boolean showCenteredPlants = false;
 	public static boolean showClearLava = false;
 	public static boolean showDeathAnimations = true;
