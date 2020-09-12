@@ -18,7 +18,7 @@ import net.minecraft.util.ResourceLocation;
 
 // Modified version of the shulkerbox display from Vazkii's Quark Forgemod.
 public class ShulkerBoxDisplay {
-	private static final ResourceLocation WIDGET_RESOURCE = new ResourceLocation("cutelessmod", "textures/shulker_widget.png");
+	private static final ResourceLocation WIDGET_RESOURCE = new ResourceLocation(Reference.MODID, "textures/shulker_widget.png");
 
 	public static void handleShulkerBoxDisplayRenderer(ItemStack stack, int x, int y, Gui gui) {
 		if (stack != null && stack.getItem() instanceof ItemShulkerBox && stack.hasTagCompound() && GuiScreen.isShiftKeyDown()) {

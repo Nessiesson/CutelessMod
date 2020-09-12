@@ -1,6 +1,7 @@
 package net.dugged.cutelessmod.mixins;
 
 import net.dugged.cutelessmod.CutelessMod;
+import net.dugged.cutelessmod.Reference;
 import net.minecraft.client.renderer.tileentity.TileEntityChestRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.tileentity.TileEntityChest;
@@ -14,10 +15,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(TileEntityChestRenderer.class)
 public abstract class MixinTileEntityChestRenderer extends TileEntitySpecialRenderer<TileEntityChest> {
 	//TODO add & apply the same for trapped and handle christmas
-	private static final ResourceLocation TEXTURE_NORMAL_FILLED = new ResourceLocation("cutelessmod", "textures/chest_normal_filled.png");
-	private static final ResourceLocation TEXTURE_NORMAL_FULL = new ResourceLocation("cutelessmod", "textures/chest_normal_full.png");
-	private static final ResourceLocation TEXTURE_NORMAL_DOUBLE_FILLED = new ResourceLocation("cutelessmod", "textures/chest_normal_double_filled.png");
-	private static final ResourceLocation TEXTURE_NORMAL_DOUBLE_FULL = new ResourceLocation("cutelessmod", "textures/chest_normal_double_full.png");
+	private static final ResourceLocation TEXTURE_NORMAL_FILLED = new ResourceLocation(Reference.MODID, "textures/chest_normal_filled.png");
+	private static final ResourceLocation TEXTURE_NORMAL_FULL = new ResourceLocation(Reference.MODID, "textures/chest_normal_full.png");
+	private static final ResourceLocation TEXTURE_NORMAL_DOUBLE_FILLED = new ResourceLocation(Reference.MODID, "textures/chest_normal_double_filled.png");
+	private static final ResourceLocation TEXTURE_NORMAL_DOUBLE_FULL = new ResourceLocation(Reference.MODID, "textures/chest_normal_double_full.png");
 
 	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;enableRescaleNormal()V"))
 	public void render(final TileEntityChest te, final double x, final double y, final double z, final float partialTicks, final int destroyStage, final float alpha, final CallbackInfo ci) {
