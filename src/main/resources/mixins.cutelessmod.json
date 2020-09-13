@@ -67,7 +67,6 @@
 		"MixinShulkerBoxDisplayRenderer",
 		"MixinSpectatorMenu",
 		"MixinTeleportToPlayer",
-		"MixinTileEntityBeacon",
 		"MixinTileEntityBeaconRenderer",
 		"MixinTileEntityChestRenderer",
 		"MixinTileEntityPiston",

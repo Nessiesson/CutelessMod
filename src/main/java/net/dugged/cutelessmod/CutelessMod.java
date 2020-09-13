@@ -54,7 +54,7 @@ public class CutelessMod {
 	public static Map<AxisAlignedBB, Integer> beaconsToRender = new HashMap<>();
 	public static Map<String, List<ChatLine>> chatHistory = new HashMap<>();
 	public static Map<String, List<String>> tabCompleteHistory = new HashMap<>();
-	public static boolean toggleBeaconArea = false;
+	public static int toggleBeaconArea = 0;
 	public static long lastTimeUpdate;
 	public static ContainerSpy spy;
 	public static int mspt;
@@ -127,7 +127,21 @@ public class CutelessMod {
 		}
 
 		if (toggleBeaconAreaKey.isPressed()) {
-			toggleBeaconArea = !toggleBeaconArea;
+			toggleBeaconArea++;
+			switch (toggleBeaconArea) {
+				case 1:
+					mc.ingameGUI.setOverlayMessage("Showing area outlines", false);
+					break;
+				case 2:
+					mc.ingameGUI.setOverlayMessage("Showing beacon areas", false);
+					break;
+				case 3:
+					mc.ingameGUI.setOverlayMessage("Showing next beacon positions", false);
+					break;
+			}
+			if (toggleBeaconArea > 3) {
+				toggleBeaconArea = 0;
+			}
 		}
 
 		if (spyKey.isPressed()) {
@@ -186,10 +200,6 @@ public class CutelessMod {
 					base.appendSibling(tMSPT).appendSibling(MSPT).appendSibling(new TextComponentString(" ")).appendSibling(tTPS).appendSibling(TPS);
 					mc.ingameGUI.getTabList().setFooter(base);
 				}
-			}
-
-			for (AxisAlignedBB axisalignedbb : CutelessMod.beaconsToRender.keySet()) {
-				CutelessMod.beaconsToRender.put(axisalignedbb, CutelessMod.beaconsToRender.get(axisalignedbb) - 1);
 			}
 			if (!mc.player.isSneaking() && spyKey.isKeyDown() && mc.world.getTotalWorldTime() % 10 == 0) {
 				spy.startFindingInventories();

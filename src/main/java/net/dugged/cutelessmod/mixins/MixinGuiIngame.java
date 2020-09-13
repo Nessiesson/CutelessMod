@@ -34,7 +34,6 @@ public abstract class MixinGuiIngame extends Gui {
 		// insane performance benefit by only calling every 10 ticks
 		if (CutelessMod.tickCounter > lastTick && mc.player != null) {
 			lastTick = CutelessMod.tickCounter + 10;
-			System.out.println("WORKED");
 			final String currentServer = CutelessMod.currentServer != null ? CutelessMod.currentServer.serverIP : "SINGLEPLAYER";
 			final GuiNewChat chat = mc.ingameGUI.getChatGUI();
 			CutelessMod.tabCompleteHistory.put(currentServer, new ArrayList<>(chat.getSentMessages()));
