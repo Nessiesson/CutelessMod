@@ -59,6 +59,6 @@ public abstract class MixinEntityRenderer {
 
 	@Redirect(method = "renderWorldPass", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isInsideOfMaterial(Lnet/minecraft/block/material/Material;)Z"))
 	private boolean renderBlockSelectorUnderwater(final Entity entity, final Material material) {
-		return !Configuration.showBlockSelectorUnderwater;
+		return !Configuration.showBlockSelectorUnderwater && entity.isInsideOfMaterial(material);
 	}
 }
