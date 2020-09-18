@@ -1,5 +1,6 @@
 package net.dugged.cutelessmod.mixins;
 
+import net.dugged.cutelessmod.Reference;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiButtonImage;
 import net.minecraft.client.gui.GuiScreen;
@@ -21,7 +22,7 @@ public abstract class MixinGuiInventory extends InventoryEffectRenderer
     @Shadow private GuiButtonImage recipeButton;
 
     @Shadow @Final private GuiRecipeBook recipeBookGui;
-    private static final ResourceLocation POTION_BUTTON = new ResourceLocation("textures/potion_button.png");
+    private static final ResourceLocation POTION_BUTTON = new ResourceLocation(Reference.MODID,"textures/potion_button.png");
     private boolean showPotionEffects = false;
 
     public MixinGuiInventory(Container inventorySlotsIn) {
