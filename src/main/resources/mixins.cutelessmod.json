@@ -6,6 +6,7 @@
 	"compatibilityLevel": "JAVA_8",
 	"mixins": [
 		"IEntityBeacon",
+		"IGuiButtonImage",
 		"IGuiChat",
 		"IGuiMultiplayer",
 		"IGuiNewChat",
@@ -37,6 +38,7 @@
 		"MixinGuiGameOver",
 		"MixinGuiIngame",
 		"MixinGuiIngameMenu",
+		"MixinGuiInventory",
 		"MixinGuiLanguage_List",
 		"MixinGuiMultiplayer",
 		"MixinGuiNewChat",
