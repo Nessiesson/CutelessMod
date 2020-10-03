@@ -6,6 +6,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(TileEntityBeacon.class)
 public interface IEntityBeacon {
-    @Accessor
-    boolean getIsComplete();
+	@Accessor
+	boolean getIsComplete();
 }

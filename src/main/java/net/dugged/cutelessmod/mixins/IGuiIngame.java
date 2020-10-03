@@ -6,8 +6,9 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(GuiIngame.class)
 public interface IGuiIngame {
-    @Accessor
-    String getOverlayMessage();
-    @Accessor
-    int getOverlayMessageTime();
+	@Accessor
+	String getOverlayMessage();
+
+	@Accessor
+	int getOverlayMessageTime();
 }

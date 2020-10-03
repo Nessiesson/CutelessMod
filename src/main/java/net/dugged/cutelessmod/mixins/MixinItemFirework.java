@@ -15,13 +15,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ItemFirework.class)
 public abstract class MixinItemFirework extends Item {
-    @Inject(method = "onItemRightClick", at = @At(value = "HEAD"), cancellable = true)
-    private void rightClickRocket(World worldIn, EntityPlayer playerIn, EnumHand handIn, CallbackInfoReturnable<ActionResult<ItemStack>> cir) {
-        if (playerIn.getCooldownTracker().hasCooldown(this)) {
-            cir.cancel();
-        }
-        if (Configuration.rocketCooldown) {
-            playerIn.getCooldownTracker().setCooldown(this, 12);
-        }
-    }
+	@Inject(method = "onItemRightClick", at = @At(value = "HEAD"), cancellable = true)
+	private void rightClickRocket(World worldIn, EntityPlayer playerIn, EnumHand handIn, CallbackInfoReturnable<ActionResult<ItemStack>> cir) {
+		if (playerIn.getCooldownTracker().hasCooldown(this)) {
+			cir.cancel();
+		}
+		if (Configuration.rocketCooldown) {
+			playerIn.getCooldownTracker().setCooldown(this, 15);
+		}
+	}
 }

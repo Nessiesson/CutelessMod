@@ -8,15 +8,15 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(GuiButtonImage.class)
 public interface IGuiButtonImage {
-    @Mutable
-    @Accessor
-    void setResourceLocation(ResourceLocation resourceLocation);
+	@Mutable
+	@Accessor
+	void setResourceLocation(ResourceLocation resourceLocation);
 
-    @Mutable
-    @Accessor
-    void setXTexStart(int xTexStart);
+	@Mutable
+	@Accessor
+	void setXTexStart(int xTexStart);
 
-    @Mutable
-    @Accessor
-    void setYDiffText(int yDiffText);
+	@Mutable
+	@Accessor
+	void setYDiffText(int yDiffText);
 }

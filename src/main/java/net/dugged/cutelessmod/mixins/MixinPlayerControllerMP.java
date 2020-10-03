@@ -4,7 +4,10 @@ import net.dugged.cutelessmod.Configuration;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemFirework;
 import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
+import net.minecraft.util.EnumActionResult;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
@@ -37,6 +40,13 @@ public abstract class MixinPlayerControllerMP {
 			if (connection != null) {
 				connection.sendPacket(new CPacketPlayerTryUseItemOnBlock(pos, face, EnumHand.MAIN_HAND, 0F, 0F, 0F));
 			}
+		}
+	}
+
+	@Inject(method = "processRightClick", at = @At(value = "INVOKE"), cancellable = true)
+	private void onRightClick(EntityPlayer player, World worldIn, EnumHand hand, CallbackInfoReturnable<EnumActionResult> cir) {
+		if (!player.isSpectator() && Configuration.rocketCooldown && player.getHeldItem(hand).getItem() instanceof ItemFirework && player.getCooldownTracker().hasCooldown(player.getHeldItem(hand).getItem())) {
+			cir.cancel();
 		}
 	}
 

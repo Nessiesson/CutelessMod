@@ -17,38 +17,39 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GuiInventory.class)
-public abstract class MixinGuiInventory extends InventoryEffectRenderer
-{
-    @Shadow private GuiButtonImage recipeButton;
+public abstract class MixinGuiInventory extends InventoryEffectRenderer {
+	private static final ResourceLocation POTION_BUTTON = new ResourceLocation(Reference.MODID, "textures/potion_button.png");
+	@Shadow
+	private GuiButtonImage recipeButton;
+	@Shadow
+	@Final
+	private GuiRecipeBook recipeBookGui;
+	private boolean showPotionEffects = false;
 
-    @Shadow @Final private GuiRecipeBook recipeBookGui;
-    private static final ResourceLocation POTION_BUTTON = new ResourceLocation(Reference.MODID,"textures/potion_button.png");
-    private boolean showPotionEffects = false;
+	public MixinGuiInventory(Container inventorySlotsIn) {
+		super(inventorySlotsIn);
+	}
 
-    public MixinGuiInventory(Container inventorySlotsIn) {
-        super(inventorySlotsIn);
-    }
+	@Inject(method = "drawScreen", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/inventory/GuiInventory;recipeBookGui:Lnet/minecraft/client/gui/recipebook/GuiRecipeBook;", ordinal = 1))
+	private void drawScreen(CallbackInfo ci) {
+		this.hasActivePotionEffects = !this.recipeBookGui.isVisible() && showPotionEffects;
+		if (GuiScreen.isShiftKeyDown() && recipeButton.isMouseOver()) {
+			((IGuiButtonImage) recipeButton).setResourceLocation(POTION_BUTTON);
+			((IGuiButtonImage) recipeButton).setXTexStart(0);
+			((IGuiButtonImage) recipeButton).setYDiffText(0);
+		} else {
+			((IGuiButtonImage) recipeButton).setResourceLocation(INVENTORY_BACKGROUND);
+			((IGuiButtonImage) recipeButton).setXTexStart(178);
+			((IGuiButtonImage) recipeButton).setYDiffText(19);
+		}
+	}
 
-    @Inject(method = "drawScreen", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/inventory/GuiInventory;recipeBookGui:Lnet/minecraft/client/gui/recipebook/GuiRecipeBook;", ordinal = 1))
-    private void drawScreen(CallbackInfo ci) {
-        this.hasActivePotionEffects = !this.recipeBookGui.isVisible() && showPotionEffects;
-        if(GuiScreen.isShiftKeyDown() && recipeButton.isMouseOver()) {
-            ((IGuiButtonImage)recipeButton).setResourceLocation(POTION_BUTTON);
-            ((IGuiButtonImage)recipeButton).setXTexStart(0);
-            ((IGuiButtonImage)recipeButton).setYDiffText(0);
-        } else {
-            ((IGuiButtonImage)recipeButton).setResourceLocation(INVENTORY_BACKGROUND);
-            ((IGuiButtonImage)recipeButton).setXTexStart(178);
-            ((IGuiButtonImage)recipeButton).setYDiffText(19);
-        }
-    }
-
-    @Inject(method = "actionPerformed", at = @At("HEAD"), cancellable = true)
-    private void actionPerformed(GuiButton button, CallbackInfo ci) {
-        if(GuiScreen.isShiftKeyDown() && recipeButton.isMouseOver() && button.id == 10 && !this.recipeBookGui.isVisible()) {
-            showPotionEffects = !showPotionEffects;
-            ci.cancel();
-        }
-    }
+	@Inject(method = "actionPerformed", at = @At("HEAD"), cancellable = true)
+	private void actionPerformed(GuiButton button, CallbackInfo ci) {
+		if (GuiScreen.isShiftKeyDown() && recipeButton.isMouseOver() && button.id == 10 && !this.recipeBookGui.isVisible()) {
+			showPotionEffects = !showPotionEffects;
+			ci.cancel();
+		}
+	}
 
 }
