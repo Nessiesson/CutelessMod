@@ -1,5 +1,9 @@
 package net.dugged.cutelessmod;
 
+import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
+import net.dugged.cutelessmod.clientcommands.CommandPing;
+import net.dugged.cutelessmod.clientcommands.CommandRandomize;
+import net.dugged.cutelessmod.clientcommands.CommandUndo;
 import net.dugged.cutelessmod.mixins.ISoundHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -10,12 +14,7 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.network.play.client.CPacketClientStatus;
 import net.minecraft.network.play.client.CPacketPlayer;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.*;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
@@ -34,12 +33,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION, clientSideOnly = true)
@@ -51,6 +45,7 @@ public class CutelessMod {
 	private static final KeyBinding toggleBeaconAreaKey = new KeyBinding("key.cutelessmod.toggle_beacon_area", KeyConflictContext.IN_GAME, Keyboard.KEY_J, Reference.NAME);
 	private static final Minecraft mc = Minecraft.getMinecraft();
 	private static final StepAssistHelper stepAssistHelper = new StepAssistHelper();
+	private static final List<KeyBinding> keybinds = new ArrayList<>();
 	public static Map<String, List<ChatLine>> chatHistory = new HashMap<>();
 	public static Map<String, List<String>> tabCompleteHistory = new HashMap<>();
 	public static int toggleBeaconArea = 0;
@@ -65,13 +60,11 @@ public class CutelessMod {
 	public static int[] receivedPackets = new int[20];
 	public static ServerData currentServer;
 	public static long tickCounter = 0;
+	public static String statPluginFilter = "stat.useItem.minecraft.diamond_pickaxe";
+	public static StatPlugin statPlugin = new StatPlugin();
 	private String originalTitle;
-	private static final List<KeyBinding> keybinds = new ArrayList<>();
-    public static String statPluginFilter = "stat.useItem.minecraft.diamond_pickaxe";
-    public static StatPlugin statPlugin = new StatPlugin();
 
-
-    @Mod.EventHandler
+	@Mod.EventHandler
 	public void preInit(final FMLPreInitializationEvent event) {
 		MinecraftForge.EVENT_BUS.register(this);
 		this.originalTitle = Display.getTitle();
@@ -95,6 +88,9 @@ public class CutelessMod {
 		ClientRegistry.registerKeyBinding(spyKey);
 		ClientRegistry.registerKeyBinding(toggleBeaconAreaKey);
 		spy = new ContainerSpy();
+		ClientCommandHandler.instance.registerCommand(new CommandPing());
+		ClientCommandHandler.instance.registerCommand(new CommandRandomize());
+		ClientCommandHandler.instance.registerCommand(new CommandUndo());
 	}
 
 	@SubscribeEvent
@@ -163,6 +159,10 @@ public class CutelessMod {
 
 	@SubscribeEvent
 	public void onTick(final TickEvent.ClientTickEvent event) {
+		if (event.phase != TickEvent.Phase.END) {
+			return;
+		}
+		ClientCommandHandler.instance.tick();
 		tickCounter++;
 		if (overlayTimer > 0) {
 			overlayTimer--;
@@ -215,22 +215,20 @@ public class CutelessMod {
 			receivedPacketsThisTick = 0;
 		}
 
-		if (event.phase == TickEvent.Phase.END) {
-			final EntityPlayerSP player = mc.player;
-			if (player == null) {
-				return;
-			}
+		final EntityPlayerSP player = mc.player;
+		if (player == null) {
+			return;
+		}
 
-			stepAssistHelper.update(player);
-			if (Configuration.noFall && player.fallDistance > 2F && !player.isElytraFlying()) {
-				player.connection.sendPacket(new CPacketPlayer(true));
-			}
+		stepAssistHelper.update(player);
+		if (Configuration.noFall && player.fallDistance > 2F && !player.isElytraFlying()) {
+			player.connection.sendPacket(new CPacketPlayer(true));
+		}
 
-			if (Configuration.flightInertiaCancellation && player.capabilities.isFlying) {
-				final GameSettings settings = mc.gameSettings;
-				if (!(GameSettings.isKeyDown(settings.keyBindForward) || GameSettings.isKeyDown(settings.keyBindBack) || GameSettings.isKeyDown(settings.keyBindLeft) || GameSettings.isKeyDown(settings.keyBindRight))) {
-					player.motionX = player.motionZ = 0D;
-				}
+		if (Configuration.flightInertiaCancellation && player.capabilities.isFlying) {
+			final GameSettings settings = mc.gameSettings;
+			if (!(GameSettings.isKeyDown(settings.keyBindForward) || GameSettings.isKeyDown(settings.keyBindBack) || GameSettings.isKeyDown(settings.keyBindLeft) || GameSettings.isKeyDown(settings.keyBindRight))) {
+				player.motionX = player.motionZ = 0D;
 			}
 		}
 	}

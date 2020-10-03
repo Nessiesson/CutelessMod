@@ -36,9 +36,15 @@ public class AreaSelectionRenderer {
 		BlockPos p2 = null;
 
 		// @formatter:off
-		try { p0 = CommandBase.parseBlockPos(player, args, 1, false); } catch (Exception ignored) { /*noop*/ }
-		try { p1 = CommandBase.parseBlockPos(player, args, 4, false); } catch (Exception ignored) { /*noop*/ }
-		try { p2 = CommandBase.parseBlockPos(player, args, 7, false); } catch (Exception ignored) { /*noop*/ }
+		try {
+			p0 = CommandBase.parseBlockPos(player, args, 1, false);
+		} catch (Exception ignored) { /*noop*/ }
+		try {
+			p1 = CommandBase.parseBlockPos(player, args, 4, false);
+		} catch (Exception ignored) { /*noop*/ }
+		try {
+			p2 = CommandBase.parseBlockPos(player, args, 7, false);
+		} catch (Exception ignored) { /*noop*/ }
 		// @formatter:on
 
 		GlStateManager.depthMask(false);
@@ -48,7 +54,7 @@ public class AreaSelectionRenderer {
 		GlStateManager.disableBlend();
 		GlStateManager.glLineWidth(3F);
 
-		if (Stream.of("/clone", "/fill", "/setblock").anyMatch(s -> args[0].equals(s))) {
+		if (Stream.of("/clone", "/fill", "/setblock", "/randomize").anyMatch(s -> args[0].equals(s))) {
 			boolean setblock = false;
 			if (args[0].equals("/setblock")) {
 				p1 = p0;
@@ -59,7 +65,7 @@ public class AreaSelectionRenderer {
 			if (p0 != null && p1 != null) {
 				// man this shit is getting uglier every time i fix more bugs xd
 				if ((d0 >= 0 && d0 >= (int) d0 + 0.5) || (d0 < 0 && d0 >= (int) d0 - 0.5)) {
-					 if (args[1].contains("~")) {
+					if (args[1].contains("~")) {
 						p0 = p0.add(-1, 0, 0);
 						if (setblock) {
 							p1 = p1.add(-1, 0, 0);

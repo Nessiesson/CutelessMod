@@ -53,6 +53,7 @@ public class Configuration {
 	public static boolean sortEnchantmentTooltip = false;
 	public static boolean stepAssist = false;
 	public static boolean waterModifiesFoV = true;
+	public static boolean performanceImprovements = false;
 
 	// Ints
 	@Config.RangeInt(min = 0)
