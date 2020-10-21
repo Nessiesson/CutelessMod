@@ -18,6 +18,7 @@
 		"MixinBlockPistonBase",
 		"MixinBlockSnow",
 		"MixinChunk",
+		"MixinChunkGeneratorOverworld",
 		"MixinCommandBase",
 		"MixinCommandFill",
 		"MixinDebugRendererChunkBorder",
