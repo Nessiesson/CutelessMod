@@ -2,12 +2,15 @@ package net.dugged.cutelessmod.mixins;
 
 import net.dugged.cutelessmod.AreaSelectionRenderer;
 import net.dugged.cutelessmod.Configuration;
+import net.dugged.cutelessmod.CutelessMod;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,7 +28,25 @@ public abstract class MixinEntityRenderer {
 	@Inject(method = "renderWorldPass", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/profiler/Profiler;endStartSection(Ljava/lang/String;)V", args = "ldc=litParticles"))
 	private void onPostRenderEntities(final int pass, final float partialTicks, final long finishTimeNano, final CallbackInfo ci) {
 		AreaSelectionRenderer.render(partialTicks);
-		//BeaconAreaRenderer.render(partialTicks);
+	}
+
+	@Inject(method = "renderWorldPass", at = @At(value = "HEAD", target = "Lnet/minecraft/client/renderer/RenderGlobal;renderEntities(Lnet/minecraft/entity/Entity;Lnet/minecraft/client/renderer/culling/ICamera;F)V"))
+	private void renderDungeons(final int pass, final float partialTicks, final long finishTimeNano, final CallbackInfo ci) {
+		if (Configuration.showDungeonLocations && CutelessMod.dungeonPositions.size() > 0) {
+			GlStateManager.depthMask(false);
+			GlStateManager.disableFog();
+			GlStateManager.disableLighting();
+			GlStateManager.disableTexture2D();
+			GlStateManager.glLineWidth(3F);
+			for (BlockPos blockpos : CutelessMod.dungeonPositions.keySet()) {
+				RenderGlobal.drawBoundingBox(blockpos.getX(), blockpos.getY(), blockpos.getZ(), blockpos.getX() + 5, blockpos.getY() + 5, blockpos.getZ() + 5, 0.99F, 0F, 0F, 1F);
+				RenderGlobal.renderFilledBox(blockpos.getX(), blockpos.getY(), blockpos.getZ(), blockpos.getX() + 5, blockpos.getY() + 5, blockpos.getZ() + 5, 0.99F, 0F, 0F, 1F);
+			}
+			GlStateManager.enableTexture2D();
+			GlStateManager.enableLighting();
+			GlStateManager.enableFog();
+			GlStateManager.depthMask(true);
+		}
 	}
 
 	@Inject(method = "renderHand", at = @At("HEAD"), cancellable = true)

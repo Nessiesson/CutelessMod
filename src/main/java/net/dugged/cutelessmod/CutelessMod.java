@@ -14,6 +14,8 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.network.play.client.CPacketClientStatus;
 import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.text.*;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
@@ -34,6 +36,7 @@ import org.lwjgl.opengl.Display;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 @Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION, clientSideOnly = true)
@@ -48,6 +51,7 @@ public class CutelessMod {
 	private static final List<KeyBinding> keybinds = new ArrayList<>();
 	public static Map<String, List<ChatLine>> chatHistory = new HashMap<>();
 	public static Map<String, List<String>> tabCompleteHistory = new HashMap<>();
+	public static Map<BlockPos, ChunkPos> dungeonPositions = new ConcurrentHashMap<>();
 	public static int toggleBeaconArea = 0;
 	public static long lastTimeUpdate;
 	public static ContainerSpy spy;
