@@ -15,6 +15,7 @@
 		"MixinBlock",
 		"MixinBlockConcretePowder",
 		"MixinBlockLiquid",
+		"MixinBlockMobSpawner",
 		"MixinBlockPistonBase",
 		"MixinBlockSnow",
 		"MixinChunk",
