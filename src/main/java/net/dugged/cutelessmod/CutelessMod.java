@@ -3,6 +3,7 @@ package net.dugged.cutelessmod;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.CommandPing;
 import net.dugged.cutelessmod.clientcommands.CommandRandomize;
+import net.dugged.cutelessmod.clientcommands.CommandRepeatLast;
 import net.dugged.cutelessmod.clientcommands.CommandUndo;
 import net.dugged.cutelessmod.mixins.ISoundHandler;
 import net.minecraft.client.Minecraft;
@@ -16,7 +17,11 @@ import net.minecraft.network.play.client.CPacketClientStatus;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.text.*;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
@@ -35,7 +40,12 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -44,6 +54,7 @@ public class CutelessMod {
 	public static final KeyBinding highlightEntities = new KeyBinding("key.cutelessmod.highlight_entities", KeyConflictContext.IN_GAME, Keyboard.KEY_C, Reference.NAME);
 	private static final KeyBinding emptyScreenKey = new KeyBinding("key.cutelessmod.emptyscreen", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	private static final KeyBinding reloadAudioEngineKey = new KeyBinding("key.cutelessmod.reload_audio", KeyConflictContext.IN_GAME, Keyboard.KEY_B, Reference.NAME);
+	private static final KeyBinding repeatLastCommandKey = new KeyBinding("key.cutelessmod.repeat_last_command", KeyConflictContext.IN_GAME, Keyboard.KEY_T, Reference.NAME);
 	private static final KeyBinding spyKey = new KeyBinding("key.cutelessmod.spy", KeyConflictContext.IN_GAME, Keyboard.KEY_Y, Reference.NAME);
 	private static final KeyBinding toggleBeaconAreaKey = new KeyBinding("key.cutelessmod.toggle_beacon_area", KeyConflictContext.IN_GAME, Keyboard.KEY_J, Reference.NAME);
 	private static final Minecraft mc = Minecraft.getMinecraft();
@@ -66,6 +77,7 @@ public class CutelessMod {
 	public static long tickCounter = 0;
 	public static String statPluginFilter = "stat.useItem.minecraft.diamond_pickaxe";
 	public static StatPlugin statPlugin = new StatPlugin();
+	public static String lastCommand = "";
 	private String originalTitle;
 
 	@Mod.EventHandler
@@ -95,6 +107,7 @@ public class CutelessMod {
 		ClientCommandHandler.instance.registerCommand(new CommandPing());
 		ClientCommandHandler.instance.registerCommand(new CommandRandomize());
 		ClientCommandHandler.instance.registerCommand(new CommandUndo());
+		ClientCommandHandler.instance.registerCommand(new CommandRepeatLast());
 	}
 
 	@SubscribeEvent
@@ -153,6 +166,10 @@ public class CutelessMod {
 
 		if (emptyScreenKey.isPressed()) {
 			mc.displayGuiScreen(new GuiEmptyScreen());
+		}
+
+		if (repeatLastCommandKey.isPressed()) {
+			mc.player.sendChatMessage(CutelessMod.lastCommand);
 		}
 	}
 

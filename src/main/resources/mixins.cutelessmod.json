@@ -22,6 +22,7 @@
 		"MixinChunkGeneratorOverworld",
 		"MixinCommandBase",
 		"MixinCommandFill",
+		"MixinCPacketChatMessage",
 		"MixinDebugRendererChunkBorder",
 		"MixinEntityChicken",
 		"MixinEntityItem",

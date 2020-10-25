@@ -1,6 +1,7 @@
 key.cutelessmod.emptyscreen=Open empty GUI screen
 key.cutelessmod.highlight_entities=Highlight Entities (Spectators)
 key.cutelessmod.reload_audio=Reload audio engine
+key.cutelessmod.repeat_last_command=Repeat last /command
 key.cutelessmod.spy=Enable container spy functionality (WIP)
 key.cutelessmod.toggle_scoreboard=Hide sidebar scoreboard
 key.cutelessmod.toggle_beacon_area=Toggle to show beacon area of effect
