@@ -2,6 +2,7 @@ package net.dugged.cutelessmod.clientcommands;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -18,8 +19,8 @@ import java.util.Map;
 
 public class CommandUndo extends CommandBase {
 
-	public static List<Map<BlockPos, IBlockState>> undoHistory = new ArrayList<>();
 	private static final Minecraft mc = Minecraft.getMinecraft();
+	public static List<Map<BlockPos, IBlockState>> undoHistory = new ArrayList<>();
 
 	private static BlockPos parseBlockPos(String[] args, int startIndex) throws NumberInvalidException {
 		final BlockPos blockPos = mc.player.getPosition();
@@ -84,26 +85,28 @@ public class CommandUndo extends CommandBase {
 
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-		if (mc.player.isCreative() || mc.player.isSpectator()) {
-			if (undoHistory.size() > 0) {
-				int historyIndex = 0;
-				if (args.length >= 1) {
-					historyIndex = parseInt(args[0], 0, 100);
-				}
-				if (undoHistory.size() - 1 >= historyIndex) {
-					World world = sender.getEntityWorld();
-					HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class);
-					setBlockHandler.init(world);
-					setBlockHandler.setBlocks(undoHistory.get(historyIndex));
-					setBlockHandler.sendAffectedBlocks = true;
+		if (sender instanceof EntityPlayerSP) {
+			if (mc.player.isCreative() || mc.player.isSpectator()) {
+				if (undoHistory.size() > 0) {
+					int historyIndex = 0;
+					if (args.length >= 1) {
+						historyIndex = parseInt(args[0], 0, 100);
+					}
+					if (undoHistory.size() - 1 >= historyIndex) {
+						World world = sender.getEntityWorld();
+						HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class);
+						setBlockHandler.init(world);
+						setBlockHandler.setBlocks(undoHistory.get(historyIndex));
+						setBlockHandler.sendAffectedBlocks = true;
+					} else {
+						throw new CommandException("text.cutelessmod.clientcommands.undo.invalidIndex");
+					}
 				} else {
-					throw new CommandException("text.cutelessmod.clientcommands.undo.invalidIndex");
+					throw new CommandException("text.cutelessmod.clientcommands.undo.noHistoryAvaliable");
 				}
 			} else {
-				throw new CommandException("text.cutelessmod.clientcommands.undo.noHistoryAvaliable");
+				throw new CommandException("text.cutelessmod.clientcommands.wrongGamemode");
 			}
-		} else {
-			throw new CommandException("text.cutelessmod.clientcommands.wrongGamemode");
 		}
 	}
 }

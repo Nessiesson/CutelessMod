@@ -20,8 +20,8 @@ import static net.minecraft.util.text.TextFormatting.RESET;
 
 public class ClientCommandHandler extends CommandHandler {
 	public static final ClientCommandHandler instance = new ClientCommandHandler();
+	private final Minecraft mc = Minecraft.getMinecraft();
 	public List<Handler> handlers = new ArrayList<>();
-
 	public String[] latestAutoComplete = null;
 	private long tick = 0;
 
@@ -58,7 +58,6 @@ public class ClientCommandHandler extends CommandHandler {
 		if (leftOfCursor.charAt(0) == '/') {
 			leftOfCursor = leftOfCursor.substring(1);
 
-			final Minecraft mc = Minecraft.getMinecraft();
 			if (mc.currentScreen instanceof GuiChat) {
 				final List<String> commands = this.getTabCompletions(mc.player, leftOfCursor, mc.player.getPosition());
 				if (!commands.isEmpty()) {
@@ -76,7 +75,7 @@ public class ClientCommandHandler extends CommandHandler {
 
 	@Override
 	protected MinecraftServer getServer() {
-		return Minecraft.getMinecraft().getIntegratedServer();
+		return mc.getIntegratedServer();
 	}
 
 	public Handler createHandler(final Class<? extends Handler> type) {
@@ -100,7 +99,7 @@ public class ClientCommandHandler extends CommandHandler {
 
 	public void tick() {
 		if (handlers.size() > 0) {
-			if (Minecraft.getMinecraft().player == null) {
+			if (mc.player == null) {
 				handlers.clear();
 			}
 			handlers.removeIf(handler -> handler.finished);
@@ -108,7 +107,7 @@ public class ClientCommandHandler extends CommandHandler {
 				handler.tick();
 			}
 		}
-		if (tick % 600 == 0) {
+		if (tick % 1200 == 0 && !mc.ingameGUI.getChatGUI().getChatOpen()) {
 			HandlerSetBlock.getGameruleStates();
 		}
 		tick++;

@@ -1,10 +1,6 @@
 package net.dugged.cutelessmod;
 
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.CommandPing;
-import net.dugged.cutelessmod.clientcommands.CommandRandomize;
-import net.dugged.cutelessmod.clientcommands.CommandRepeatLast;
-import net.dugged.cutelessmod.clientcommands.CommandUndo;
+import net.dugged.cutelessmod.clientcommands.*;
 import net.dugged.cutelessmod.mixins.ISoundHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -17,11 +13,7 @@ import net.minecraft.network.play.client.CPacketClientStatus;
 import net.minecraft.network.play.client.CPacketPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.*;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
@@ -40,12 +32,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -108,6 +95,7 @@ public class CutelessMod {
 		ClientCommandHandler.instance.registerCommand(new CommandRandomize());
 		ClientCommandHandler.instance.registerCommand(new CommandUndo());
 		ClientCommandHandler.instance.registerCommand(new CommandRepeatLast());
+		ClientCommandHandler.instance.registerCommand(new CommandStone());
 	}
 
 	@SubscribeEvent

@@ -19,13 +19,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GuiInventory.class)
 public abstract class MixinGuiInventory extends InventoryEffectRenderer {
+	@Unique
+	private static final ResourceLocation CUTELESSMOD_POTION_BUTTON = new ResourceLocation(Reference.MODID, "textures/potion_button.png");
 	@Shadow
 	private GuiButtonImage recipeButton;
 	@Shadow
 	@Final
 	private GuiRecipeBook recipeBookGui;
-	@Unique
-	private static final ResourceLocation CUTELESSMOD_POTION_BUTTON = new ResourceLocation(Reference.MODID, "textures/potion_button.png");
 	@Unique
 	private boolean cutelessModShowPotionEffects = false;
 

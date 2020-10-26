@@ -13,9 +13,8 @@ import java.util.Map;
 
 public class HandlerSaveBlockBox extends Handler {
 	private static final int BLOCKS_PROCESSED_PER_TICK = 4096;
-
-	public String command = null;
 	private final List<Iterator> iterators = new ArrayList<>();
+	public String command = null;
 	private Map<BlockPos, IBlockState> blockList;
 	private boolean message = false;
 	private World world;

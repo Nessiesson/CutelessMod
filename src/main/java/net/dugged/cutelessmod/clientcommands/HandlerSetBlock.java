@@ -21,12 +21,12 @@ public class HandlerSetBlock extends Handler {
 	public static boolean doTileDrops = true;
 	public static boolean gamerulePermission = false;
 	public static boolean setblockPermission = false;
+	private final List<BlockPos> blockPositions = new ArrayList<>();
+	private final Map<BlockPos, IBlockState> blocksToPlace = new HashMap<>();
 	public boolean failed = false;
 	public boolean sendAffectedBlocks = false;
 	private int affectedBlocks = 0;
 	private World world;
-	private final List<BlockPos> blockPositions = new ArrayList<>();
-	private final Map<BlockPos, IBlockState> blocksToPlace = new HashMap<>();
 
 	public static void getGameruleStates() {
 		if (mc.player != null && mc.player.connection != null) {
