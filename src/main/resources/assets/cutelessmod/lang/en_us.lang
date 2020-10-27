@@ -10,6 +10,7 @@ text.cutelessmod.options.gamma.fullbright=Fullbright
 text.cutelessmod.reload_audio=Reloaded audio engine
 text.cutelessmod.disconnect=Disconnect
 text.cutelessmod.connect=Connect
+text.cutelessmod.error_while_teleporting=There was an error while attemping teleportation!
 text.cutelessmod.clientcommands.ping=Ping: %sms
 text.cutelessmod.clientcommands.wrongGamemode=Command can't be executed in this gamemode
 text.cutelessmod.clientcommands.randomize.usage=/randomize <x1> <y1> <z1> <x2> <y2> <z2> <percentage> <block> [dataValue|state],<block> [dataValue|state],<block> [dataValue|state]...

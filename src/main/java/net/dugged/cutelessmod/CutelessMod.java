@@ -9,16 +9,22 @@ import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.item.ItemCompass;
+import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.client.CPacketClientStatus;
 import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.*;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -238,6 +244,59 @@ public class CutelessMod {
 			final GameSettings settings = mc.gameSettings;
 			if (!(GameSettings.isKeyDown(settings.keyBindForward) || GameSettings.isKeyDown(settings.keyBindBack) || GameSettings.isKeyDown(settings.keyBindLeft) || GameSettings.isKeyDown(settings.keyBindRight))) {
 				player.motionX = player.motionZ = 0D;
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onLeftClickEmpty(final PlayerInteractEvent.LeftClickEmpty event) {
+		if (Configuration.worldeditCompass && mc.world != null && mc.player.isCreative() && mc.player.getHeldItemMainhand().getItem() instanceof ItemCompass) {
+			boolean teleported = false;
+			boolean displayOnly = CutelessModUtils.isShiftKeyDown();
+			Vec3d vec3d = mc.player.getPositionEyes(mc.getRenderPartialTicks());
+			Vec3d vec3d1 = mc.player.getLook(mc.getRenderPartialTicks());
+			Vec3d vec3d2 = vec3d.add(vec3d1.x * 500, vec3d1.y * 500, vec3d1.z * 500);
+			RayTraceResult rayTraceResult = CutelessModUtils.rayTrace(vec3d, vec3d2, displayOnly);
+			if (rayTraceResult != null) {
+				BlockPos destinationBlock = rayTraceResult.getBlockPos();
+				if (displayOnly) {
+					for (int y = 0; y < 2; y++) {
+						for (int z = 0; z < 2; z++) {
+							for (float i = 0; i < 1.25; i += 0.25) {
+								mc.world.spawnParticle(EnumParticleTypes.FIREWORKS_SPARK, true, (float) destinationBlock.getX() + i, (float) destinationBlock.getY() + y, (float) destinationBlock.getZ() + z, 0.005, 0.005, 0.005, 5);
+							}
+						}
+					}
+					for (int x = 0; x < 2; x++) {
+						for (int z = 0; z < 2; z++) {
+							for (float i = 0; i < 1.25; i += 0.25) {
+								mc.world.spawnParticle(EnumParticleTypes.FIREWORKS_SPARK, true, (float) destinationBlock.getX() + x, (float) destinationBlock.getY() + i, (float) destinationBlock.getZ() + z, 0.005, 0.005, 0.005, 5);
+							}
+						}
+					}
+					for (int y = 0; y < 2; y++) {
+						for (int x = 0; x < 2; x++) {
+							for (float i = 0; i < 1.25; i += 0.25) {
+								mc.world.spawnParticle(EnumParticleTypes.FIREWORKS_SPARK, true, (float) destinationBlock.getX() + x, (float) destinationBlock.getY() + y, (float) destinationBlock.getZ() + i, 0.005, 0.005, 0.005, 5);
+							}
+						}
+					}
+				} else {
+					destinationBlock = destinationBlock.up();
+					while (destinationBlock.getY() <= mc.world.getHeight()) {
+						if (mc.world.getBlockState(destinationBlock).getCollisionBoundingBox(mc.world, destinationBlock) == null && mc.world.getBlockState(destinationBlock.up()).getCollisionBoundingBox(mc.world, destinationBlock.up()) == null) {
+							mc.player.connection.sendPacket(new CPacketChatMessage("/tp " + destinationBlock.getX() + " " + destinationBlock.getY() + " " + destinationBlock.getZ()));
+							teleported = true;
+							break;
+						}
+						destinationBlock = destinationBlock.up();
+					}
+				}
+			}
+			if (!teleported && !displayOnly) {
+				TextComponentTranslation error = new TextComponentTranslation("text.cutelessmod.error_while_teleporting");
+				error.getStyle().setColor(TextFormatting.RED);
+				mc.player.sendMessage(error);
 			}
 		}
 	}

@@ -3,6 +3,7 @@ package net.dugged.cutelessmod.mixins;
 import com.mojang.authlib.GameProfile;
 import net.dugged.cutelessmod.Configuration;
 import net.dugged.cutelessmod.CutelessMod;
+import net.dugged.cutelessmod.CutelessModUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -56,7 +57,7 @@ public abstract class MixinEntityPlayerSP extends AbstractClientPlayer {
 
 	@Inject(method = "onLivingUpdate", at = @At("HEAD"))
 	private void enableElytraCancelation(final CallbackInfo ci) {
-		if (Configuration.elytraCancellation && this.getFlag(7) && (Keyboard.isKeyDown(42) || Keyboard.isKeyDown(54)) && Keyboard.isKeyDown(57)) {
+		if (Configuration.elytraCancellation && this.getFlag(7) && CutelessModUtils.isShiftKeyDown() && Keyboard.isKeyDown(57)) {
 			this.setFlag(7, false);
 		}
 	}

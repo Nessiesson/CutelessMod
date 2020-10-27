@@ -27,6 +27,7 @@ public class Configuration {
 	public static boolean lightUpdates = true;
 	public static boolean miningGhostBlockFix = false;
 	public static boolean noFall = false;
+	public static boolean performanceImprovements = false;
 	public static boolean respawnOnDeath = false;
 	public static boolean rocketCooldown = false;
 	public static boolean showBlockBreakingParticles = true;
@@ -54,7 +55,7 @@ public class Configuration {
 	public static boolean sortEnchantmentTooltip = false;
 	public static boolean stepAssist = false;
 	public static boolean waterModifiesFoV = true;
-	public static boolean performanceImprovements = false;
+	public static boolean worldeditCompass = false;
 
 	// Ints
 	@Config.RangeInt(min = 0)
