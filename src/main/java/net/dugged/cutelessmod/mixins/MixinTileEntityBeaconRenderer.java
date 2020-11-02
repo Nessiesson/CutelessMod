@@ -46,13 +46,13 @@ public abstract class MixinTileEntityBeaconRenderer {
 		return new AxisAlignedBB(pos).offset(-d1, -d2, -d3).expand(x, 0, z);
 	}
 
-	private AxisAlignedBB getBeaconAreaBB(TileEntityBeacon te, AxisAlignedBB beaconBlockBB) {
-		return beaconBlockBB.grow(te.getLevels() * 10 + 10).expand(0.0, te.getWorld().getHeight(), 0.0);
+	private AxisAlignedBB getBeaconAreaBB(TileEntityBeacon te, AxisAlignedBB beaconBlockBB, final EntityPlayer player, final float partialTicks) {
+		return beaconBlockBB.grow(te.getLevels() * 10 + 10).expand(0.0, te.getWorld().getHeight() - 1 - beaconBlockBB.minY - (te.getLevels() * 10 + 10) - (player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks), 0.0);
 
 	}
 
-	private AxisAlignedBB getNextBeaconBB(TileEntityBeacon te, AxisAlignedBB beaconBlockBB, final int offsetX, final int offsetZ) {
-		return beaconBlockBB.expand(0.0, -beaconBlockBB.minY, 0.0).expand(0.0, te.getWorld().getHeight(), 0.0).offset(offsetX, 0.0, offsetZ);
+	private AxisAlignedBB getNextBeaconBB(TileEntityBeacon te, AxisAlignedBB beaconBlockBB, final int offsetX, final int offsetZ, final EntityPlayer player, final float partialTicks) {
+		return beaconBlockBB.expand(0.0, -beaconBlockBB.minY, 0.0).expand(0.0, te.getWorld().getHeight() - 1, 0.0).offset(offsetX, -(player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks), offsetZ);
 	}
 
 	@Inject(method = "render", at = @At("RETURN"))
@@ -66,7 +66,7 @@ public abstract class MixinTileEntityBeaconRenderer {
 				final int colour = pos.getX() + scale * pos.getZ() + scale * 256 * pos.getY();
 				final float[] colours = new Color((int) (colour * (16777215F / (256F * scale)))).getRGBColorComponents(null);
 				final AxisAlignedBB beaconBlockBB = getBeaconBlockBB(pos, world, player, partialTicks);
-				final AxisAlignedBB beaconAreaBB = getBeaconAreaBB(te, beaconBlockBB);
+				final AxisAlignedBB beaconAreaBB = getBeaconAreaBB(te, beaconBlockBB, player, partialTicks);
 				final int offset = (te.getLevels() * 10 + 10) * 2;
 				GlStateManager.depthMask(false);
 				GlStateManager.disableFog();
@@ -78,7 +78,7 @@ public abstract class MixinTileEntityBeaconRenderer {
 				if (CutelessMod.toggleBeaconArea == 3) {
 					for (int x1 = -offset; x1 < offset * 2; x1 += offset) {
 						for (int z1 = -offset; z1 < offset * 2; z1 += offset) {
-							RenderGlobal.drawSelectionBoundingBox(getNextBeaconBB(te, beaconBlockBB, x1, z1), colours[0], colours[1], colours[2], 1F);
+							RenderGlobal.drawSelectionBoundingBox(getNextBeaconBB(te, beaconBlockBB, x1, z1, player, partialTicks), colours[0], colours[1], colours[2], 1F);
 						}
 					}
 				}
