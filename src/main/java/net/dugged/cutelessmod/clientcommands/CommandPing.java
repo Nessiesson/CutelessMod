@@ -16,7 +16,7 @@ public class CommandPing extends CommandBase {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return this.getName();
+		return getName();
 	}
 
 	@Override

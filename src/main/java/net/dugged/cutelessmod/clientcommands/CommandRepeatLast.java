@@ -22,7 +22,7 @@ public class CommandRepeatLast extends CommandBase {
 
 	@Override
 	public String getUsage(final ICommandSender sender) {
-		return this.getName();
+		return getName();
 	}
 
 	@Override

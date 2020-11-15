@@ -5,8 +5,10 @@
 	"minVersion": "0.7.3",
 	"compatibilityLevel": "JAVA_8",
 	"mixins": [
+		"IItemTool",
 		"IKeybinding",
 		"MixinGuiScreen",
+		"MixinMinecraft",
 		"MixinNetHandlerPlayClient",
 		"MixinTabCompleter"
 	]

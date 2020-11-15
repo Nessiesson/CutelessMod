@@ -1,5 +1,6 @@
 package net.dugged.cutelessmod.clientcommands;
 
+import net.dugged.cutelessmod.clientcommands.worldedit.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.command.CommandHandler;
@@ -8,8 +9,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.event.world.WorldEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +24,20 @@ public class ClientCommandHandler extends CommandHandler {
 	public List<Handler> handlers = new ArrayList<>();
 	public String[] latestAutoComplete = null;
 	private long tick = 0;
+
+	public void init() {
+		instance.registerCommand(new CommandPing());
+		instance.registerCommand(new CommandRandomize());
+		instance.registerCommand(new CommandUndo());
+		instance.registerCommand(new CommandRepeatLast());
+		instance.registerCommand(new CommandStone());
+		instance.registerCommand(new CommandSet());
+		instance.registerCommand(new CommandWalls());
+		instance.registerCommand(new CommandHollow());
+		instance.registerCommand(new CommandCenter());
+		instance.registerCommand(new CommandPos());
+		instance.registerCommand(new CommandSize());
+	}
 
 	@Override
 	public int executeCommand(ICommandSender sender, String message) {
@@ -54,10 +68,8 @@ public class ClientCommandHandler extends CommandHandler {
 
 	public void autoComplete(String leftOfCursor) {
 		this.latestAutoComplete = null;
-
 		if (leftOfCursor.charAt(0) == '/') {
 			leftOfCursor = leftOfCursor.substring(1);
-
 			if (mc.currentScreen instanceof GuiChat) {
 				final List<String> commands = this.getTabCompletions(mc.player, leftOfCursor, mc.player.getPosition());
 				if (!commands.isEmpty()) {
@@ -66,7 +78,6 @@ public class ClientCommandHandler extends CommandHandler {
 					} else {
 						IntStream.range(0, commands.size()).forEach(s -> commands.set(s, GRAY + commands.get(s) + RESET));
 					}
-
 					this.latestAutoComplete = commands.toArray(new String[0]);
 				}
 			}
@@ -78,23 +89,19 @@ public class ClientCommandHandler extends CommandHandler {
 		return mc.getIntegratedServer();
 	}
 
-	public Handler createHandler(final Class<? extends Handler> type) {
+	public Handler createHandler(final Class<? extends Handler> type, World worldIn) {
 		try {
-			final Handler handler = type.newInstance();
+			Class[] constructors = {World.class};
+			final Handler handler = type.getDeclaredConstructor(constructors).newInstance(worldIn);
 			instance.handlers.add(handler);
 			return handler;
 		} catch (Exception e) {
-			return new Handler();
+			return new Handler(worldIn);
 		}
 	}
 
 	public int countHandlerType(final Class<? extends Handler> type) {
 		return (int) handlers.stream().filter(type::isInstance).count();
-	}
-
-	@SubscribeEvent
-	public void onLoadWorld(final WorldEvent.Load event) {
-		HandlerSetBlock.getGameruleStates();
 	}
 
 	public void tick() {
@@ -107,8 +114,9 @@ public class ClientCommandHandler extends CommandHandler {
 				handler.tick();
 			}
 		}
-		if (tick % 1200 == 0 && !mc.ingameGUI.getChatGUI().getChatOpen()) {
+		if (tick % 36000 == 0 && !mc.ingameGUI.getChatGUI().getChatOpen()) {
 			HandlerSetBlock.getGameruleStates();
+			HandlerFill.getGameruleStates();
 		}
 		tick++;
 	}

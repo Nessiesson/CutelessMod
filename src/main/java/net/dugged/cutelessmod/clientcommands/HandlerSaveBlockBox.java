@@ -14,18 +14,18 @@ import java.util.Map;
 public class HandlerSaveBlockBox extends Handler {
 	private static final int BLOCKS_PROCESSED_PER_TICK = 4096;
 	private final List<Iterator> iterators = new ArrayList<>();
-	public String command = null;
+	public String command;
 	private Map<BlockPos, IBlockState> blockList;
 	private boolean message = false;
-	private World world;
 
-	public void init(final World worldToRecord, Map<BlockPos, IBlockState> list, final String commandToExecuteAfterwards, final boolean sendFinishMessage) {
-		world = worldToRecord;
-		blockList = list;
-		if (!commandToExecuteAfterwards.isEmpty()) {
-			command = commandToExecuteAfterwards;
-		}
+	public HandlerSaveBlockBox(World worldIn) {
+		super(worldIn);
+	}
+
+	public void init(final String commandToExecuteAfterwards, final boolean sendFinishMessage, Map<BlockPos, IBlockState> list) {
+		command = commandToExecuteAfterwards;
 		message = sendFinishMessage;
+		blockList = list;
 	}
 
 	public void saveBox(BlockPos pos1, BlockPos pos2) {

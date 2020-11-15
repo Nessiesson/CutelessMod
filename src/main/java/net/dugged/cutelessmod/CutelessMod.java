@@ -1,11 +1,8 @@
 package net.dugged.cutelessmod;
 
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.CommandPing;
-import net.dugged.cutelessmod.clientcommands.CommandRandomize;
-import net.dugged.cutelessmod.clientcommands.CommandRepeatLast;
-import net.dugged.cutelessmod.clientcommands.CommandStone;
-import net.dugged.cutelessmod.clientcommands.CommandUndo;
+import net.dugged.cutelessmod.clientcommands.*;
+import net.dugged.cutelessmod.clientcommands.mixins.IItemTool;
+import net.dugged.cutelessmod.clientcommands.worldedit.WorldEdit;
 import net.dugged.cutelessmod.mixins.ISoundHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -14,6 +11,8 @@ import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemCompass;
 import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.client.CPacketClientStatus;
@@ -28,11 +27,13 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.gen.feature.WorldGenLakes;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -42,6 +43,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
+import net.minecraftforge.fml.common.gameevent.PlayerEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
@@ -86,6 +88,7 @@ public class CutelessMod {
 	public static StatPlugin statPlugin = new StatPlugin();
 	public static String lastCommand = "";
 	private String originalTitle;
+	private long axeCooldown = 0;
 
 	@Mod.EventHandler
 	public void preInit(final FMLPreInitializationEvent event) {
@@ -112,11 +115,7 @@ public class CutelessMod {
 		ClientRegistry.registerKeyBinding(spyKey);
 		ClientRegistry.registerKeyBinding(toggleBeaconAreaKey);
 		spy = new ContainerSpy();
-		ClientCommandHandler.instance.registerCommand(new CommandPing());
-		ClientCommandHandler.instance.registerCommand(new CommandRandomize());
-		ClientCommandHandler.instance.registerCommand(new CommandUndo());
-		ClientCommandHandler.instance.registerCommand(new CommandRepeatLast());
-		ClientCommandHandler.instance.registerCommand(new CommandStone());
+		ClientCommandHandler.instance.init();
 	}
 
 	@SubscribeEvent
@@ -194,6 +193,7 @@ public class CutelessMod {
 		}
 		ClientCommandHandler.instance.tick();
 		tickCounter++;
+		axeCooldown--;
 		if (overlayTimer > 0) {
 			overlayTimer--;
 		}
@@ -259,6 +259,44 @@ public class CutelessMod {
 			final GameSettings settings = mc.gameSettings;
 			if (!(GameSettings.isKeyDown(settings.keyBindForward) || GameSettings.isKeyDown(settings.keyBindBack) || GameSettings.isKeyDown(settings.keyBindLeft) || GameSettings.isKeyDown(settings.keyBindRight))) {
 				player.motionX = player.motionZ = 0D;
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onleftClickBlock(final PlayerInteractEvent.LeftClickBlock event) {
+		Item itemInHand = mc.player.getHeldItemMainhand().getItem();
+		if (mc.player.isCreative() && itemInHand instanceof ItemAxe && ((IItemTool) itemInHand).getToolMaterial() == Item.ToolMaterial.WOOD) {
+			if (axeCooldown > tickCounter) {
+				event.setCanceled(true);
+			} else if (mc.player instanceof EntityPlayerSP) {
+				if (WorldEdit.posA == null || !WorldEdit.posA.equals(event.getPos())) {
+					WorldEdit.posA = event.getPos();
+				} else {
+					WorldEdit.posA = null;
+				}
+				System.out.println(WorldEdit.posA);
+				axeCooldown = tickCounter + 10;
+				event.setCanceled(true);
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onRighClickBlock(final PlayerInteractEvent.RightClickBlock event) {
+		Item itemInHand = mc.player.getHeldItemMainhand().getItem();
+		if (mc.player.isCreative() && itemInHand instanceof ItemAxe && ((IItemTool) itemInHand).getToolMaterial() == Item.ToolMaterial.WOOD) {
+			if (axeCooldown > tickCounter) {
+				event.setCanceled(true);
+			} else if (mc.player instanceof EntityPlayerSP) {
+				if (WorldEdit.posB == null || !WorldEdit.posB.equals(event.getPos())) {
+					WorldEdit.posB = event.getPos();
+				} else {
+					WorldEdit.posB = null;
+				}
+				System.out.println(WorldEdit.posA);
+				axeCooldown = tickCounter + 10;
+				event.setCanceled(true);
 			}
 		}
 	}

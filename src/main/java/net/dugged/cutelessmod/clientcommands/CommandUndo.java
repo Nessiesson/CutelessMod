@@ -36,15 +36,16 @@ public class CommandUndo extends CommandBase {
 	}
 
 	public static boolean saveHistory(String msg) {
-		if (mc.player.world != null) {
+		final World world = mc.player.world;
+		if (world != null) {
 			final String[] temp = msg.split(" ");
 			final String[] args = new String[temp.length - 1];
 			System.arraycopy(temp, 1, args, 0, args.length);
 			try {
 				Map<BlockPos, IBlockState> blockList = new HashMap<>();
 				if (msg.startsWith("/fill") && args.length >= 7) {
-					HandlerSaveBlockBox handler = (HandlerSaveBlockBox) ClientCommandHandler.instance.createHandler(HandlerSaveBlockBox.class);
-					handler.init(mc.player.world, blockList, msg, true);
+					HandlerSaveBlockBox handler = (HandlerSaveBlockBox) ClientCommandHandler.instance.createHandler(HandlerSaveBlockBox.class, world);
+					handler.init(msg, true, blockList);
 					handler.saveBox(parseBlockPos(args, 0), parseBlockPos(args, 3));
 					mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.undo.startedSaving"));
 					undoHistory.add(0, blockList);
@@ -54,8 +55,8 @@ public class CommandUndo extends CommandBase {
 					final BlockPos pos2 = parseBlockPos(args, 3);
 					final BlockPos pos3 = parseBlockPos(args, 6);
 					final BlockPos pos4 = pos3.add(Math.max(pos1.getX(), pos2.getX()) - Math.min(pos1.getX(), pos2.getX()), Math.max(pos1.getY(), pos2.getY()) - Math.min(pos1.getY(), pos2.getY()), Math.max(pos1.getZ(), pos2.getZ()) - Math.min(pos1.getZ(), pos2.getZ()));
-					HandlerSaveBlockBox handler = (HandlerSaveBlockBox) ClientCommandHandler.instance.createHandler(HandlerSaveBlockBox.class);
-					handler.init(mc.player.world, blockList, msg, true);
+					HandlerSaveBlockBox handler = (HandlerSaveBlockBox) ClientCommandHandler.instance.createHandler(HandlerSaveBlockBox.class, world);
+					handler.init(msg, true, blockList);
 					handler.saveBox(parseBlockPos(args, 0), parseBlockPos(args, 3));
 					handler.saveBox(pos1, pos2);
 					handler.saveBox(pos3, pos4);
@@ -80,7 +81,7 @@ public class CommandUndo extends CommandBase {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return this.getName();
+		return getName();
 	}
 
 	@Override
@@ -94,8 +95,7 @@ public class CommandUndo extends CommandBase {
 					}
 					if (undoHistory.size() - 1 >= historyIndex) {
 						World world = sender.getEntityWorld();
-						HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class);
-						setBlockHandler.init(world);
+						HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
 						setBlockHandler.setBlocks(undoHistory.get(historyIndex));
 						setBlockHandler.sendAffectedBlocks = true;
 					} else {

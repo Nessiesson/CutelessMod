@@ -22,7 +22,7 @@ public class CommandRandomize extends CommandBase {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return this.getName() + new TextComponentTranslation("text.cutelessmod.clientcommands.randomize.usage").toString();
+		return new TextComponentTranslation("text.cutelessmod.clientcommands.randomize.usage").toString();
 	}
 
 	private List<IBlockState> parseBlockList(String[] argList, ICommandSender sender) throws CommandException {
@@ -52,8 +52,7 @@ public class CommandRandomize extends CommandBase {
 				BlockPos blockpos1 = parseBlockPos(sender, args, 3, false);
 				int percentage = parseInt(args[6], 0, 100);
 				World world = sender.getEntityWorld();
-				HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class);
-				setBlockHandler.init(world);
+				HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
 				List<IBlockState> blockList = parseBlockList(Arrays.copyOfRange(args, 7, args.length), sender);
 				for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(blockpos, blockpos1)) {
 					if (rand.nextFloat() <= (float) percentage / 100F) {

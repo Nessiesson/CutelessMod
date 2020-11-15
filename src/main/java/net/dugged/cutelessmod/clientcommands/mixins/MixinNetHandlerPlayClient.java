@@ -1,6 +1,8 @@
 package net.dugged.cutelessmod.clientcommands.mixins;
 
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
+import net.dugged.cutelessmod.clientcommands.Handler;
+import net.dugged.cutelessmod.clientcommands.HandlerFill;
 import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.play.server.SPacketChat;
@@ -22,19 +24,19 @@ public class MixinNetHandlerPlayClient {
 			final String chatLine = packet.getChatComponent().getUnformattedText();
 			boolean flag = false;
 			if (chatLine.contains("sendCommandFeedback") && !chatLine.contains("updated")) {
-				HandlerSetBlock.sendCommandfeedback = chatLine.contains("true");
+				Handler.sendCommandfeedback = chatLine.contains("true");
 				flag = true;
 			} else if (chatLine.contains("doTileDrops")) {
-				HandlerSetBlock.doTileDrops = chatLine.contains("true");
+				Handler.doTileDrops = chatLine.contains("true");
 				flag = true;
 			} else if (chatLine.contains("logAdminCommands")) {
-				HandlerSetBlock.logAdminCommands = chatLine.contains("true");
+				Handler.logAdminCommands = chatLine.contains("true");
 				flag = true;
 			}
 			if (flag && !chatLine.contains("updated")) {
 				ci.cancel();
 			}
-			if (ClientCommandHandler.instance.handlers.size() > 0 && (chatLine.contains("The block couldn't be placed") || chatLine.contains("Block placed"))) {
+			if (ClientCommandHandler.instance.handlers.size() > 0 && (chatLine.contains("The block couldn't be placed") || chatLine.contains("Block placed") || chatLine.contains("No blocks filled"))) {
 				ci.cancel();
 			}
 		}
@@ -45,8 +47,10 @@ public class MixinNetHandlerPlayClient {
 		if (packetIn.getMatches().length == 1) {
 			if (packetIn.getMatches()[0].contains("setblock")) {
 				HandlerSetBlock.setblockPermission = true;
+			} else if (packetIn.getMatches()[0].contains("fill")) {
+				HandlerFill.fillPermission = true;
 			} else if (packetIn.getMatches()[0].contains("gamerule")) {
-				HandlerSetBlock.gamerulePermission = true;
+				Handler.gamerulePermission = true;
 			}
 		}
 	}
