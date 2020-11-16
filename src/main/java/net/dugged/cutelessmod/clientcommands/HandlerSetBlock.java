@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class HandlerSetBlock extends Handler {
-	private static final int COMMANDS_EXECUTED_PER_TICK = 2048;
+	private static final int COMMANDS_EXECUTED_PER_TICK = 1048;
 	private static final int BLOCKS_PROCESSED_PER_TICK = 4096;
 	public static boolean setblockPermission = false;
 	private final List<BlockPos> blockPositions = new ArrayList<>();
@@ -30,30 +30,35 @@ public class HandlerSetBlock extends Handler {
 		}
 	}
 
-	public void setBlock(final BlockPos pos, final IBlockState blockState) {
-		blockPositions.add(pos);
-		blocksToPlace.put(pos, blockState);
+	synchronized public void setBlock(final BlockPos pos, final IBlockState blockState) {
+		if (!blockPositions.contains(pos)) {
+			blockPositions.add(pos);
+			blocksToPlace.put(pos, blockState);
+		}
 	}
 
-	public void setBlocks(Map<BlockPos, IBlockState> blockList) {
+	synchronized public void setBlocks(Map<BlockPos, IBlockState> blockList) {
 		blockPositions.addAll(blockList.keySet());
 		blocksToPlace.putAll(blockList);
 	}
 
-	public void tick() {
+	synchronized public void tick() {
 		super.tick();
 		if (blockPositions.size() > 0) {
 			final int handlerCount = ClientCommandHandler.instance.countHandlerType(HandlerSetBlock.class);
 			int commandsExecuted = 0;
-			while (blockPositions.size() > 0 && commandsExecuted < (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
+			int counter = 0;
+			while (counter <= BLOCKS_PROCESSED_PER_TICK && blockPositions.size() > 0 && commandsExecuted < (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
 				final BlockPos pos = blockPositions.get(0);
-				if (sendSetBlockCommand(pos, blocksToPlace.get(pos))) {
+				IBlockState blockToPlace = blocksToPlace.get(pos);
+				if (blockToPlace != null && sendSetBlockCommand(pos, blockToPlace)) {
 					commandsExecuted++;
 				}
 				blocksToPlace.remove(pos);
 				blockPositions.remove(0);
+				counter++;
 			}
-		} else {
+		} else if (age > 100) {
 			if (gamerulePermission) {
 				if (doTileDrops) {
 					mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule doTileDrops true"));

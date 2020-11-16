@@ -1,6 +1,7 @@
 package net.dugged.cutelessmod.clientcommands.mixins;
 
 import net.dugged.cutelessmod.clientcommands.Handler;
+import net.dugged.cutelessmod.clientcommands.HandlerClone;
 import net.dugged.cutelessmod.clientcommands.HandlerFill;
 import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
 import net.minecraft.client.Minecraft;
@@ -17,5 +18,6 @@ public class MixinMinecraft {
 		Handler.getGameruleStates();
 		HandlerSetBlock.getGameruleStates();
 		HandlerFill.getGameruleStates();
+		HandlerClone.getGameruleStates();
 	}
 }

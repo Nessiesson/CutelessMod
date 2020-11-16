@@ -1,6 +1,6 @@
 package net.dugged.cutelessmod.clientcommands;
 
-import net.minecraft.block.state.IBlockState;
+import net.dugged.cutelessmod.clientcommands.worldedit.WorldEdit;
 import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.client.CPacketTabComplete;
 import net.minecraft.util.math.AxisAlignedBB;
@@ -13,43 +13,45 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HandlerFill extends Handler {
-	private static final int COMMANDS_EXECUTED_PER_TICK = 1024; // Minimum 2
-	private static final int FILL_LIMIT = 32768;
+public class HandlerClone extends Handler {
+	private static final int COMMANDS_EXECUTED_PER_TICK = 2; // Minimum 2
+	private static final int FILL_LIMIT = 8;//32768;
 	private static final int CUBE_LENGTH = (int) Math.pow(FILL_LIMIT, 1.0 / 3.0);
 
-	public static boolean fillPermission = false;
+	public static boolean clonePermission = false;
 	private final List<AxisAlignedBB> areas = new ArrayList<>();
-	private final Map<AxisAlignedBB, IBlockState> blockStateMap = new HashMap<>();
+	private final Map<AxisAlignedBB, BlockPos> destinationBlockMap = new HashMap<>();
 	private final Map<AxisAlignedBB, BlockPos> iteratorPositions = new HashMap<>();
+	public boolean moveBlocks = false;
+	public boolean moveSelectionAfterwards = true;
 
-	public HandlerFill(World worldIn) {
+	public HandlerClone(World worldIn) {
 		super(worldIn);
 	}
 
 	public static void getGameruleStates() {
 		if (mc.player != null && mc.player.connection != null) {
-			fillPermission = false;
-			mc.player.connection.sendPacket(new CPacketTabComplete("/fil", null, false));
+			clonePermission = false;
+			mc.player.connection.sendPacket(new CPacketTabComplete("/clon", null, false));
 		}
 	}
 
-	synchronized public void fill(BlockPos pos1, BlockPos pos2, IBlockState blockStateToPlace) {
+	synchronized public void clone(BlockPos pos1, BlockPos pos2, BlockPos pos3) {
 		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
 		areas.add(bb);
-		blockStateMap.put(bb, blockStateToPlace);
+		destinationBlockMap.put(bb, pos3);
 		iteratorPositions.put(bb, new BlockPos(bb.minX, bb.minY, bb.minZ));
 	}
 
 	synchronized public void tick() {
 		super.tick();
 		if (areas.size() > 0) {
-			final int handlerCount = ClientCommandHandler.instance.countHandlerType(HandlerFill.class);
+			final int handlerCount = ClientCommandHandler.instance.countHandlerType(HandlerClone.class);
 			int commandsExecuted = 0;
 			while (areas.size() > 0 && commandsExecuted < (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
 				AxisAlignedBB bb = areas.get(0);
 				BlockPos iteratorPosition = iteratorPositions.get(bb);
-				IBlockState blockState = blockStateMap.get(bb);
+				BlockPos destinationPosition = destinationBlockMap.get(bb);
 				for (int x = (int) bb.minX; x < bb.maxX + 1; x += CUBE_LENGTH) {
 					for (int y = (int) bb.minY; y < bb.maxY + 1; y += CUBE_LENGTH) {
 						for (int z = (int) bb.minZ; z < bb.maxZ + 1; z += CUBE_LENGTH) {
@@ -68,14 +70,19 @@ public class HandlerFill extends Handler {
 								iteratorPositions.put(bb, pos1);
 								return;
 							}
-							if (sendFillCommand(pos1, pos2, blockState)) {
+							BlockPos pos3 = WorldEdit.getMinPos();
+							if (sendCloneCommand(pos1, pos2, pos1.add(destinationPosition.getX() - pos3.getX(), destinationPosition.getY() - pos3.getY(), destinationPosition.getZ() - pos3.getZ()))) {
 								commandsExecuted++;
 							}
 						}
 					}
 				}
+				if (areas.size() == 1 && moveSelectionAfterwards) {
+					WorldEdit.posA = destinationPosition;
+					WorldEdit.posB = destinationPosition.add(bb.maxX - bb.minX, bb.maxY - bb.minY, bb.maxZ - bb.minZ);
+				}
 				iteratorPositions.remove(bb);
-				blockStateMap.remove(bb);
+				destinationBlockMap.remove(bb);
 				areas.remove(0);
 			}
 		} else if (age > 100) {
@@ -99,12 +106,14 @@ public class HandlerFill extends Handler {
 	}
 
 
-	private boolean sendFillCommand(BlockPos pos1, BlockPos pos2, IBlockState blockState) {
-		final String name = blockState.getBlock().getRegistryName().toString();
-		final String metadata = Integer.toString(blockState.getBlock().getMetaFromState(blockState));
-		if (fillPermission && world.isBlockLoaded(pos1) && world.isBlockLoaded(pos2) && Math.min(pos1.getY(), pos2.getY()) >= 0 && Math.max(pos1.getY(), pos2.getY()) < 256) {
+	private boolean sendCloneCommand(BlockPos pos1, BlockPos pos2, BlockPos pos3) {
+		if (clonePermission && world.isBlockLoaded(pos1) && world.isBlockLoaded(pos2) && world.isBlockLoaded(pos3) && Math.min(pos1.getY(), Math.min(pos2.getY(), pos3.getY())) >= 0 && Math.max(pos1.getY(), Math.max(pos2.getY(), pos3.getY())) < 256) {
 			last_execution = age;
-			world.sendPacketToServer(new CPacketChatMessage("/fill " + pos1.getX() + " " + pos1.getY() + " " + pos1.getZ() + " " + pos2.getX() + " " + pos2.getY() + " " + pos2.getZ() + " " + name + " " + metadata));
+			if (moveBlocks) {
+				world.sendPacketToServer(new CPacketChatMessage("/clone " + pos1.getX() + " " + pos1.getY() + " " + pos1.getZ() + " " + pos2.getX() + " " + pos2.getY() + " " + pos2.getZ() + " " + pos3.getX() + " " + pos3.getY() + " " + pos3.getZ() + " replace move"));
+			} else {
+				world.sendPacketToServer(new CPacketChatMessage("/clone " + pos1.getX() + " " + pos1.getY() + " " + pos1.getZ() + " " + pos2.getX() + " " + pos2.getY() + " " + pos2.getZ() + " " + pos3.getX() + " " + pos3.getY() + " " + pos3.getZ() + " replace force"));
+			}
 			affectedBlocks += (Math.max(pos1.getX(), pos2.getX()) - Math.min(pos1.getX(), pos2.getX()) + 1) * (Math.max(pos1.getY(), pos2.getY()) - Math.min(pos1.getY(), pos2.getY()) + 1) * (Math.max(pos1.getZ(), pos2.getZ()) - Math.min(pos1.getZ(), pos2.getZ()) + 1);
 			return true;
 		} else {

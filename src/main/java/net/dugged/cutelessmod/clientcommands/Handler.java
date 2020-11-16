@@ -49,7 +49,7 @@ public class Handler {
 		}
 	}
 
-	public void tick() {
+	synchronized public void tick() {
 		if (age - last_execution > 300 && !warned) {
 			warned = true;
 			TextComponentTranslation warning = new TextComponentTranslation("text.cutelessmod.clientcommands.handlerAgeWarning", getClass());

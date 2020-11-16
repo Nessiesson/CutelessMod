@@ -7,9 +7,14 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.init.Blocks;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
+
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
 
 public class CommandCenter extends CommandBase {
 	@Override
@@ -25,10 +30,13 @@ public class CommandCenter extends CommandBase {
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (WorldEdit.hasSelection()) {
-			if (args.length > 0 && args.length <= 2) {
+			if (args.length >= 0 && args.length <= 2) {
 				HandlerSetBlock handler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, sender.getEntityWorld());
 				handler.isWorldEditHandler = true;
-				Block block = CommandBase.getBlockByText(sender, args[0]);
+				Block block = Blocks.GLOWSTONE;
+				if (args.length > 0) {
+					block = CommandBase.getBlockByText(sender, args[0]);
+				}
 				IBlockState blockstate = block.getDefaultState();
 				if (args.length >= 2) {
 					blockstate = convertArgToBlockState(block, args[1]);
@@ -65,6 +73,14 @@ public class CommandCenter extends CommandBase {
 			}
 		} else {
 			WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
+		}
+	}
+
+	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
+		if (args.length == 1) {
+			return getListOfStringsMatchingLastWord(args, Block.REGISTRY.getKeys());
+		} else {
+			return Collections.emptyList();
 		}
 	}
 }

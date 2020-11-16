@@ -1,9 +1,6 @@
 package net.dugged.cutelessmod.clientcommands.mixins;
 
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.Handler;
-import net.dugged.cutelessmod.clientcommands.HandlerFill;
-import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
+import net.dugged.cutelessmod.clientcommands.*;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.network.play.server.SPacketChat;
 import net.minecraft.network.play.server.SPacketTabComplete;
@@ -49,6 +46,8 @@ public class MixinNetHandlerPlayClient {
 				HandlerSetBlock.setblockPermission = true;
 			} else if (packetIn.getMatches()[0].contains("fill")) {
 				HandlerFill.fillPermission = true;
+			} else if (packetIn.getMatches()[0].contains("clone")) {
+				HandlerClone.clonePermission = true;
 			} else if (packetIn.getMatches()[0].contains("gamerule")) {
 				Handler.gamerulePermission = true;
 			}

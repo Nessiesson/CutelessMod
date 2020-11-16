@@ -39,6 +39,10 @@ public class ClientCommandHandler extends CommandHandler {
 		instance.registerCommand(new CommandSize());
 		instance.registerCommand(new CommandCyl());
 		instance.registerCommand(new CommandHCyl());
+		instance.registerCommand(new CommandHSphere());
+		instance.registerCommand(new CommandSphere());
+		instance.registerCommand(new CommandMove());
+		instance.registerCommand(new CommandFlip());
 	}
 
 	@Override
@@ -91,7 +95,7 @@ public class ClientCommandHandler extends CommandHandler {
 		return mc.getIntegratedServer();
 	}
 
-	public Handler createHandler(final Class<? extends Handler> type, World worldIn) {
+	synchronized public Handler createHandler(final Class<? extends Handler> type, World worldIn) {
 		try {
 			Class[] constructors = {World.class};
 			final Handler handler = type.getDeclaredConstructor(constructors).newInstance(worldIn);
