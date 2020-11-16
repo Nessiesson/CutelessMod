@@ -18,7 +18,6 @@ public class HandlerSetBlock extends Handler {
 	public static boolean setblockPermission = false;
 	private final List<BlockPos> blockPositions = new ArrayList<>();
 	private final Map<BlockPos, IBlockState> blocksToPlace = new HashMap<>();
-	public boolean failed = false;
 
 	public HandlerSetBlock(World worldIn) {
 		super(worldIn);
@@ -42,6 +41,7 @@ public class HandlerSetBlock extends Handler {
 	}
 
 	public void tick() {
+		super.tick();
 		if (blockPositions.size() > 0) {
 			final int handlerCount = ClientCommandHandler.instance.countHandlerType(HandlerSetBlock.class);
 			int commandsExecuted = 0;
@@ -78,11 +78,11 @@ public class HandlerSetBlock extends Handler {
 		final String name = blockState.getBlock().getRegistryName().toString();
 		final String metadata = Integer.toString(blockState.getBlock().getMetaFromState(blockState));
 		if (setblockPermission && world.isBlockLoaded(pos) && pos.getY() >= 0 && pos.getY() < 256 && !world.getBlockState(pos).equals(blockState)) {
+			last_execution = age;
 			world.sendPacketToServer(new CPacketChatMessage("/setblock " + pos.getX() + " " + pos.getY() + " " + pos.getZ() + " " + name + " " + metadata));
 			affectedBlocks++;
 			return true;
 		} else {
-			failed = true;
 			return false;
 		}
 	}

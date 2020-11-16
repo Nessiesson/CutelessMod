@@ -3,6 +3,8 @@ package net.dugged.cutelessmod.clientcommands;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.client.CPacketTabComplete;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 public class Handler {
@@ -13,8 +15,12 @@ public class Handler {
 	public static boolean doTileDrops = true;
 	public boolean finished = false;
 	public boolean sendAffectedBlocks = false;
+	public boolean isWorldEditHandler = false;
 	protected long affectedBlocks = 0;
 	protected World world;
+	protected long age = 0;
+	protected long last_execution = 0;
+	private boolean warned = false;
 
 	public Handler(World worldIn) {
 		world = worldIn;
@@ -44,6 +50,28 @@ public class Handler {
 	}
 
 	public void tick() {
+		if (age - last_execution > 300 && !warned) {
+			warned = true;
+			TextComponentTranslation warning = new TextComponentTranslation("text.cutelessmod.clientcommands.handlerAgeWarning", getClass());
+			if (isWorldEditHandler) {
+				warning.getStyle().setColor(TextFormatting.LIGHT_PURPLE);
+			} else {
+				warning.getStyle().setColor(TextFormatting.RED);
+			}
+			mc.ingameGUI.getChatGUI().printChatMessage(warning);
+		} else if (age - last_execution > 600 && warned) {
+			TextComponentTranslation error = new TextComponentTranslation("text.cutelessmod.clientcommands.handlerTermination", getClass());
+			if (isWorldEditHandler) {
+				error.getStyle().setColor(TextFormatting.LIGHT_PURPLE);
+			} else {
+				error.getStyle().setColor(TextFormatting.RED);
+			}
+			mc.ingameGUI.getChatGUI().printChatMessage(error);
+			finished = true;
+		} else {
+			warned = false;
+		}
+		age++;
 	}
 
 }

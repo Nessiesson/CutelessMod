@@ -275,7 +275,6 @@ public class CutelessMod {
 				} else {
 					WorldEdit.posA = null;
 				}
-				System.out.println(WorldEdit.posA);
 				axeCooldown = tickCounter + 10;
 				event.setCanceled(true);
 			}
@@ -294,7 +293,6 @@ public class CutelessMod {
 				} else {
 					WorldEdit.posB = null;
 				}
-				System.out.println(WorldEdit.posA);
 				axeCooldown = tickCounter + 10;
 				event.setCanceled(true);
 			}

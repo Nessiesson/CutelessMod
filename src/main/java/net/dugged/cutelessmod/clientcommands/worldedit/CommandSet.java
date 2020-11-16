@@ -26,6 +26,7 @@ public class CommandSet extends CommandBase {
 		if (WorldEdit.hasSelection()) {
 			if (args.length > 0 && args.length <= 2) {
 				HandlerFill handler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, sender.getEntityWorld());
+				handler.isWorldEditHandler = true;
 				Block block = CommandBase.getBlockByText(sender, args[0]);
 				IBlockState blockstate = block.getDefaultState();
 				if (args.length == 2) {

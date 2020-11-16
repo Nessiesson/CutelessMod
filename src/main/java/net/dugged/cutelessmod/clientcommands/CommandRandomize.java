@@ -60,9 +60,6 @@ public class CommandRandomize extends CommandBase {
 						setBlockHandler.setBlock(pos, blockState);
 					}
 				}
-				if (setBlockHandler.failed) {
-					throw new CommandException("text.cutelessmod.clientcommands.randomize.outOfWorld");
-				}
 				setBlockHandler.sendAffectedBlocks = true;
 			}
 		}

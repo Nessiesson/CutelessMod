@@ -33,12 +33,14 @@ public class HandlerSaveBlockBox extends Handler {
 	}
 
 	public void tick() {
+		super.tick();
 		iterators.removeIf(iterator -> !iterator.hasNext());
 		if (iterators.size() > 0) {
 			int iterCount = 0;
 			Iterator iterator = iterators.get(0);
 			while (iterator.hasNext() && iterCount <= BLOCKS_PROCESSED_PER_TICK / ClientCommandHandler.instance.countHandlerType(HandlerSaveBlockBox.class)) {
 				final BlockPos pos = (BlockPos) iterator.next();
+				last_execution = age;
 				blockList.put(pos, world.getBlockState(pos));
 			}
 		} else {

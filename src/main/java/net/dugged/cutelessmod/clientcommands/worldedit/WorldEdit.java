@@ -7,10 +7,10 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 
 public class WorldEdit {
-	public static BlockPos posA = null;
-	public static BlockPos posB = null;
 	private static final Minecraft mc = Minecraft.getMinecraft();
 	private static final EntityPlayerSP player = mc.player;
+	public static BlockPos posA = null;
+	public static BlockPos posB = null;
 
 	public static boolean hasSelection() {
 		return posA != null && posB != null;

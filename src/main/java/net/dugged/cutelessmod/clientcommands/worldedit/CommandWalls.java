@@ -28,6 +28,7 @@ public class CommandWalls extends CommandBase {
 		if (WorldEdit.hasSelection()) {
 			if (args.length > 0 && args.length <= 3) {
 				HandlerFill handler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, sender.getEntityWorld());
+				handler.isWorldEditHandler = true;
 				Block block = CommandBase.getBlockByText(sender, args[0]);
 				IBlockState blockstate = block.getDefaultState();
 				int thickness = 0;

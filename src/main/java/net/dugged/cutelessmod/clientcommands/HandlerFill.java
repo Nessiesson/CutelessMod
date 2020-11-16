@@ -22,7 +22,6 @@ public class HandlerFill extends Handler {
 	private final List<AxisAlignedBB> areas = new ArrayList<>();
 	private final Map<AxisAlignedBB, IBlockState> blockStateMap = new HashMap<>();
 	private final Map<AxisAlignedBB, BlockPos> iteratorPositions = new HashMap<>();
-	public boolean failed = false;
 
 	public HandlerFill(World worldIn) {
 		super(worldIn);
@@ -43,6 +42,7 @@ public class HandlerFill extends Handler {
 	}
 
 	public void tick() {
+		super.tick();
 		if (areas.size() > 0) {
 			final int handlerCount = ClientCommandHandler.instance.countHandlerType(HandlerFill.class);
 			int commandsExecuted = 0;
@@ -102,12 +102,12 @@ public class HandlerFill extends Handler {
 	private boolean sendFillCommand(BlockPos pos1, BlockPos pos2, IBlockState blockState) {
 		final String name = blockState.getBlock().getRegistryName().toString();
 		final String metadata = Integer.toString(blockState.getBlock().getMetaFromState(blockState));
-		if (fillPermission && world.isBlockLoaded(pos1) && world.isBlockLoaded(pos2) && Math.min(pos1.getY(), pos2.getY()) >= 0 && Math.max(pos1.getY(), pos2.getY()) < 256) {
+		if (false &&  fillPermission && world.isBlockLoaded(pos1) && world.isBlockLoaded(pos2) && Math.min(pos1.getY(), pos2.getY()) >= 0 && Math.max(pos1.getY(), pos2.getY()) < 256) {
+			last_execution = age;
 			world.sendPacketToServer(new CPacketChatMessage("/fill " + pos1.getX() + " " + pos1.getY() + " " + pos1.getZ() + " " + pos2.getX() + " " + pos2.getY() + " " + pos2.getZ() + " " + name + " " + metadata));
 			affectedBlocks += (Math.max(pos1.getX(), pos2.getX()) - Math.min(pos1.getX(), pos2.getX()) + 1) * (Math.max(pos1.getY(), pos2.getY()) - Math.min(pos1.getY(), pos2.getY()) + 1) * (Math.max(pos1.getZ(), pos2.getZ()) - Math.min(pos1.getZ(), pos2.getZ()) + 1);
 			return true;
 		} else {
-			failed = true;
 			return false;
 		}
 	}

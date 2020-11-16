@@ -27,6 +27,7 @@ public class CommandCenter extends CommandBase {
 		if (WorldEdit.hasSelection()) {
 			if (args.length > 0 && args.length <= 2) {
 				HandlerSetBlock handler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, sender.getEntityWorld());
+				handler.isWorldEditHandler = true;
 				Block block = CommandBase.getBlockByText(sender, args[0]);
 				IBlockState blockstate = block.getDefaultState();
 				if (args.length >= 2) {
