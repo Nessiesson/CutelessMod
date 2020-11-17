@@ -39,18 +39,25 @@ public class MixinNetHandlerPlayClient {
 		}
 	}
 
+	private boolean contains(String[] matches, String word) {
+		for (String s : matches) {
+			if (s.contains(word)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	@Inject(method = "handleTabComplete", at = @At(value = "INVOKE", target = START_OF_PACKET, shift = At.Shift.AFTER), cancellable = true)
 	private void onHandleTabComplete(SPacketTabComplete packetIn, CallbackInfo ci) {
-		if (packetIn.getMatches().length == 1) {
-			if (packetIn.getMatches()[0].contains("setblock")) {
-				HandlerSetBlock.setblockPermission = true;
-			} else if (packetIn.getMatches()[0].contains("fill")) {
-				HandlerFill.fillPermission = true;
-			} else if (packetIn.getMatches()[0].contains("clone")) {
-				HandlerClone.clonePermission = true;
-			} else if (packetIn.getMatches()[0].contains("gamerule")) {
-				Handler.gamerulePermission = true;
-			}
+		if (contains(packetIn.getMatches(), "setblock")) {
+			HandlerSetBlock.setblockPermission = true;
+		} else if (contains(packetIn.getMatches(), "fill")) {
+			HandlerFill.fillPermission = true;
+		} else if (contains(packetIn.getMatches(), "clone")) {
+			HandlerClone.clonePermission = true;
+		} else if (contains(packetIn.getMatches(), "gamerule")) {
+			Handler.gamerulePermission = true;
 		}
 	}
 }
