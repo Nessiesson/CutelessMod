@@ -22,14 +22,15 @@ public class CommandMove extends CommandBase {
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (WorldEdit.hasSelection()) {
-			if (args.length == 1) {
-				HandlerClone handler = (HandlerClone) ClientCommandHandler.instance.createHandler(HandlerClone.class, sender.getEntityWorld());
-				handler.isWorldEditHandler = true;
-				handler.moveBlocks = true;
+			HandlerClone handler = (HandlerClone) ClientCommandHandler.instance.createHandler(HandlerClone.class, sender.getEntityWorld());
+			handler.isWorldEditHandler = true;
+			handler.moveBlocks = true;
+			if (args.length == 0) {
+				handler.clone(WorldEdit.minPos(), WorldEdit.maxPos(), WorldEdit.playerPos());
+			} else if (args.length == 1) {
 				int blocksToMove = parseInt(args[0]);
-				handler.clone(WorldEdit.getMinPos(), WorldEdit.getMaxPos(), WorldEdit.offsetLookingDirection(WorldEdit.getMinPos(), blocksToMove));
+				handler.clone(WorldEdit.minPos(), WorldEdit.maxPos(), WorldEdit.offsetLookingDirection(WorldEdit.minPos(), blocksToMove));
 			} else {
-
 				WorldEdit.sendMessage(getUsage(sender));
 			}
 		} else {

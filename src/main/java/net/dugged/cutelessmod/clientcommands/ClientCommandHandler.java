@@ -43,6 +43,7 @@ public class ClientCommandHandler extends CommandHandler {
 		instance.registerCommand(new CommandSphere());
 		instance.registerCommand(new CommandMove());
 		instance.registerCommand(new CommandFlip());
+		instance.registerCommand(new CommandStack());
 	}
 
 	@Override

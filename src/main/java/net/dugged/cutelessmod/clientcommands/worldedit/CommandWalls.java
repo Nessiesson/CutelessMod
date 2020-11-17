@@ -45,8 +45,8 @@ public class CommandWalls extends CommandBase {
 						thickness = 0;
 					}
 				}
-				BlockPos posMin = WorldEdit.getMinPos();
-				BlockPos posMax = WorldEdit.getMaxPos();
+				BlockPos posMin = WorldEdit.minPos();
+				BlockPos posMax = WorldEdit.maxPos();
 				handler.fill(posMin, new BlockPos(posMax.getX(), posMax.getY(), posMin.getZ() + Math.min(thickness, WorldEdit.widthZ() - 1)), blockstate);
 				handler.fill(posMin, new BlockPos(posMin.getX() + Math.min(thickness, WorldEdit.widthX() - 1), posMax.getY(), posMax.getZ()), blockstate);
 				handler.fill(posMax, new BlockPos(posMin.getX(), posMin.getY(), posMax.getZ() - Math.min(thickness, WorldEdit.widthZ() - 1)), blockstate);

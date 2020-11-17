@@ -2,7 +2,7 @@ package net.dugged.cutelessmod.clientcommands.worldedit;
 
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
-import net.minecraft.block.Block;
+import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
@@ -15,9 +15,7 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class CommandFlip extends CommandBase {
 
@@ -31,23 +29,120 @@ public class CommandFlip extends CommandBase {
 		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.flip.usage").getUnformattedText();
 	}
 
+	private IBlockState flipBlockstate(IBlockState blockState, EnumFacing.Axis axis) {
+		if (blockState == null) {
+			return null;
+		}
+		if (axis == EnumFacing.Axis.Y && blockState.getProperties().containsKey(BlockSlab.HALF)) {
+			if (blockState.getValue(BlockSlab.HALF) == BlockSlab.EnumBlockHalf.BOTTOM) {
+				return blockState.withProperty(BlockSlab.HALF, BlockSlab.EnumBlockHalf.TOP);
+			} else if (blockState.getValue(BlockSlab.HALF) == BlockSlab.EnumBlockHalf.TOP) {
+				return blockState.withProperty(BlockSlab.HALF, BlockSlab.EnumBlockHalf.BOTTOM);
+			}
+		}
+
+		if (axis == EnumFacing.Axis.Y && blockState.getProperties().containsKey(BlockStairs.HALF)) {
+			if (blockState.getValue(BlockStairs.HALF) == BlockStairs.EnumHalf.BOTTOM) {
+				return blockState.withProperty(BlockStairs.HALF, BlockStairs.EnumHalf.TOP);
+			} else if (blockState.getValue(BlockStairs.HALF) == BlockStairs.EnumHalf.TOP) {
+				return blockState.withProperty(BlockStairs.HALF, BlockStairs.EnumHalf.BOTTOM);
+			}
+		}
+
+		if (blockState.getProperties().containsKey(BlockLever.FACING)) {
+			switch (axis) {
+				case X:
+					if (blockState.getValue(BlockLever.FACING) == BlockLever.EnumOrientation.WEST) {
+						return blockState.withProperty(BlockLever.FACING, BlockLever.EnumOrientation.EAST);
+					} else if (blockState.getValue(BlockLever.FACING) == BlockLever.EnumOrientation.EAST) {
+						return blockState.withProperty(BlockLever.FACING, BlockLever.EnumOrientation.WEST);
+					}
+					break;
+				case Y:
+					if (blockState.getValue(BlockLever.FACING) == BlockLever.EnumOrientation.DOWN_X) {
+						return blockState.withProperty(BlockLever.FACING, BlockLever.EnumOrientation.UP_X);
+					} else if (blockState.getValue(BlockLever.FACING) == BlockLever.EnumOrientation.DOWN_Z) {
+						return blockState.withProperty(BlockLever.FACING, BlockLever.EnumOrientation.UP_Z);
+					} else if (blockState.getValue(BlockLever.FACING) == BlockLever.EnumOrientation.UP_X) {
+						return blockState.withProperty(BlockLever.FACING, BlockLever.EnumOrientation.DOWN_X);
+					} else if (blockState.getValue(BlockLever.FACING) == BlockLever.EnumOrientation.UP_Z) {
+						return blockState.withProperty(BlockLever.FACING, BlockLever.EnumOrientation.DOWN_Z);
+					}
+					break;
+				case Z:
+					if (blockState.getValue(BlockLever.FACING) == BlockLever.EnumOrientation.NORTH) {
+						return blockState.withProperty(BlockLever.FACING, BlockLever.EnumOrientation.SOUTH);
+					} else if (blockState.getValue(BlockLever.FACING) == BlockLever.EnumOrientation.SOUTH) {
+						return blockState.withProperty(BlockLever.FACING, BlockLever.EnumOrientation.NORTH);
+					}
+					break;
+			}
+		}
+
+		if (blockState.getProperties().containsKey(BlockHorizontal.FACING)) {
+			switch (axis) {
+				case X:
+					if (blockState.getValue(BlockHorizontal.FACING) == EnumFacing.WEST) {
+						return blockState.withProperty(BlockHorizontal.FACING, EnumFacing.EAST);
+					} else if (blockState.getValue(BlockHorizontal.FACING) == EnumFacing.EAST) {
+						return blockState.withProperty(BlockHorizontal.FACING, EnumFacing.WEST);
+					}
+					break;
+				case Z:
+					if (blockState.getValue(BlockHorizontal.FACING) == EnumFacing.NORTH) {
+						return blockState.withProperty(BlockHorizontal.FACING, EnumFacing.SOUTH);
+					} else if (blockState.getValue(BlockHorizontal.FACING) == EnumFacing.SOUTH) {
+						return blockState.withProperty(BlockHorizontal.FACING, EnumFacing.NORTH);
+					}
+					break;
+			}
+		}
+
+		if (blockState.getProperties().containsKey(BlockDirectional.FACING)) {
+			switch (axis) {
+				case X:
+					if (blockState.getValue(BlockDirectional.FACING) == EnumFacing.WEST) {
+						return blockState.withProperty(BlockDirectional.FACING, EnumFacing.EAST);
+					} else if (blockState.getValue(BlockDirectional.FACING) == EnumFacing.EAST) {
+						return blockState.withProperty(BlockDirectional.FACING, EnumFacing.WEST);
+					}
+					break;
+				case Y:
+					if (blockState.getValue(BlockDirectional.FACING) == EnumFacing.DOWN) {
+						return blockState.withProperty(BlockDirectional.FACING, EnumFacing.UP);
+					} else if (blockState.getValue(BlockDirectional.FACING) == EnumFacing.UP) {
+						return blockState.withProperty(BlockDirectional.FACING, EnumFacing.DOWN);
+					}
+					break;
+				case Z:
+					if (blockState.getValue(BlockDirectional.FACING) == EnumFacing.NORTH) {
+						return blockState.withProperty(BlockDirectional.FACING, EnumFacing.SOUTH);
+					} else if (blockState.getValue(BlockDirectional.FACING) == EnumFacing.SOUTH) {
+						return blockState.withProperty(BlockDirectional.FACING, EnumFacing.NORTH);
+					}
+					break;
+			}
+		}
+		return blockState;
+	}
+
 	private void flipSelection(World world) {
 		HandlerSetBlock handler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
 		handler.isWorldEditHandler = true;
-		Map<BlockPos, IBlockState> blockList = new HashMap<>();
-		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(WorldEdit.getMinPos(), WorldEdit.getMaxPos())) {
-			blockList.put(pos, world.getBlockState(pos));
-		}
 		EnumFacing direction = WorldEdit.getLookingDirection();
-		for (int x = 0; x <= WorldEdit.widthX(); x++) {
-			for (int y = 0; y <= WorldEdit.widthY(); y++) {
-				for (int z = 0; z <= WorldEdit.widthZ(); z++) {
+		for (int x = 0; x < WorldEdit.widthX(); x++) {
+			for (int y = 0; y < WorldEdit.widthY(); y++) {
+				for (int z = 0; z < WorldEdit.widthZ(); z++) {
+					IBlockState blockState;
 					if (direction.getAxis() == EnumFacing.Axis.Y) {
-						handler.setBlock(WorldEdit.getMinPos().add(x, y, z), blockList.get(WorldEdit.getMinPos().add(x, WorldEdit.widthY() - y - 1, z)));
+						blockState = world.getBlockState(WorldEdit.minPos().add(x, y, z));
+						handler.setBlock(WorldEdit.minPos().add(x, WorldEdit.widthY() - y - 1, z), flipBlockstate(blockState, direction.getAxis()));
 					} else if (direction.getAxis() == EnumFacing.Axis.Z) {
-						handler.setBlock(WorldEdit.getMinPos().add(x, y, z), blockList.get(WorldEdit.getMinPos().add(x, y, WorldEdit.widthZ() - z - 1)));
+						blockState = world.getBlockState(WorldEdit.minPos().add(x, y, z));
+						handler.setBlock(WorldEdit.minPos().add(x, y, WorldEdit.widthZ() - z - 1), flipBlockstate(blockState, direction.getAxis()));
 					} else {
-						handler.setBlock(WorldEdit.getMinPos().add(x, y, z), blockList.get(WorldEdit.getMinPos().add(WorldEdit.widthX() - x - 1, y, z)));
+						blockState = world.getBlockState(WorldEdit.minPos().add(x, y, z));
+						handler.setBlock(WorldEdit.minPos().add(WorldEdit.widthX() - x - 1, y, z), flipBlockstate(blockState, direction.getAxis()));
 					}
 				}
 			}

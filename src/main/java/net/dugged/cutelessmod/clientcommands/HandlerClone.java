@@ -14,14 +14,14 @@ import java.util.List;
 import java.util.Map;
 
 public class HandlerClone extends Handler {
-	private static final int COMMANDS_EXECUTED_PER_TICK = 2; // Minimum 2
-	private static final int FILL_LIMIT = 8;//32768;
+	private static final int COMMANDS_EXECUTED_PER_TICK = 256; // Minimum 2
+	private static final int FILL_LIMIT = 32768;
 	private static final int CUBE_LENGTH = (int) Math.pow(FILL_LIMIT, 1.0 / 3.0);
 
 	public static boolean clonePermission = false;
-	private final List<AxisAlignedBB> areas = new ArrayList<>();
-	private final Map<AxisAlignedBB, BlockPos> destinationBlockMap = new HashMap<>();
-	private final Map<AxisAlignedBB, BlockPos> iteratorPositions = new HashMap<>();
+	private final List<BlockPos> destinations = new ArrayList<>();
+	private final Map<BlockPos, AxisAlignedBB> sourceAreaMap = new HashMap<>();
+	private final Map<BlockPos, BlockPos> iteratorPositions = new HashMap<>();
 	public boolean moveBlocks = false;
 	public boolean moveSelectionAfterwards = true;
 
@@ -38,25 +38,25 @@ public class HandlerClone extends Handler {
 
 	synchronized public void clone(BlockPos pos1, BlockPos pos2, BlockPos pos3) {
 		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
-		areas.add(bb);
-		destinationBlockMap.put(bb, pos3);
-		iteratorPositions.put(bb, new BlockPos(bb.minX, bb.minY, bb.minZ));
+		destinations.add(pos3);
+		sourceAreaMap.put(pos3, bb);
+		iteratorPositions.put(pos3, new BlockPos(bb.minX, bb.minY, bb.minZ));
 	}
 
 	synchronized public void tick() {
 		super.tick();
-		if (areas.size() > 0) {
+		if (destinations.size() > 0) {
 			final int handlerCount = ClientCommandHandler.instance.countHandlerType(HandlerClone.class);
 			int commandsExecuted = 0;
-			while (areas.size() > 0 && commandsExecuted < (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
-				AxisAlignedBB bb = areas.get(0);
-				BlockPos iteratorPosition = iteratorPositions.get(bb);
-				BlockPos destinationPosition = destinationBlockMap.get(bb);
+			while (destinations.size() > 0 && commandsExecuted < (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
+				BlockPos destinationPosition = destinations.get(0);
+				BlockPos iteratorPosition = iteratorPositions.get(destinationPosition);
+				AxisAlignedBB bb = sourceAreaMap.get(destinationPosition);
 				for (int x = (int) bb.minX; x < bb.maxX + 1; x += CUBE_LENGTH) {
 					for (int y = (int) bb.minY; y < bb.maxY + 1; y += CUBE_LENGTH) {
 						for (int z = (int) bb.minZ; z < bb.maxZ + 1; z += CUBE_LENGTH) {
 							if (iteratorPosition == null) {
-								areas.remove(0);
+								destinations.remove(0);
 								return;
 							}
 							if (x == (int) bb.minX && y == (int) bb.minY && z == (int) bb.minZ) {
@@ -67,25 +67,27 @@ public class HandlerClone extends Handler {
 							BlockPos pos1 = new BlockPos(x, y, z);
 							BlockPos pos2 = new BlockPos(Math.min(x + CUBE_LENGTH - 1, bb.maxX), Math.min(y + CUBE_LENGTH - 1, bb.maxY), Math.min(z + CUBE_LENGTH - 1, bb.maxZ));
 							if (commandsExecuted >= (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
-								iteratorPositions.put(bb, pos1);
+								iteratorPositions.put(destinationPosition, pos1);
 								return;
 							}
-							BlockPos pos3 = WorldEdit.getMinPos();
+							BlockPos pos3 = WorldEdit.minPos();
 							if (sendCloneCommand(pos1, pos2, pos1.add(destinationPosition.getX() - pos3.getX(), destinationPosition.getY() - pos3.getY(), destinationPosition.getZ() - pos3.getZ()))) {
 								commandsExecuted++;
 							}
 						}
 					}
 				}
-				if (areas.size() == 1 && moveSelectionAfterwards) {
+				if (destinations.size() == 1 && moveSelectionAfterwards) {
 					WorldEdit.posA = destinationPosition;
 					WorldEdit.posB = destinationPosition.add(bb.maxX - bb.minX, bb.maxY - bb.minY, bb.maxZ - bb.minZ);
 				}
-				iteratorPositions.remove(bb);
-				destinationBlockMap.remove(bb);
-				areas.remove(0);
+				sourceAreaMap.remove(bb);
+				if (!sourceAreaMap.containsKey(bb)) {
+					iteratorPositions.remove(bb);
+					destinations.remove(0);
+				}
 			}
-		} else if (age > 100) {
+		} else if (age > 5) {
 			if (gamerulePermission) {
 				if (doTileDrops) {
 					mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule doTileDrops true"));

@@ -41,7 +41,7 @@ public class CommandCenter extends CommandBase {
 				if (args.length >= 2) {
 					blockstate = convertArgToBlockState(block, args[1]);
 				}
-				BlockPos center = new BlockPos(WorldEdit.getMinPos().getX() + WorldEdit.widthX() / 2, WorldEdit.getMinPos().getY() + WorldEdit.widthY() / 2, WorldEdit.getMinPos().getZ() + WorldEdit.widthZ() / 2);
+				BlockPos center = new BlockPos(WorldEdit.minPos().getX() + WorldEdit.widthX() / 2, WorldEdit.minPos().getY() + WorldEdit.widthY() / 2, WorldEdit.minPos().getZ() + WorldEdit.widthZ() / 2);
 				handler.setBlock(center, blockstate);
 				boolean x = WorldEdit.widthX() % 2 == 0;
 				boolean y = WorldEdit.widthY() % 2 == 0;

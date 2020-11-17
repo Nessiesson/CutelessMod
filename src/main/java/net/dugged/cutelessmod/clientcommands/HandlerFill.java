@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 public class HandlerFill extends Handler {
-	private static final int COMMANDS_EXECUTED_PER_TICK = 1024; // Minimum 2
+	private static final int COMMANDS_EXECUTED_PER_TICK = 256; // Minimum 2
 	private static final int FILL_LIMIT = 32768;
 	private static final int CUBE_LENGTH = (int) Math.pow(FILL_LIMIT, 1.0 / 3.0);
 
@@ -78,7 +78,7 @@ public class HandlerFill extends Handler {
 				blockStateMap.remove(bb);
 				areas.remove(0);
 			}
-		} else if (age > 100) {
+		} else if (age > 5) {
 			if (gamerulePermission) {
 				if (doTileDrops) {
 					mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule doTileDrops true"));

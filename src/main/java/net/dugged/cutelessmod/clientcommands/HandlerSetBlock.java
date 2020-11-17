@@ -1,5 +1,6 @@
 package net.dugged.cutelessmod.clientcommands;
 
+import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.client.CPacketTabComplete;
@@ -13,10 +14,11 @@ import java.util.List;
 import java.util.Map;
 
 public class HandlerSetBlock extends Handler {
-	private static final int COMMANDS_EXECUTED_PER_TICK = 1048;
+	private static final int COMMANDS_EXECUTED_PER_TICK = 512;
 	private static final int BLOCKS_PROCESSED_PER_TICK = 4096;
 	public static boolean setblockPermission = false;
 	private final List<BlockPos> blockPositions = new ArrayList<>();
+	private final List<BlockPos> skippedPositions = new ArrayList<>();
 	private final Map<BlockPos, IBlockState> blocksToPlace = new HashMap<>();
 
 	public HandlerSetBlock(World worldIn) {
@@ -28,6 +30,33 @@ public class HandlerSetBlock extends Handler {
 			setblockPermission = false;
 			mc.player.connection.sendPacket(new CPacketTabComplete("/setbloc", null, false));
 		}
+	}
+
+	private static boolean placeLast(Block block) {
+		return (block instanceof BlockBush ||
+				block instanceof BlockFlowerPot ||
+				block instanceof BlockFire ||
+				block instanceof BlockButton ||
+				block instanceof BlockSign ||
+				block instanceof BlockChorusFlower ||
+				block instanceof BlockCake ||
+				block instanceof BlockCarpet ||
+				block instanceof BlockRailBase ||
+				block instanceof BlockEndRod ||
+				block instanceof BlockLever ||
+				block instanceof BlockRedstoneWire ||
+				block instanceof BlockCactus ||
+				block instanceof BlockVine ||
+				block instanceof BlockSnow ||
+				block instanceof BlockTorch ||
+				block instanceof BlockLadder ||
+				block instanceof BlockBanner ||
+				block instanceof BlockDoor ||
+				block instanceof BlockRedstoneDiode ||
+				block instanceof BlockBasePressurePlate ||
+				block instanceof BlockPistonMoving ||
+				block instanceof BlockReed ||
+				block instanceof BlockTripWireHook);
 	}
 
 	synchronized public void setBlock(final BlockPos pos, final IBlockState blockState) {
@@ -50,15 +79,22 @@ public class HandlerSetBlock extends Handler {
 			int counter = 0;
 			while (counter <= BLOCKS_PROCESSED_PER_TICK && blockPositions.size() > 0 && commandsExecuted < (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
 				final BlockPos pos = blockPositions.get(0);
-				IBlockState blockToPlace = blocksToPlace.get(pos);
-				if (blockToPlace != null && sendSetBlockCommand(pos, blockToPlace)) {
-					commandsExecuted++;
-				}
-				blocksToPlace.remove(pos);
-				blockPositions.remove(0);
+				IBlockState blockState = blocksToPlace.get(pos);
 				counter++;
+				if (blockState != null) {
+					if (placeLast(blockState.getBlock()) && !skippedPositions.contains(pos)) {
+						blockPositions.add(blockPositions.size(), pos);
+						skippedPositions.add(pos);
+					} else {
+						if (sendSetBlockCommand(pos, blockState)) {
+							commandsExecuted++;
+						}
+						blocksToPlace.remove(pos);
+					}
+				}
+				blockPositions.remove(0);
 			}
-		} else if (age > 100) {
+		} else if (age > 5) {
 			if (gamerulePermission) {
 				if (doTileDrops) {
 					mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule doTileDrops true"));
@@ -77,7 +113,6 @@ public class HandlerSetBlock extends Handler {
 			finished = true;
 		}
 	}
-
 
 	private boolean sendSetBlockCommand(BlockPos pos, IBlockState blockState) {
 		final String name = blockState.getBlock().getRegistryName().toString();

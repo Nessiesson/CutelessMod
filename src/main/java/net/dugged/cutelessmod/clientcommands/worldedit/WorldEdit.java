@@ -46,24 +46,24 @@ public class WorldEdit {
 		Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessage(msg);
 	}
 
-	public static BlockPos getMinPos() {
+	public static BlockPos minPos() {
 		return new BlockPos(Math.min(posA.getX(), posB.getX()), Math.min(posA.getY(), posB.getY()), Math.min(posA.getZ(), posB.getZ()));
 	}
 
-	public static BlockPos getMaxPos() {
+	public static BlockPos maxPos() {
 		return new BlockPos(Math.max(posA.getX(), posB.getX()), Math.max(posA.getY(), posB.getY()), Math.max(posA.getZ(), posB.getZ()));
 	}
 
 	public static int widthX() {
-		return getMaxPos().getX() - getMinPos().getX() + 1;
+		return maxPos().getX() - minPos().getX() + 1;
 	}
 
 	public static int widthY() {
-		return getMaxPos().getY() - getMinPos().getY() + 1;
+		return maxPos().getY() - minPos().getY() + 1;
 	}
 
 	public static int widthZ() {
-		return getMaxPos().getZ() - getMinPos().getZ() + 1;
+		return maxPos().getZ() - minPos().getZ() + 1;
 	}
 
 	public static long volume() {

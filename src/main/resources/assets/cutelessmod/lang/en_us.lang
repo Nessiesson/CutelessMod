@@ -35,5 +35,6 @@ text.cutelessmod.clientcommands.worldEdit.hcyl.usage=/hcyl <block> <dataValue:st
 text.cutelessmod.clientcommands.worldEdit.cyl.usage=/cyl <block> <dataValue:state> <radius> [height]
 text.cutelessmod.clientcommands.worldEdit.hsphere.usage=/hsphere <block> <dataValue:state> <radius>
 text.cutelessmod.clientcommands.worldEdit.sphere.usage=/sphere <block> <dataValue:state> <radius>
-text.cutelessmod.clientcommands.worldEdit.move.usage=/move <blocks to move>
+text.cutelessmod.clientcommands.worldEdit.move.usage=/move [blocks to move]
 text.cutelessmod.clientcommands.worldEdit.flip.usage=/flip
+text.cutelessmod.clientcommands.worldEdit.stack.usage=/stack <count> [blocks in between]
