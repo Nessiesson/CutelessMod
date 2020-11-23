@@ -16,6 +16,7 @@ public class Configuration {
 	public static boolean craftingHax = true;
 	public static boolean deathLocation = false;
 	public static boolean derpyChicken = false;
+	public static boolean disableRealmsButton = false;
 	public static boolean dynamicServerListUpdates = false;
 	public static boolean elytraFix = false;
 	public static boolean elytraCancellation = false;
