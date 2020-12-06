@@ -164,7 +164,7 @@ public class CutelessMod {
 			mc.displayGuiScreen(new GuiEmptyScreen());
 		}
 
-		if (repeatLastCommandKey.isPressed()) {
+		if (repeatLastCommandKey.isPressed() && !lastCommand.isEmpty()) {
 			mc.player.sendChatMessage(CutelessMod.lastCommand);
 		}
 	}
