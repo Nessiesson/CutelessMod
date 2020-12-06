@@ -44,33 +44,44 @@ public class ClientCommandHandler extends CommandHandler {
 		instance.registerCommand(new CommandMove());
 		instance.registerCommand(new CommandFlip());
 		instance.registerCommand(new CommandStack());
+		//instance.registerCommand(new CommandRotate());
+		instance.registerCommand(new CommandLine());
+		instance.registerCommand(new CommandPolygon());
+		instance.registerCommand(new CommandSelection());
+		instance.registerCommand(new CommandDrain());
+		instance.registerCommand(new CommandFloodFill());
+		instance.registerCommand(new CommandOutlineFill());
 	}
 
 	@Override
 	public int executeCommand(ICommandSender sender, String message) {
-		message = message.trim();
+		if (mc.player.isCreative() || mc.player.isSpectator()) {
+			message = message.trim();
 
-		if (message.startsWith("/")) {
-			message = message.substring(1);
-		}
+			if (message.startsWith("/")) {
+				message = message.substring(1);
+			}
 
-		final String[] temp = message.split(" ");
-		final String[] args = new String[temp.length - 1];
-		final String commandName = temp[0];
-		System.arraycopy(temp, 1, args, 0, args.length);
-		final ICommand command = getCommands().get(commandName);
-		if (command == null) {
+			final String[] temp = message.split(" ");
+			final String[] args = new String[temp.length - 1];
+			final String commandName = temp[0];
+			System.arraycopy(temp, 1, args, 0, args.length);
+			final ICommand command = getCommands().get(commandName);
+			if (command == null) {
+				return 0;
+			}
+
+			try {
+				this.tryExecute(sender, args, command, message);
+			} catch (Throwable t) {
+				final TextComponentTranslation error = new TextComponentTranslation("commands.generic.exception");
+				error.getStyle().setColor(TextFormatting.RED);
+				sender.sendMessage(error);
+			}
+			return -1;
+		} else {
 			return 0;
 		}
-
-		try {
-			this.tryExecute(sender, args, command, message);
-		} catch (Throwable t) {
-			final TextComponentTranslation error = new TextComponentTranslation("commands.generic.exception");
-			error.getStyle().setColor(TextFormatting.RED);
-			sender.sendMessage(error);
-		}
-		return -1;
 	}
 
 	public void autoComplete(String leftOfCursor) {

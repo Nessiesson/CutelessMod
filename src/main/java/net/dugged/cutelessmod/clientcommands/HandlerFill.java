@@ -9,19 +9,19 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public class HandlerFill extends Handler {
-	private static final int COMMANDS_EXECUTED_PER_TICK = 256; // Minimum 2
+	private static final int COMMANDS_EXECUTED_PER_TICK = 64; // Minimum 2
 	private static final int FILL_LIMIT = 32768;
 	private static final int CUBE_LENGTH = (int) Math.pow(FILL_LIMIT, 1.0 / 3.0);
 
 	public static boolean fillPermission = false;
 	private final List<AxisAlignedBB> areas = new ArrayList<>();
-	private final Map<AxisAlignedBB, IBlockState> blockStateMap = new HashMap<>();
-	private final Map<AxisAlignedBB, BlockPos> iteratorPositions = new HashMap<>();
+	private final Map<AxisAlignedBB, IBlockState> blockStateMap = new LinkedHashMap<>();
+	private final Map<AxisAlignedBB, BlockPos> iteratorPositions = new LinkedHashMap<>();
 
 	public HandlerFill(World worldIn) {
 		super(worldIn);

@@ -94,7 +94,7 @@ public class HandlerSetBlock extends Handler {
 				}
 				blockPositions.remove(0);
 			}
-		} else if (age > 5) {
+		} else if (age > 5 && autoCancel) {
 			if (gamerulePermission) {
 				if (doTileDrops) {
 					mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule doTileDrops true"));

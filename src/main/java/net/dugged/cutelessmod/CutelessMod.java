@@ -1,7 +1,7 @@
 package net.dugged.cutelessmod;
 
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.mixins.IItemTool;
+import net.dugged.cutelessmod.clientcommands.mixins.IItemSword;
 import net.dugged.cutelessmod.clientcommands.worldedit.WorldEdit;
 import net.dugged.cutelessmod.mixins.ISoundHandler;
 import net.minecraft.client.Minecraft;
@@ -12,8 +12,8 @@ import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemCompass;
+import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.client.CPacketClientStatus;
 import net.minecraft.network.play.client.CPacketPlayer;
@@ -254,7 +254,7 @@ public class CutelessMod {
 	@SubscribeEvent
 	public void onleftClickBlock(final PlayerInteractEvent.LeftClickBlock event) {
 		Item itemInHand = mc.player.getHeldItemMainhand().getItem();
-		if (mc.player.isCreative() && itemInHand instanceof ItemAxe && ((IItemTool) itemInHand).getToolMaterial() == Item.ToolMaterial.WOOD) {
+		if (mc.player.isCreative() && itemInHand instanceof ItemSword && ((IItemSword) itemInHand).getMaterial() == Item.ToolMaterial.WOOD) {
 			if (axeCooldown > tickCounter) {
 				event.setCanceled(true);
 			} else if (mc.player instanceof EntityPlayerSP) {
@@ -272,7 +272,7 @@ public class CutelessMod {
 	@SubscribeEvent
 	public void onRighClickBlock(final PlayerInteractEvent.RightClickBlock event) {
 		Item itemInHand = mc.player.getHeldItemMainhand().getItem();
-		if (mc.player.isCreative() && itemInHand instanceof ItemAxe && ((IItemTool) itemInHand).getToolMaterial() == Item.ToolMaterial.WOOD) {
+		if (mc.player.isCreative() && itemInHand instanceof ItemSword && ((IItemSword) itemInHand).getMaterial() == Item.ToolMaterial.WOOD) {
 			if (axeCooldown > tickCounter) {
 				event.setCanceled(true);
 			} else if (mc.player instanceof EntityPlayerSP) {

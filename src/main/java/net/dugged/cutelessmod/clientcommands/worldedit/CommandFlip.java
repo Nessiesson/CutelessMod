@@ -15,7 +15,9 @@ import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CommandFlip extends CommandBase {
 
@@ -127,26 +129,28 @@ public class CommandFlip extends CommandBase {
 	}
 
 	private void flipSelection(World world) {
-		HandlerSetBlock handler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
-		handler.isWorldEditHandler = true;
 		EnumFacing direction = WorldEdit.getLookingDirection();
+		Map<BlockPos, IBlockState> blockList = new HashMap<>();
 		for (int x = 0; x < WorldEdit.widthX(); x++) {
 			for (int y = 0; y < WorldEdit.widthY(); y++) {
 				for (int z = 0; z < WorldEdit.widthZ(); z++) {
 					IBlockState blockState;
 					if (direction.getAxis() == EnumFacing.Axis.Y) {
 						blockState = world.getBlockState(WorldEdit.minPos().add(x, y, z));
-						handler.setBlock(WorldEdit.minPos().add(x, WorldEdit.widthY() - y - 1, z), flipBlockstate(blockState, direction.getAxis()));
+						blockList.put(WorldEdit.minPos().add(x, WorldEdit.widthY() - y - 1, z), flipBlockstate(blockState, direction.getAxis()));
 					} else if (direction.getAxis() == EnumFacing.Axis.Z) {
 						blockState = world.getBlockState(WorldEdit.minPos().add(x, y, z));
-						handler.setBlock(WorldEdit.minPos().add(x, y, WorldEdit.widthZ() - z - 1), flipBlockstate(blockState, direction.getAxis()));
+						blockList.put(WorldEdit.minPos().add(x, y, WorldEdit.widthZ() - z - 1), flipBlockstate(blockState, direction.getAxis()));
 					} else {
 						blockState = world.getBlockState(WorldEdit.minPos().add(x, y, z));
-						handler.setBlock(WorldEdit.minPos().add(WorldEdit.widthX() - x - 1, y, z), flipBlockstate(blockState, direction.getAxis()));
+						blockList.put(WorldEdit.minPos().add(WorldEdit.widthX() - x - 1, y, z), flipBlockstate(blockState, direction.getAxis()));
 					}
 				}
 			}
 		}
+		HandlerSetBlock handler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
+		handler.isWorldEditHandler = true;
+		handler.setBlocks(blockList);
 	}
 
 	@Override

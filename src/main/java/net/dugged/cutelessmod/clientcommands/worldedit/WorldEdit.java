@@ -1,7 +1,6 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
@@ -10,7 +9,6 @@ import net.minecraft.util.text.TextFormatting;
 
 public class WorldEdit {
 	private static final Minecraft mc = Minecraft.getMinecraft();
-	private static final EntityPlayerSP player = mc.player;
 	public static BlockPos posA = null;
 	public static BlockPos posB = null;
 
@@ -19,7 +17,7 @@ public class WorldEdit {
 	}
 
 	public static BlockPos playerPos() {
-		return new BlockPos(player.posX, player.posY, player.posZ);
+		return new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
 	}
 
 	public static EnumFacing getLookingDirection() {
@@ -80,5 +78,9 @@ public class WorldEdit {
 
 	public static boolean checkCircle(final double x, final double z, final double r) {
 		return x * x + z * z <= r * r;
+	}
+
+	public static int maxWidth() {
+		return Math.max(widthX(), Math.max(widthY(), widthZ()));
 	}
 }

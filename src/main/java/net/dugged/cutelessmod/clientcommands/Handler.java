@@ -16,6 +16,7 @@ public class Handler {
 	public boolean finished = false;
 	public boolean sendAffectedBlocks = false;
 	public boolean isWorldEditHandler = false;
+	public boolean autoCancel = true;
 	protected long affectedBlocks = 0;
 	protected World world;
 	protected long age = 0;
