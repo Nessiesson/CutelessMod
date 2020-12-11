@@ -32,7 +32,7 @@ public class WorldEdit {
 	}
 
 	public static BlockPos offsetLookingDirection(BlockPos pos, int offset) {
-		return pos.offset(getLookingDirection(), offset);
+		return new BlockPos(pos.offset(getLookingDirection(), offset));
 	}
 
 	public static void sendMessage(String msg) {

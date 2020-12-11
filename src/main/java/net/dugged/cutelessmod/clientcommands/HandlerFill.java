@@ -78,7 +78,7 @@ public class HandlerFill extends Handler {
 				blockStateMap.remove(bb);
 				areas.remove(0);
 			}
-		} else if (age > 5) {
+		} else if (age > 5 && autoCancel) {
 			if (gamerulePermission) {
 				if (doTileDrops) {
 					mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule doTileDrops true"));

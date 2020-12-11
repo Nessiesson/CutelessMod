@@ -51,6 +51,7 @@ public class ClientCommandHandler extends CommandHandler {
 		instance.registerCommand(new CommandDrain());
 		instance.registerCommand(new CommandFloodFill());
 		instance.registerCommand(new CommandOutlineFill());
+		instance.registerCommand(new CommandUpscale());
 	}
 
 	@Override

@@ -111,7 +111,7 @@ public class CommandLine extends CommandBase {
 				handler.setBlock(new BlockPos(x1, y1, z1), blockstate);
 			}
 		}
-		handler.autoCancel = false;
+		handler.autoCancel = true;
 	}
 
 	@Override
