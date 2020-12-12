@@ -52,6 +52,7 @@
 		"MixinGuiStats",
 		"MixinInventoryEffectRenderer",
 		"MixinItemFirework",
+		"MixinItemFlintAndSteel",
 		"MixinItemStack",
 		"MixinMinecraft",
 		"MixinNetHandlerPlayClient",
