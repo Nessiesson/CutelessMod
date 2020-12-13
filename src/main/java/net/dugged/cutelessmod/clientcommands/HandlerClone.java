@@ -37,7 +37,7 @@ public class HandlerClone extends Handler {
 	}
 
 	synchronized public void clone(BlockPos pos1, BlockPos pos2, BlockPos pos3) {
-		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
+		AxisAlignedBB bb = new AxisAlignedBB(pos1.getX(), Math.max(0, pos1.getY()), pos1.getZ(), pos2.getX(), Math.min(pos2.getY(), 255), pos2.getZ());
 		destinations.add(pos3);
 		sourceAreaMap.put(pos3, bb);
 		iteratorPositions.put(pos3, new BlockPos(bb.minX, bb.minY, bb.minZ));
@@ -70,8 +70,7 @@ public class HandlerClone extends Handler {
 								iteratorPositions.put(destinationPosition, pos1);
 								return;
 							}
-							BlockPos pos3 = WorldEdit.minPos();
-							if (sendCloneCommand(pos1, pos2, pos1.add(destinationPosition.getX() - pos3.getX(), destinationPosition.getY() - pos3.getY(), destinationPosition.getZ() - pos3.getZ()))) {
+							if (sendCloneCommand(pos1, pos2, destinationPosition.add(pos1.getX() - bb.minX, pos1.getY() - bb.minY, pos1.getZ() - bb.minZ))) {
 								commandsExecuted++;
 							}
 						}

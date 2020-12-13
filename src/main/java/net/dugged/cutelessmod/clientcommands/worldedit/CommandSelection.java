@@ -34,7 +34,6 @@ public class CommandSelection extends CommandBase {
 				if (args.length == 3) {
 					amount = parseInt(args[2]);
 				}
-				System.out.println(args);
 				if (args[1].toLowerCase().matches("up") || args[1].toLowerCase().matches("u")) {
 					if (args[0].toLowerCase().matches("expand")) {
 						if (WorldEdit.posA.getY() > WorldEdit.posB.getY()) {
