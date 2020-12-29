@@ -10,6 +10,7 @@ text.cutelessmod.options.gamma.fullbright=Fullbright
 text.cutelessmod.reload_audio=Reloaded audio engine
 text.cutelessmod.disconnect=Disconnect
 text.cutelessmod.connect=Connect
+text.cutelessmod.search=Search:
 text.cutelessmod.error_while_teleporting=There was an error while attemping teleportation!
 text.cutelessmod.clientcommands.handlerAgeWarning=Warning: Handler %s is alive for more than 45 seconds
 text.cutelessmod.clientcommands.handlerTermination=Error: Handler %s was alive for more than 60 seconds and was terminated

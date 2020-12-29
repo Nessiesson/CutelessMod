@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(GuiDisconnected.class)
-public class  MixinGuiDisconnected extends GuiScreen {
+public class MixinGuiDisconnected extends GuiScreen {
 	@Shadow
 	@Final
 	private ITextComponent message;
@@ -49,7 +49,7 @@ public class  MixinGuiDisconnected extends GuiScreen {
 
 	@Inject(method = "drawScreen", at = @At("HEAD"))
 	public void updateStrings(final int mouseX, final int mouseY, final float partialTicks, final CallbackInfo ci) {
-		if (CutelessMod.tickCounter > this.cutelessmodTicks&& this.buttonList.get(1).enabled) {
+		if (CutelessMod.tickCounter > this.cutelessmodTicks && this.buttonList.get(1).enabled) {
 			this.cutelessmodTicks = CutelessMod.tickCounter + 20;
 			if (this.cutelessmodSeconds <= 0 && this.buttonList.get(1).enabled) {
 				if (CutelessMod.currentServer != null) {
