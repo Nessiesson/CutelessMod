@@ -14,14 +14,14 @@ public class CommandSize extends CommandBase {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.set.usage").getUnformattedText();
+		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.size.usage").getUnformattedText();
 	}
 
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (args.length == 0) {
 			if (WorldEdit.hasSelection()) {
-				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.size", WorldEdit.posA.getX(), WorldEdit.posA.getY(), WorldEdit.posA.getZ(), WorldEdit.posB.getX(), WorldEdit.posB.getY(), WorldEdit.posB.getZ(), WorldEdit.widthX(), WorldEdit.widthY(), WorldEdit.widthZ(), WorldEdit.volume()));
+				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.size.response", WorldEdit.posA.getX(), WorldEdit.posA.getY(), WorldEdit.posA.getZ(), WorldEdit.posB.getX(), WorldEdit.posB.getY(), WorldEdit.posB.getZ(), WorldEdit.widthX(), WorldEdit.widthY(), WorldEdit.widthZ(), WorldEdit.volume()));
 			} else {
 				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
 			}

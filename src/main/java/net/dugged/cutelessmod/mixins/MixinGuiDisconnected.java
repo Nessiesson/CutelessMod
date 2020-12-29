@@ -19,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(GuiDisconnected.class)
-public class MixinGuiDisconnected extends GuiScreen {
+public class  MixinGuiDisconnected extends GuiScreen {
 	@Shadow
 	@Final
 	private ITextComponent message;
@@ -38,15 +38,20 @@ public class MixinGuiDisconnected extends GuiScreen {
 		final int textHeight = msg.size() * this.fontRenderer.FONT_HEIGHT;
 		cutelessmodSeconds = Configuration.reconnectTimer;
 		if (CutelessMod.currentServer != null) {
-			this.buttonList.add(new GuiButton(1, this.width / 2 - 100, Math.min(this.height / 2 + textHeight / 2 + this.fontRenderer.FONT_HEIGHT, this.height - 30) + 30, I18n.format("Reconnect (" + this.cutelessmodSeconds + ")")));
+			if (this.message.getUnformattedText().toLowerCase().contains("stopjoin")) {
+				this.buttonList.add(new GuiButton(1, this.width / 2 - 100, Math.min(this.height / 2 + textHeight / 2 + this.fontRenderer.FONT_HEIGHT, this.height - 30) + 30, I18n.format("Reconnect forbidden")));
+				this.buttonList.get(1).enabled = false;
+			} else {
+				this.buttonList.add(new GuiButton(1, this.width / 2 - 100, Math.min(this.height / 2 + textHeight / 2 + this.fontRenderer.FONT_HEIGHT, this.height - 30) + 30, I18n.format("Reconnect (" + this.cutelessmodSeconds + ")")));
+			}
 		}
 	}
 
 	@Inject(method = "drawScreen", at = @At("HEAD"))
 	public void updateStrings(final int mouseX, final int mouseY, final float partialTicks, final CallbackInfo ci) {
-		if (CutelessMod.tickCounter > this.cutelessmodTicks) {
+		if (CutelessMod.tickCounter > this.cutelessmodTicks&& this.buttonList.get(1).enabled) {
 			this.cutelessmodTicks = CutelessMod.tickCounter + 20;
-			if (this.cutelessmodSeconds <= 0) {
+			if (this.cutelessmodSeconds <= 0 && this.buttonList.get(1).enabled) {
 				if (CutelessMod.currentServer != null) {
 					this.mc.displayGuiScreen(new GuiConnecting(this.parentScreen, this.mc, CutelessMod.currentServer));
 				}

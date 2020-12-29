@@ -37,7 +37,7 @@ public class Configuration {
 	public static boolean showCenteredPlants = false;
 	public static boolean showClearLava = false;
 	public static boolean showDeathAnimations = true;
-	public static boolean showDungeonLocations = true;
+	public static boolean showDungeonLocations = false;
 	public static boolean showGuiBackGround = true;
 	public static boolean showHand = true;
 	public static boolean showIdealToolMarker = false;

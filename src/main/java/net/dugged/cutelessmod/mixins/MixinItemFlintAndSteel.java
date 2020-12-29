@@ -26,7 +26,7 @@ public class MixinItemFlintAndSteel extends Item {
 	private void rightClickRocket(EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ, CallbackInfoReturnable<EnumActionResult> cir) {
 		IBlockState blockStateDown = worldIn.getBlockState(pos.down());
 		if (Configuration.improveObserverFire && player.isCreative() && blockStateDown.getBlock() instanceof BlockObserver) {
-			if (blockStateDown.getProperties().containsKey((BlockDirectional.FACING)) && blockStateDown.getProperties().get(BlockDirectional.FACING) == EnumFacing.UP) {
+			if (blockStateDown.getProperties().containsKey((BlockDirectional.FACING)) && blockStateDown.getValue(BlockDirectional.FACING) == EnumFacing.UP) {
 				final NetHandlerPlayClient connection = Minecraft.getMinecraft().getConnection();
 				if (connection != null) {
 					connection.sendPacket(new CPacketPlayerDigging(CPacketPlayerDigging.Action.START_DESTROY_BLOCK, pos, EnumFacing.DOWN));

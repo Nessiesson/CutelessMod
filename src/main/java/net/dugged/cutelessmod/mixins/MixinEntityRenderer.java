@@ -12,9 +12,11 @@ import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.EnumDyeColor;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -23,6 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityRenderer.class)
 public abstract class MixinEntityRenderer {
+	@Shadow private int rainSoundCounter;
 	@Unique
 	private float cutelessmodEyeHeight;
 	@Unique
@@ -52,7 +55,8 @@ public abstract class MixinEntityRenderer {
 			}
 			if (WorldEdit.posA != null && WorldEdit.posB != null) {
 				AxisAlignedBB posBB = new AxisAlignedBB(WorldEdit.posA, WorldEdit.posB).offset(-d1, -d2, -d3).expand(1, 1, 1);
-				RenderGlobal.drawSelectionBoundingBox(posBB, 1F, 1F, 1F, 0.75F);
+				//Purple BB to differentiate from structure block
+				RenderGlobal.drawSelectionBoundingBox(posBB, 1.0F, 85.0F/255, 1.0F, 0.75F);
 			}
 			GlStateManager.glLineWidth(1F);
 			GlStateManager.enableTexture2D();
@@ -61,10 +65,6 @@ public abstract class MixinEntityRenderer {
 			GlStateManager.disableBlend();
 			GlStateManager.depthMask(true);
 		}
-	}
-
-	@Inject(method = "renderWorldPass", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/profiler/Profiler;endStartSection(Ljava/lang/String;)V", args = "ldc=litParticles"))
-	private void renderBoxes(final int pass, final float partialTicks, final long finishTimeNano, final CallbackInfo ci) {
 		if (Configuration.showDungeonLocations && CutelessMod.dungeonPositions.size() > 0) {
 			GlStateManager.depthMask(false);
 			GlStateManager.disableFog();
@@ -72,8 +72,8 @@ public abstract class MixinEntityRenderer {
 			GlStateManager.disableTexture2D();
 			GlStateManager.glLineWidth(3F);
 			for (BlockPos blockpos : CutelessMod.dungeonPositions.keySet()) {
-				RenderGlobal.drawBoundingBox(blockpos.getX(), blockpos.getY(), blockpos.getZ(), blockpos.getX() + 5, blockpos.getY() + 5, blockpos.getZ() + 5, 0.99F, 0F, 0F, 1F);
-				RenderGlobal.renderFilledBox(blockpos.getX(), blockpos.getY(), blockpos.getZ(), blockpos.getX() + 5, blockpos.getY() + 5, blockpos.getZ() + 5, 0.99F, 0F, 0F, 1F);
+				AxisAlignedBB posBB = new AxisAlignedBB(blockpos);
+				RenderGlobal.drawSelectionBoundingBox(posBB, 1.0F, 1.0F, 1.0F, 0.75F);
 			}
 			GlStateManager.enableTexture2D();
 			GlStateManager.enableLighting();

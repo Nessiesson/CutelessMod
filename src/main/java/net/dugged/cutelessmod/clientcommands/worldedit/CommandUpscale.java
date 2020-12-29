@@ -41,7 +41,16 @@ public class CommandUpscale extends CommandBase {
 					IBlockState blockState = world.getBlockState(new BlockPos(WorldEdit.minPos().getX() + x, WorldEdit.minPos().getY() + y, WorldEdit.minPos().getZ() + z));
 					BlockPos minPos = new BlockPos(WorldEdit.minPos().getX() + (x * factor), WorldEdit.minPos().getY() + (y * factor), WorldEdit.minPos().getZ() + (z * factor));
 					BlockPos maxPos = new BlockPos(minPos.getX() + (factor - 1), minPos.getY() + (factor - 1), minPos.getZ() + (factor - 1));
-					handler.fill(minPos, maxPos, blockState);
+					boolean skip = true;
+					for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(minPos, maxPos)) {
+						if (world.getBlockState(pos) != blockState) {
+							skip = false;
+							break;
+						}
+					}
+					if (!skip) {
+						handler.fill(minPos, maxPos, blockState);
+					}
 				}
 			}
 		}
