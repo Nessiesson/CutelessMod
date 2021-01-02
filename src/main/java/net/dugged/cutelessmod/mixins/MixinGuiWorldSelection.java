@@ -33,9 +33,8 @@ public abstract class MixinGuiWorldSelection extends GuiScreen {
 		searchField.drawTextBox();
 	}
 
-	@Override
-	protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-		super.mouseClicked(mouseX, mouseY, mouseButton);
+	@Inject(method = "mouseClicked", at = @At("HEAD"))
+	protected void mouseClicked(int mouseX, int mouseY, int mouseButton, CallbackInfo ci) {
 		searchField.mouseClicked(mouseX, mouseY, mouseButton);
 	}
 
