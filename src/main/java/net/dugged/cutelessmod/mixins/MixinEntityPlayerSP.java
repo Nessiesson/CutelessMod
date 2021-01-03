@@ -12,6 +12,7 @@ import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerMerchant;
 import net.minecraft.stats.StatBase;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.lwjgl.input.Keyboard;
 import org.spongepowered.asm.mixin.Mixin;
@@ -69,5 +70,17 @@ public abstract class MixinEntityPlayerSP extends AbstractClientPlayer {
 				CutelessMod.statPlugin.sendStatIncrease(amount, false);
 			}
 		}
+	}
+
+	@Override
+	public void setVelocity(final double x, final double y, final double z) {
+		if (Configuration.showDamageTilt) {
+			final float result = (float) (-MathHelper.atan2(this.motionZ - z, this.motionX - x) * (180D / Math.PI) - this.rotationYaw);
+			if (Float.isFinite(result)) {
+				this.attackedAtYaw = result;
+			}
+		}
+
+		super.setVelocity(x, y, z);
 	}
 }
