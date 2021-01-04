@@ -5,6 +5,7 @@ key.cutelessmod.repeat_last_command=Repeat last /command
 key.cutelessmod.spy=Enable container spy functionality (WIP)
 key.cutelessmod.toggle_scoreboard=Hide sidebar scoreboard
 key.cutelessmod.toggle_beacon_area=Toggle to show beacon area of effect
+key.cutelessmod.chunk_debug=Chunk Debug Tool
 text.cutelessmod.relog=Relog
 text.cutelessmod.options.gamma.fullbright=Fullbright
 text.cutelessmod.reload_audio=Reloaded audio engine

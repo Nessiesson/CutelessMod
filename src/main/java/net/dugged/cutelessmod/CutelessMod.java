@@ -1,5 +1,8 @@
 package net.dugged.cutelessmod;
 
+import net.dugged.cutelessmod.chunk_display.CarpetPluginChannel;
+import net.dugged.cutelessmod.chunk_display.gui.Controller;
+import net.dugged.cutelessmod.chunk_display.gui.GuiChunkGrid;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.mixins.IItemSword;
 import net.dugged.cutelessmod.clientcommands.worldedit.WorldEdit;
@@ -54,6 +57,7 @@ public class CutelessMod {
 	private static final KeyBinding repeatLastCommandKey = new KeyBinding("key.cutelessmod.repeat_last_command", KeyConflictContext.IN_GAME, Keyboard.KEY_T, Reference.NAME);
 	private static final KeyBinding spyKey = new KeyBinding("key.cutelessmod.spy", KeyConflictContext.IN_GAME, Keyboard.KEY_Y, Reference.NAME);
 	private static final KeyBinding toggleBeaconAreaKey = new KeyBinding("key.cutelessmod.toggle_beacon_area", KeyConflictContext.IN_GAME, Keyboard.KEY_J, Reference.NAME);
+	private static final KeyBinding chunkDebug = new KeyBinding("key.cutelessmod.chunk_debug", KeyConflictContext.IN_GAME, Keyboard.KEY_F6, Reference.NAME);
 	private static final Minecraft mc = Minecraft.getMinecraft();
 	private static final StepAssistHelper stepAssistHelper = new StepAssistHelper();
 	private static final List<KeyBinding> keybinds = new ArrayList<>();
@@ -77,6 +81,8 @@ public class CutelessMod {
 	public static String lastCommand = "";
 	private String originalTitle;
 	private long axeCooldown = 0;
+	private boolean loggedOut;
+	private CarpetPluginChannel carpetPluginChannel = new CarpetPluginChannel();
 
 	@Mod.EventHandler
 	public void preInit(final FMLPreInitializationEvent event) {
@@ -102,8 +108,11 @@ public class CutelessMod {
 		ClientRegistry.registerKeyBinding(repeatLastCommandKey);
 		ClientRegistry.registerKeyBinding(spyKey);
 		ClientRegistry.registerKeyBinding(toggleBeaconAreaKey);
+		ClientRegistry.registerKeyBinding(chunkDebug);
+
 		spy = new ContainerSpy();
 		ClientCommandHandler.instance.init();
+		GuiChunkGrid.instance = new GuiChunkGrid();
 	}
 
 	@SubscribeEvent
@@ -166,6 +175,10 @@ public class CutelessMod {
 
 		if (repeatLastCommandKey.isPressed() && !lastCommand.isEmpty()) {
 			mc.player.sendChatMessage(CutelessMod.lastCommand);
+		}
+
+		if (chunkDebug.isPressed()) {
+			mc.displayGuiScreen(GuiChunkGrid.instance);
 		}
 	}
 
@@ -231,6 +244,13 @@ public class CutelessMod {
 			receivedPackets[0] = receivedPacketsThisTick;
 			sendPacketsThisTick = 0;
 			receivedPacketsThisTick = 0;
+			if (mc.isIntegratedServerRunning() || mc.getCurrentServerData() != null) {
+				Controller.tick();
+				loggedOut = true;
+			} else if (loggedOut) {
+				loggedOut = false;
+				GuiChunkGrid.instance = new GuiChunkGrid();
+			}
 		}
 
 		final EntityPlayerSP player = mc.player;

@@ -1,0 +1,12 @@
+{
+	"required": true,
+	"package": "net.dugged.cutelessmod.chunk_display.mixins",
+	"refmap": "mixins.cutelessmod.refmap.json",
+	"minVersion": "0.7.3",
+	"compatibilityLevel": "JAVA_8",
+	"mixins": [
+		"MixinEntityRenderer",
+		"MixinFMLIndexedMessageToMessageCodec",
+		"MixinMinecraft"
+	]
+}

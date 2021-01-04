@@ -14,6 +14,7 @@ public class CutelessModLoadingPlugin implements IFMLLoadingPlugin {
 		MixinBootstrap.init();
 		Mixins.addConfiguration("mixins.cutelessmod.json");
 		Mixins.addConfiguration("mixins.cutelessmod.clientcommands.json");
+		Mixins.addConfiguration("mixins.cutelessmod.chunk_display.json");
 		Mixins.addConfiguration("mixins.forge.cutelessmod.json");
 		Mixins.addConfiguration("mixins.liteloader.cutelessmod.json");
 	}
