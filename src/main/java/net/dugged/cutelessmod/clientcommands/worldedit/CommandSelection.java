@@ -1,6 +1,6 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
-import net.minecraft.command.CommandBase;
+import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
@@ -11,7 +11,12 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
-public class CommandSelection extends CommandBase {
+public class CommandSelection extends ClientCommand {
+
+	public CommandSelection() {
+		creativeOnly = false;
+	}
+
 	@Override
 	public String getName() {
 		return "selection";

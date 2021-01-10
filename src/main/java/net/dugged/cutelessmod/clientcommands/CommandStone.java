@@ -1,11 +1,10 @@
 package net.dugged.cutelessmod.clientcommands;
 
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 
-public class CommandStone extends CommandBase {
+public class CommandStone extends ClientCommand {
 	@Override
 	public String getName() {
 		return "stone";

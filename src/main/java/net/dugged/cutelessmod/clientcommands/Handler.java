@@ -14,7 +14,7 @@ public class Handler {
 	public static boolean logAdminCommands = true;
 	public static boolean doTileDrops = true;
 	public boolean finished = false;
-	public boolean sendAffectedBlocks = false;
+	public boolean sendAffectedBlocks = true;
 	public boolean isWorldEditHandler = false;
 	public boolean autoCancel = true;
 	protected long affectedBlocks = 0;

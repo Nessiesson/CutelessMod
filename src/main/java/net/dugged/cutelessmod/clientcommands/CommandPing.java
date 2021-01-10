@@ -2,12 +2,15 @@ package net.dugged.cutelessmod.clientcommands;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentTranslation;
 
-public class CommandPing extends CommandBase {
+public class CommandPing extends ClientCommand {
+
+	public CommandPing() {
+		creativeOnly = false;
+	}
 
 	@Override
 	public String getName() {

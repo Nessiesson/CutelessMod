@@ -1,9 +1,9 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
+import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerFill;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
@@ -14,7 +14,7 @@ import net.minecraft.world.World;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CommandUpscale extends CommandBase {
+public class CommandUpscale extends ClientCommand {
 	@Override
 	public String getName() {
 		return "upscale";

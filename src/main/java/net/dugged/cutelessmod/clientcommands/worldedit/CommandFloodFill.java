@@ -1,11 +1,11 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
+import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
@@ -17,7 +17,7 @@ import net.minecraft.world.World;
 import javax.annotation.Nullable;
 import java.util.*;
 
-public class CommandFloodFill extends CommandBase {
+public class CommandFloodFill extends ClientCommand {
 	@Override
 	public String getName() {
 		return "floodfill";
@@ -152,7 +152,7 @@ public class CommandFloodFill extends CommandBase {
 			World world = sender.getEntityWorld();
 			BlockPos pos = WorldEdit.playerPos();
 			if (world.getBlockState(pos).getBlock() instanceof BlockAir) {
-				Block block = CommandBase.getBlockByText(sender, args[0]);
+				Block block = getBlockByText(sender, args[0]);
 				IBlockState blockState;
 				if (args.length >= 2) {
 					blockState = convertArgToBlockState(block, args[1]);

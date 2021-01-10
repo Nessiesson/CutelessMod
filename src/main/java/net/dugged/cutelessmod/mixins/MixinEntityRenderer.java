@@ -3,6 +3,7 @@ package net.dugged.cutelessmod.mixins;
 import net.dugged.cutelessmod.AreaSelectionRenderer;
 import net.dugged.cutelessmod.Configuration;
 import net.dugged.cutelessmod.CutelessMod;
+import net.dugged.cutelessmod.chunk_display.gui.GuiChunkGrid;
 import net.dugged.cutelessmod.clientcommands.worldedit.WorldEdit;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;

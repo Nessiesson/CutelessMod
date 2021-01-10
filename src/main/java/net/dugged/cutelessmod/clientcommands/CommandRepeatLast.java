@@ -3,13 +3,12 @@ package net.dugged.cutelessmod.clientcommands;
 import com.google.common.collect.ImmutableList;
 import net.dugged.cutelessmod.CutelessMod;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 
 import java.util.List;
 
-public class CommandRepeatLast extends CommandBase {
+public class CommandRepeatLast extends ClientCommand {
 	@Override
 	public String getName() {
 		return "repeatlast";
@@ -17,7 +16,7 @@ public class CommandRepeatLast extends CommandBase {
 
 	@Override
 	public List<String> getAliases() {
-		return ImmutableList.of(";", "repeat", "repeatcommand", "repeatlast", "repeatlastcommand");
+		return ImmutableList.of(";");
 	}
 
 	@Override

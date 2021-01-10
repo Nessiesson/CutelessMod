@@ -1,10 +1,10 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
+import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerFill;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
-public class CommandSet extends CommandBase {
+public class CommandSet extends ClientCommand {
 	@Override
 	public String getName() {
 		return "set";
@@ -32,7 +32,7 @@ public class CommandSet extends CommandBase {
 			if (args.length > 0 && args.length <= 2) {
 				HandlerFill handler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, sender.getEntityWorld());
 				handler.isWorldEditHandler = true;
-				Block block = CommandBase.getBlockByText(sender, args[0]);
+				Block block = getBlockByText(sender, args[0]);
 				IBlockState blockstate = block.getDefaultState();
 				if (args.length == 2) {
 					blockstate = convertArgToBlockState(block, args[1]);

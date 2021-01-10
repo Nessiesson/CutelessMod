@@ -3,7 +3,6 @@ package net.dugged.cutelessmod.clientcommands;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.NumberInvalidException;
@@ -17,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CommandUndo extends CommandBase {
+public class CommandUndo extends ClientCommand {
 
 	private static final Minecraft mc = Minecraft.getMinecraft();
 	public static List<Map<BlockPos, IBlockState>> undoHistory = new ArrayList<>();

@@ -1,12 +1,12 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
-import net.minecraft.command.CommandBase;
+import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentTranslation;
 
-public class CommandPos extends CommandBase {
+public class CommandPos extends ClientCommand {
 	@Override
 	public String getName() {
 		return "pos";

@@ -32,7 +32,8 @@ public class GuiChunkGrid extends GuiScreen {
 	private static final float MINIMAP_WIDTH = 0.25f;
 	private static final float MINIMAP_HEIGHT = 0.45f;
 	public static GuiChunkGrid instance;
-	public static ChunkGridStyle style = ChunkGridStyle.values()[new Random().nextInt(ChunkGridStyle.values().length)];
+	public static ChunkGridStyle style = ChunkGridStyle.CHECKERBOARD;
+//	public static ChunkGridStyle style = ChunkGridStyle.values()[new Random().nextInt(ChunkGridStyle.values().length)];
 	private final Controller controller;
 	private final ChunkGrid chunkgrid = new ChunkGrid();
 	private GuiButton startStopButton;
@@ -264,7 +265,7 @@ public class GuiChunkGrid extends GuiScreen {
 		tess.draw();
 
 		// Text
-		drawCenteredString(fontRenderer, "Chunk Debug Map", width / 2, 0, 0xffffff);
+		drawCenteredString(fontRenderer, "Chunk Debug Map", width / 2, 2, 0xffffff);
 
 		if (chunkSelection) {
 			drawCenteredString(fontRenderer, chunkSelectionString, width / 2, HEADER_HEIGHT + 10, 0xffffff); // possible indicator for chunk selected

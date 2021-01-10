@@ -1,10 +1,10 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
+import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerFill;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
-public class CommandSphere extends CommandBase {
+public class CommandSphere extends ClientCommand {
 
 	@Override
 	public String getName() {
@@ -51,7 +51,7 @@ public class CommandSphere extends CommandBase {
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (args.length == 3) {
 			if (WorldEdit.hasSelection() && WorldEdit.isOneByOne()) {
-				Block block = CommandBase.getBlockByText(sender, args[0]);
+				Block block = getBlockByText(sender, args[0]);
 				IBlockState blockstate = convertArgToBlockState(block, args[1]);
 				World world = sender.getEntityWorld();
 				double radius = parseInt(args[2]) + 0.5;

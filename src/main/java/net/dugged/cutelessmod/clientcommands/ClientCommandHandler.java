@@ -27,7 +27,6 @@ public class ClientCommandHandler extends CommandHandler {
 
 	public void init() {
 		instance.registerCommand(new CommandPing());
-		instance.registerCommand(new CommandRandomize());
 		instance.registerCommand(new CommandUndo());
 		instance.registerCommand(new CommandRepeatLast());
 		instance.registerCommand(new CommandStone());
@@ -54,37 +53,40 @@ public class ClientCommandHandler extends CommandHandler {
 		instance.registerCommand(new CommandUpscale());
 		instance.registerCommand(new CommandCount());
 		instance.registerCommand(new CommandFixSlabs());
+		instance.registerCommand(new CommandRandomize());
 	}
 
 	@Override
 	public int executeCommand(ICommandSender sender, String message) {
-		if (mc.player.isCreative() || mc.player.isSpectator()) {
-			message = message.trim();
+		message = message.trim();
 
-			if (message.startsWith("/")) {
-				message = message.substring(1);
-			}
+		if (message.startsWith("/")) {
+			message = message.substring(1);
+		}
 
-			final String[] temp = message.split(" ");
-			final String[] args = new String[temp.length - 1];
-			final String commandName = temp[0];
-			System.arraycopy(temp, 1, args, 0, args.length);
-			final ICommand command = getCommands().get(commandName);
-			if (command == null) {
-				return 0;
-			}
-
-			try {
-				this.tryExecute(sender, args, command, message);
-			} catch (Throwable t) {
-				final TextComponentTranslation error = new TextComponentTranslation("commands.generic.exception");
-				error.getStyle().setColor(TextFormatting.RED);
-				sender.sendMessage(error);
-			}
+		final String[] temp = message.split(" ");
+		final String[] args = new String[temp.length - 1];
+		final String commandName = temp[0];
+		System.arraycopy(temp, 1, args, 0, args.length);
+		final ICommand command = getCommands().get(commandName);
+		if (command instanceof ClientCommand && ((ClientCommand) command).creativeOnly && !(mc.player.isCreative() || mc.player.isSpectator())) {
+			final TextComponentTranslation error = new TextComponentTranslation("text.cutelessmod.clientcommands.wrongGamemode");
+			error.getStyle().setColor(TextFormatting.RED);
+			sender.sendMessage(error);
 			return -1;
-		} else {
+		}
+		if (command == null) {
 			return 0;
 		}
+
+		try {
+			this.tryExecute(sender, args, command, message);
+		} catch (Throwable t) {
+			final TextComponentTranslation error = new TextComponentTranslation("commands.generic.exception");
+			error.getStyle().setColor(TextFormatting.RED);
+			sender.sendMessage(error);
+		}
+		return -1;
 	}
 
 	public void autoComplete(String leftOfCursor) {

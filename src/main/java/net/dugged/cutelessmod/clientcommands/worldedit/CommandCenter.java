@@ -1,10 +1,10 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
+import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
-import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.init.Blocks;
@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
-public class CommandCenter extends CommandBase {
+public class CommandCenter extends ClientCommand {
 	@Override
 	public String getName() {
 		return "center";
@@ -35,7 +35,7 @@ public class CommandCenter extends CommandBase {
 				handler.isWorldEditHandler = true;
 				Block block = Blocks.GLOWSTONE;
 				if (args.length > 0) {
-					block = CommandBase.getBlockByText(sender, args[0]);
+					block = getBlockByText(sender, args[0]);
 				}
 				IBlockState blockstate = block.getDefaultState();
 				if (args.length >= 2) {
