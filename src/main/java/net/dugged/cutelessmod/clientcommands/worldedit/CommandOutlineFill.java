@@ -3,6 +3,7 @@ package net.dugged.cutelessmod.clientcommands.worldedit;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerFill;
+import net.dugged.cutelessmod.clientcommands.HandlerUndo;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.state.IBlockState;
@@ -30,8 +31,10 @@ public class CommandOutlineFill extends ClientCommand {
 	}
 
 	private void outLineFill(World world, IBlockState blockState, BlockPos startPos, int height, int radius) {
-		HandlerFill handler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, world);
-		handler.isWorldEditHandler = true;
+		HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, world);
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
+		undoHandler.setHandler(fillHandler);
+		undoHandler.running = false;
 		List<BlockPos> checkedBlocks = new ArrayList<>();
 		List<BlockPos> blocksToCheck = new ArrayList<>();
 		BlockPos pos1;
@@ -67,10 +70,11 @@ public class CommandOutlineFill extends ClientCommand {
 					checkedBlocks.add(pos1);
 				}
 			}
-			handler.fill(pos, new BlockPos(pos.getX(), Math.max(pos.getY() + height, 0), pos.getZ()), blockState);
+			undoHandler.saveBox(pos, new BlockPos(pos.getX(), Math.max(pos.getY() + height, 0), pos.getZ()));
+			fillHandler.fill(pos, new BlockPos(pos.getX(), Math.max(pos.getY() + height, 0), pos.getZ()), blockState);
 			blocksToCheck.remove(0);
 		}
-		handler.autoCancel = true;
+		undoHandler.running = true;
 	}
 
 	@Override
@@ -86,7 +90,7 @@ public class CommandOutlineFill extends ClientCommand {
 				if (args.length == 4) {
 					radius = parseInt(args[3]);
 				} else {
-					radius = 150;
+					radius = 100;
 				}
 				Thread t = new Thread(() -> outLineFill(world, blockState, pos, height, radius));
 				t.start();

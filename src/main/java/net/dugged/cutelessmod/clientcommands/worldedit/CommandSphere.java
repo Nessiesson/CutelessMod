@@ -3,6 +3,7 @@ package net.dugged.cutelessmod.clientcommands.worldedit;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerFill;
+import net.dugged.cutelessmod.clientcommands.HandlerUndo;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
@@ -29,22 +30,29 @@ public class CommandSphere extends ClientCommand {
 	}
 
 	private void generateSphere(World world, IBlockState blockstate, double radius) {
-		HandlerFill handler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, world);
-		handler.isWorldEditHandler = true;
+		HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, world);
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
+		undoHandler.setHandler(fillHandler);
+		undoHandler.running = false;
 		for (double x = 0; x <= radius; x++) {
 			for (double y = 0; y <= Math.min(radius, world.getHeight() - WorldEdit.posA.getY()); y++) {
 				for (double z = 0; z <= radius; z++) {
 					if (WorldEdit.checkSphere(x, y, z, radius)) {
 						if (!WorldEdit.checkSphere(x + 1, y, z, radius) || !WorldEdit.checkSphere(x, y + 1, z, radius) || !WorldEdit.checkSphere(x, y, z + 1, radius)) {
-							handler.fill(new BlockPos(WorldEdit.posA.getX() + x, WorldEdit.posA.getY() + y, WorldEdit.posA.getZ() + z), new BlockPos(WorldEdit.posA.getX() + x, Math.max(0, WorldEdit.posA.getY() - y), WorldEdit.posA.getZ() + z), blockstate);
-							handler.fill(new BlockPos(WorldEdit.posA.getX() + x, WorldEdit.posA.getY() + y, WorldEdit.posA.getZ() - z), new BlockPos(WorldEdit.posA.getX() + x, Math.max(0, WorldEdit.posA.getY() - y), WorldEdit.posA.getZ() - z), blockstate);
-							handler.fill(new BlockPos(WorldEdit.posA.getX() - x, WorldEdit.posA.getY() + y, WorldEdit.posA.getZ() + z), new BlockPos(WorldEdit.posA.getX() - x, Math.max(0, WorldEdit.posA.getY() - y), WorldEdit.posA.getZ() + z), blockstate);
-							handler.fill(new BlockPos(WorldEdit.posA.getX() - x, WorldEdit.posA.getY() + y, WorldEdit.posA.getZ() - z), new BlockPos(WorldEdit.posA.getX() - x, Math.max(0, WorldEdit.posA.getY() - y), WorldEdit.posA.getZ() - z), blockstate);
+							undoHandler.saveBox(new BlockPos(WorldEdit.posA.getX() + x, WorldEdit.posA.getY() + y, WorldEdit.posA.getZ() + z), new BlockPos(WorldEdit.posA.getX() + x, Math.max(0, WorldEdit.posA.getY() - y), WorldEdit.posA.getZ() + z));
+							fillHandler.fill(new BlockPos(WorldEdit.posA.getX() + x, WorldEdit.posA.getY() + y, WorldEdit.posA.getZ() + z), new BlockPos(WorldEdit.posA.getX() + x, Math.max(0, WorldEdit.posA.getY() - y), WorldEdit.posA.getZ() + z), blockstate);
+							undoHandler.saveBox(new BlockPos(WorldEdit.posA.getX() + x, WorldEdit.posA.getY() + y, WorldEdit.posA.getZ() - z), new BlockPos(WorldEdit.posA.getX() + x, Math.max(0, WorldEdit.posA.getY() - y), WorldEdit.posA.getZ() - z));
+							fillHandler.fill(new BlockPos(WorldEdit.posA.getX() + x, WorldEdit.posA.getY() + y, WorldEdit.posA.getZ() - z), new BlockPos(WorldEdit.posA.getX() + x, Math.max(0, WorldEdit.posA.getY() - y), WorldEdit.posA.getZ() - z), blockstate);
+							undoHandler.saveBox(new BlockPos(WorldEdit.posA.getX() - x, WorldEdit.posA.getY() + y, WorldEdit.posA.getZ() + z), new BlockPos(WorldEdit.posA.getX() - x, Math.max(0, WorldEdit.posA.getY() - y), WorldEdit.posA.getZ() + z));
+							fillHandler.fill(new BlockPos(WorldEdit.posA.getX() - x, WorldEdit.posA.getY() + y, WorldEdit.posA.getZ() + z), new BlockPos(WorldEdit.posA.getX() - x, Math.max(0, WorldEdit.posA.getY() - y), WorldEdit.posA.getZ() + z), blockstate);
+							undoHandler.saveBox(new BlockPos(WorldEdit.posA.getX() - x, WorldEdit.posA.getY() + y, WorldEdit.posA.getZ() - z), new BlockPos(WorldEdit.posA.getX() - x, Math.max(0, WorldEdit.posA.getY() - y), WorldEdit.posA.getZ() - z));
+							fillHandler.fill(new BlockPos(WorldEdit.posA.getX() - x, WorldEdit.posA.getY() + y, WorldEdit.posA.getZ() - z), new BlockPos(WorldEdit.posA.getX() - x, Math.max(0, WorldEdit.posA.getY() - y), WorldEdit.posA.getZ() - z), blockstate);
 						}
 					}
 				}
 			}
 		}
+		undoHandler.running = true;
 	}
 
 	@Override

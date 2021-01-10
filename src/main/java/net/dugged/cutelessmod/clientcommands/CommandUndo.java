@@ -8,11 +8,9 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.command.NumberInvalidException;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,14 +24,6 @@ public class CommandUndo extends ClientCommand {
 		return new BlockPos(parseDouble(blockPos.getX(), args[startIndex], -30000000, 30000000, false), parseDouble(blockPos.getY(), args[startIndex + 1], 0, 256, false), parseDouble(blockPos.getZ(), args[startIndex + 2], -30000000, 30000000, false));
 	}
 
-	private static Map<BlockPos, IBlockState> getBlockList(BlockPos pos1, BlockPos pos2) throws CommandException {
-		Map<BlockPos, IBlockState> blockList = new HashMap<>();
-		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(pos1, pos2)) {
-			blockList.put(pos, mc.player.world.getBlockState(pos));
-		}
-		return blockList;
-	}
-
 	public static boolean saveHistory(String msg) {
 		final World world = mc.player.world;
 		if (world != null) {
@@ -41,26 +31,25 @@ public class CommandUndo extends ClientCommand {
 			final String[] args = new String[temp.length - 1];
 			System.arraycopy(temp, 1, args, 0, args.length);
 			try {
-				Map<BlockPos, IBlockState> blockList = new HashMap<>();
 				if (msg.startsWith("/fill") && args.length >= 7) {
-					HandlerSaveBlockBox handler = (HandlerSaveBlockBox) ClientCommandHandler.instance.createHandler(HandlerSaveBlockBox.class, world);
-					handler.init(msg, true, blockList);
-					handler.saveBox(parseBlockPos(args, 0), parseBlockPos(args, 3));
-					mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.undo.startedSaving"));
-					undoHistory.add(0, blockList);
+					HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
+					undoHandler.command = msg;
+					undoHandler.isWorldEditHandler = false;
+					undoHandler.message = true;
+					undoHandler.saveBox(parseBlockPos(args, 0), parseBlockPos(args, 3));
 					return true;
 				} else if (msg.startsWith("/clone") && args.length >= 9) {
 					final BlockPos pos1 = parseBlockPos(args, 0);
 					final BlockPos pos2 = parseBlockPos(args, 3);
 					final BlockPos pos3 = parseBlockPos(args, 6);
 					final BlockPos pos4 = pos3.add(Math.max(pos1.getX(), pos2.getX()) - Math.min(pos1.getX(), pos2.getX()), Math.max(pos1.getY(), pos2.getY()) - Math.min(pos1.getY(), pos2.getY()), Math.max(pos1.getZ(), pos2.getZ()) - Math.min(pos1.getZ(), pos2.getZ()));
-					HandlerSaveBlockBox handler = (HandlerSaveBlockBox) ClientCommandHandler.instance.createHandler(HandlerSaveBlockBox.class, world);
-					handler.init(msg, true, blockList);
-					handler.saveBox(parseBlockPos(args, 0), parseBlockPos(args, 3));
-					handler.saveBox(pos1, pos2);
-					handler.saveBox(pos3, pos4);
-					mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.undo.startedSaving"));
-					undoHistory.add(0, blockList);
+					HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
+					undoHandler.command = msg;
+					undoHandler.isWorldEditHandler = false;
+					undoHandler.message = true;
+					undoHandler.saveBox(parseBlockPos(args, 0), parseBlockPos(args, 3));
+					undoHandler.saveBox(pos1, pos2);
+					undoHandler.saveBox(pos3, pos4);
 					return true;
 				} else {
 					return false;
@@ -96,7 +85,6 @@ public class CommandUndo extends ClientCommand {
 						World world = sender.getEntityWorld();
 						HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
 						setBlockHandler.setBlocks(undoHistory.get(historyIndex));
-						setBlockHandler.sendAffectedBlocks = true;
 					} else {
 						throw new CommandException("text.cutelessmod.clientcommands.undo.invalidIndex");
 					}

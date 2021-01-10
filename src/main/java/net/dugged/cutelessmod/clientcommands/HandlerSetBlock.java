@@ -5,7 +5,6 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.client.CPacketTabComplete;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -59,14 +58,16 @@ public class HandlerSetBlock extends Handler {
 				block instanceof BlockTripWireHook);
 	}
 
-	synchronized public void setBlock(final BlockPos pos, final IBlockState blockState) {
+	public void setBlock(final BlockPos pos, final IBlockState blockState) {
 		if (!blockPositions.contains(pos)) {
+			totalCount++;
 			blockPositions.add(pos);
 			blocksToPlace.put(pos, blockState);
 		}
 	}
 
-	synchronized public void setBlocks(Map<BlockPos, IBlockState> blockList) {
+	public void setBlocks(Map<BlockPos, IBlockState> blockList) {
+		totalCount += blockList.size();
 		blockPositions.addAll(blockList.keySet());
 		blocksToPlace.putAll(blockList);
 	}
@@ -81,6 +82,7 @@ public class HandlerSetBlock extends Handler {
 				final BlockPos pos = blockPositions.get(0);
 				IBlockState blockState = blocksToPlace.get(pos);
 				counter++;
+				currentCount++;
 				if (blockState != null) {
 					if (placeLast(blockState.getBlock()) && !skippedPositions.contains(pos)) {
 						blockPositions.add(blockPositions.size(), pos);
@@ -94,23 +96,8 @@ public class HandlerSetBlock extends Handler {
 				}
 				blockPositions.remove(0);
 			}
-		} else if (age > 5 && autoCancel) {
-			if (gamerulePermission) {
-				if (doTileDrops) {
-					mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule doTileDrops true"));
-				}
-				if (logAdminCommands) {
-					mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule logAdminCommands true"));
-				}
-				if (sendCommandfeedback) {
-					mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule sendCommandFeedback true"));
-				}
-				if (sendAffectedBlocks) {
-					mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("commands.fill.success", affectedBlocks));
-				}
-			}
-			getGameruleStates();
-			finished = true;
+		} else if (age > 5) {
+			finish();
 		}
 	}
 

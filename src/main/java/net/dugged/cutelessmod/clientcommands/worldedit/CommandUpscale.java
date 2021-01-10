@@ -3,6 +3,7 @@ package net.dugged.cutelessmod.clientcommands.worldedit;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerFill;
+import net.dugged.cutelessmod.clientcommands.HandlerUndo;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -33,8 +34,10 @@ public class CommandUpscale extends ClientCommand {
 		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(WorldEdit.minPos(), WorldEdit.maxPos())) {
 			blockList.put(pos, world.getBlockState(pos));
 		}
-		HandlerFill handler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, world);
-		handler.isWorldEditHandler = true;
+		HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, world);
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
+		undoHandler.setHandler(fillHandler);
+		undoHandler.running = false;
 		for (int x = 0; x < WorldEdit.widthX(); x++) {
 			for (int y = 0; y < WorldEdit.widthY(); y++) {
 				for (int z = 0; z < WorldEdit.widthZ(); z++) {
@@ -49,11 +52,13 @@ public class CommandUpscale extends ClientCommand {
 						}
 					}
 					if (!skip) {
-						handler.fill(minPos, maxPos, blockState);
+						undoHandler.saveBox(minPos, maxPos);
+						fillHandler.fill(minPos, maxPos, blockState);
 					}
 				}
 			}
 		}
+		undoHandler.running = true;
 	}
 
 	@Override

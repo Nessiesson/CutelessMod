@@ -3,6 +3,7 @@ package net.dugged.cutelessmod.clientcommands.worldedit;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerFill;
+import net.dugged.cutelessmod.clientcommands.HandlerUndo;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
@@ -32,8 +33,9 @@ public class CommandCyl extends ClientCommand {
 		if (args.length >= 3 && args.length <= 4) {
 			if (WorldEdit.hasSelection() && WorldEdit.isOneByOne()) {
 				World world = sender.getEntityWorld();
-				HandlerFill handler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, world);
-				handler.isWorldEditHandler = true;
+				HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, world);
+				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld());
+				undoHandler.setHandler(fillHandler);
 				Block block = getBlockByText(sender, args[0]);
 				IBlockState blockstate = convertArgToBlockState(block, args[1]);
 				double radius = parseInt(args[2]) + 0.5;
@@ -51,8 +53,10 @@ public class CommandCyl extends ClientCommand {
 					for (double z = 0; z <= radius; z++) {
 						if (WorldEdit.checkCircle(x, z, radius)) {
 							if (!WorldEdit.checkCircle(x + 1, z, radius) || !WorldEdit.checkCircle(x, z + 1, radius)) {
-								handler.fill(new BlockPos(WorldEdit.posA.getX() + x, WorldEdit.posA.getY(), WorldEdit.posA.getZ() - z), new BlockPos(WorldEdit.posA.getX() + x, WorldEdit.posA.getY() + height - 1, WorldEdit.posA.getZ() + z), blockstate);
-								handler.fill(new BlockPos(WorldEdit.posA.getX() - x, WorldEdit.posA.getY(), WorldEdit.posA.getZ() - z), new BlockPos(WorldEdit.posA.getX() - x, WorldEdit.posA.getY() + height - 1, WorldEdit.posA.getZ() + z), blockstate);
+								undoHandler.saveBox(new BlockPos(WorldEdit.posA.getX() + x, WorldEdit.posA.getY(), WorldEdit.posA.getZ() - z), new BlockPos(WorldEdit.posA.getX() + x, WorldEdit.posA.getY() + height - 1, WorldEdit.posA.getZ() + z));
+								undoHandler.saveBox(new BlockPos(WorldEdit.posA.getX() - x, WorldEdit.posA.getY(), WorldEdit.posA.getZ() - z), new BlockPos(WorldEdit.posA.getX() - x, WorldEdit.posA.getY() + height - 1, WorldEdit.posA.getZ() + z));
+								fillHandler.fill(new BlockPos(WorldEdit.posA.getX() + x, WorldEdit.posA.getY(), WorldEdit.posA.getZ() - z), new BlockPos(WorldEdit.posA.getX() + x, WorldEdit.posA.getY() + height - 1, WorldEdit.posA.getZ() + z), blockstate);
+								fillHandler.fill(new BlockPos(WorldEdit.posA.getX() - x, WorldEdit.posA.getY(), WorldEdit.posA.getZ() - z), new BlockPos(WorldEdit.posA.getX() - x, WorldEdit.posA.getY() + height - 1, WorldEdit.posA.getZ() + z), blockstate);
 							}
 						}
 					}

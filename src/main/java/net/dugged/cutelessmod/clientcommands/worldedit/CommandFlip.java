@@ -3,6 +3,7 @@ package net.dugged.cutelessmod.clientcommands.worldedit;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
+import net.dugged.cutelessmod.clientcommands.HandlerUndo;
 import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
@@ -14,10 +15,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CommandFlip extends ClientCommand {
 
@@ -148,9 +146,13 @@ public class CommandFlip extends ClientCommand {
 				}
 			}
 		}
-		HandlerSetBlock handler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
-		handler.isWorldEditHandler = true;
-		handler.setBlocks(blockList);
+		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
+		undoHandler.setHandler(setBlockHandler);
+		undoHandler.running = false;
+		undoHandler.saveBlocks(new ArrayList<>(blockList.keySet()));
+		setBlockHandler.setBlocks(blockList);
+		undoHandler.running = true;
 	}
 
 	@Override

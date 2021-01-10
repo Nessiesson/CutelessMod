@@ -3,6 +3,7 @@ package net.dugged.cutelessmod.clientcommands.worldedit;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
+import net.dugged.cutelessmod.clientcommands.HandlerUndo;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
@@ -13,6 +14,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,8 +33,10 @@ public class CommandCenter extends ClientCommand {
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (WorldEdit.hasSelection()) {
 			if (args.length >= 0 && args.length <= 2) {
-				HandlerSetBlock handler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, sender.getEntityWorld());
-				handler.isWorldEditHandler = true;
+				HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, sender.getEntityWorld());
+				List<BlockPos> undoBlockPositions = new ArrayList<>();
+				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld());
+				undoHandler.setHandler(setBlockHandler);
 				Block block = Blocks.GLOWSTONE;
 				if (args.length > 0) {
 					block = getBlockByText(sender, args[0]);
@@ -42,32 +46,40 @@ public class CommandCenter extends ClientCommand {
 					blockstate = convertArgToBlockState(block, args[1]);
 				}
 				BlockPos center = new BlockPos(WorldEdit.minPos().getX() + WorldEdit.widthX() / 2, WorldEdit.minPos().getY() + WorldEdit.widthY() / 2, WorldEdit.minPos().getZ() + WorldEdit.widthZ() / 2);
-				handler.setBlock(center, blockstate);
+				setBlockHandler.setBlock(center, blockstate);
+				undoBlockPositions.add(center);
 				boolean x = WorldEdit.widthX() % 2 == 0;
 				boolean y = WorldEdit.widthY() % 2 == 0;
 				boolean z = WorldEdit.widthZ() % 2 == 0;
 				if (x) {
-					handler.setBlock(center.west(), blockstate);
+					setBlockHandler.setBlock(center.west(), blockstate);
+					undoBlockPositions.add(center.west());
 				}
 				if (y) {
-					handler.setBlock(center.down(), blockstate);
+					setBlockHandler.setBlock(center.down(), blockstate);
+					undoBlockPositions.add(center.down());
 				}
 				if (z) {
-					handler.setBlock(center.north(), blockstate);
+					setBlockHandler.setBlock(center.north(), blockstate);
+					undoBlockPositions.add(center.north());
 				}
 				if (x && y) {
-					handler.setBlock(center.west().down(), blockstate);
+					setBlockHandler.setBlock(center.west().down(), blockstate);
+					undoBlockPositions.add(center.west().down());
 				}
 				if (y && z) {
-					handler.setBlock(center.down().north(), blockstate);
+					setBlockHandler.setBlock(center.down().north(), blockstate);
+					undoBlockPositions.add(center.down().north());
 				}
 				if (x && z) {
-					handler.setBlock(center.west().north(), blockstate);
+					setBlockHandler.setBlock(center.west().north(), blockstate);
+					undoBlockPositions.add(center.west().north());
 				}
 				if (x && y && z) {
-					handler.setBlock(center.west().down().north(), blockstate);
+					setBlockHandler.setBlock(center.west().down().north(), blockstate);
+					undoBlockPositions.add(center.west().down().north());
 				}
-
+				undoHandler.saveBlocks(undoBlockPositions);
 			} else {
 				WorldEdit.sendMessage(getUsage(sender));
 			}

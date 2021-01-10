@@ -3,6 +3,7 @@ package net.dugged.cutelessmod.clientcommands.worldedit;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
+import net.dugged.cutelessmod.clientcommands.HandlerUndo;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
@@ -13,6 +14,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -29,9 +31,11 @@ public class CommandPolygon extends ClientCommand {
 	}
 
 	private void generatePolygon(World world, IBlockState blockstate, int radius, int points, boolean halfStep) {
-		HandlerSetBlock handler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
-		handler.isWorldEditHandler = true;
-		handler.autoCancel = false;
+		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
+		List<BlockPos> undoBlockPositions = new ArrayList<>();
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
+		undoHandler.setHandler(setBlockHandler);
+		undoHandler.running = false;
 		double rotation = Math.PI / points;
 		if (halfStep) {
 			rotation = Math.PI / (points * 2);
@@ -57,7 +61,8 @@ public class CommandPolygon extends ClientCommand {
 			if (dx > dz) {
 				err = dx / 2;
 				while (x1 != x2) {
-					handler.setBlock(new BlockPos(x1, WorldEdit.posA.getY(), z1), blockstate);
+					undoBlockPositions.add(new BlockPos(x1, WorldEdit.posA.getY(), z1));
+					setBlockHandler.setBlock(new BlockPos(x1, WorldEdit.posA.getY(), z1), blockstate);
 					err -= dz;
 					if (err < 0) {
 						z1 += sz;
@@ -68,7 +73,8 @@ public class CommandPolygon extends ClientCommand {
 			} else {
 				err = dz / 2;
 				while (z1 != z2) {
-					handler.setBlock(new BlockPos(x1, WorldEdit.posA.getY(), z1), blockstate);
+					undoBlockPositions.add(new BlockPos(x1, WorldEdit.posA.getY(), z1));
+					setBlockHandler.setBlock(new BlockPos(x1, WorldEdit.posA.getY(), z1), blockstate);
 					err -= dx;
 					if (err < 0) {
 						x1 += sx;
@@ -78,7 +84,8 @@ public class CommandPolygon extends ClientCommand {
 				}
 			}
 		}
-		handler.autoCancel = true;
+		undoHandler.saveBlocks(undoBlockPositions);
+		undoHandler.running = true;
 	}
 
 	@Override

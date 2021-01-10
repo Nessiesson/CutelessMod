@@ -3,6 +3,7 @@ package net.dugged.cutelessmod.clientcommands.worldedit;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
+import net.dugged.cutelessmod.clientcommands.HandlerUndo;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
@@ -14,6 +15,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -30,9 +32,11 @@ public class CommandLine extends ClientCommand {
 	}
 
 	private void placeLine(World world, IBlockState blockstate) {
-		HandlerSetBlock handler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
-		handler.isWorldEditHandler = true;
-		handler.autoCancel = false;
+		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
+		List<BlockPos> undoBlockPositions = new ArrayList<>();
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
+		undoHandler.setHandler(setBlockHandler);
+		undoHandler.running = false;
 		int x1 = WorldEdit.posA.getX();
 		int y1 = WorldEdit.posA.getY();
 		int z1 = WorldEdit.posA.getZ();
@@ -43,7 +47,8 @@ public class CommandLine extends ClientCommand {
 		int dy = Math.abs(y2 - y1);
 		int dz = Math.abs(z2 - z1);
 		int xs, ys, zs, p1, p2;
-		handler.setBlock(new BlockPos(x1, y1, z1), blockstate);
+		undoBlockPositions.add(new BlockPos(x1, y1, z1));
+		setBlockHandler.setBlock(new BlockPos(x1, y1, z1), blockstate);
 		if (x2 > x1) {
 			xs = 1;
 		} else {
@@ -74,7 +79,8 @@ public class CommandLine extends ClientCommand {
 				}
 				p1 += 2 * dy;
 				p2 += 2 * dz;
-				handler.setBlock(new BlockPos(x1, y1, z1), blockstate);
+				undoBlockPositions.add(new BlockPos(x1, y1, z1));
+				setBlockHandler.setBlock(new BlockPos(x1, y1, z1), blockstate);
 			}
 		} else if (dy >= dx && dy >= dz) {
 			p1 = 2 * dx - dy;
@@ -91,7 +97,8 @@ public class CommandLine extends ClientCommand {
 				}
 				p1 += 2 * dx;
 				p2 += 2 * dz;
-				handler.setBlock(new BlockPos(x1, y1, z1), blockstate);
+				undoBlockPositions.add(new BlockPos(x1, y1, z1));
+				setBlockHandler.setBlock(new BlockPos(x1, y1, z1), blockstate);
 			}
 		} else {
 			p1 = 2 * dy - dz;
@@ -108,10 +115,12 @@ public class CommandLine extends ClientCommand {
 				}
 				p1 += 2 * dy;
 				p2 += 2 * dx;
-				handler.setBlock(new BlockPos(x1, y1, z1), blockstate);
+				undoBlockPositions.add(new BlockPos(x1, y1, z1));
+				setBlockHandler.setBlock(new BlockPos(x1, y1, z1), blockstate);
 			}
 		}
-		handler.autoCancel = true;
+		undoHandler.saveBlocks(undoBlockPositions);
+		undoHandler.running = true;
 	}
 
 	@Override

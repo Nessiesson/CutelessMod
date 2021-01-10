@@ -15,9 +15,11 @@ public class Handler {
 	public static boolean doTileDrops = true;
 	public boolean finished = false;
 	public boolean sendAffectedBlocks = true;
-	public boolean isWorldEditHandler = false;
-	public boolean autoCancel = true;
+	public boolean isWorldEditHandler = true;
+	public boolean running = true;
 	protected long affectedBlocks = 0;
+	protected int totalCount;
+	protected int currentCount;
 	protected World world;
 	protected long age = 0;
 	protected long last_execution = 0;
@@ -50,6 +52,29 @@ public class Handler {
 		}
 	}
 
+	public float getProgress() {
+		return (float) currentCount / totalCount;
+	}
+
+	public void finish() {
+		if (gamerulePermission && !ClientCommandHandler.instance.otherHandlersRunning(this)) {
+			if (doTileDrops) {
+				mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule doTileDrops true"));
+			}
+			if (logAdminCommands) {
+				mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule logAdminCommands true"));
+			}
+			if (sendCommandfeedback) {
+				mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule sendCommandFeedback true"));
+			}
+		}
+		if (sendAffectedBlocks) {
+			mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("commands.fill.success", affectedBlocks));
+		}
+		getGameruleStates();
+		finished = true;
+	}
+
 	synchronized public void tick() {
 		if (age - last_execution > 300) {
 			if (!warned) {
@@ -76,5 +101,4 @@ public class Handler {
 		}
 		age++;
 	}
-
 }

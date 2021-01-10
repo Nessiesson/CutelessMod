@@ -5,7 +5,6 @@ import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.client.CPacketTabComplete;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -38,6 +37,7 @@ public class HandlerClone extends Handler {
 
 	synchronized public void clone(BlockPos pos1, BlockPos pos2, BlockPos pos3) {
 		AxisAlignedBB bb = new AxisAlignedBB(pos1.getX(), Math.max(0, pos1.getY()), pos1.getZ(), pos2.getX(), Math.min(pos2.getY(), 255), pos2.getZ());
+		totalCount += (bb.maxX - bb.minX + 1) * (bb.maxY - bb.minY + 1) * (bb.maxZ - bb.minZ + 1);
 		destinations.add(pos3);
 		sourceAreaMap.put(pos3, bb);
 		iteratorPositions.put(pos3, new BlockPos(bb.minX, bb.minY, bb.minZ));
@@ -70,6 +70,7 @@ public class HandlerClone extends Handler {
 								iteratorPositions.put(destinationPosition, pos1);
 								return;
 							}
+							currentCount += (Math.max(pos1.getX(), pos2.getX()) - Math.min(pos1.getX(), pos2.getX()) + 1) * (Math.max(pos1.getY(), pos2.getY()) - Math.min(pos1.getY(), pos2.getY()) + 1) * (Math.max(pos1.getZ(), pos2.getZ()) - Math.min(pos1.getZ(), pos2.getZ()) + 1);
 							if (sendCloneCommand(pos1, pos2, destinationPosition.add(pos1.getX() - bb.minX, pos1.getY() - bb.minY, pos1.getZ() - bb.minZ))) {
 								commandsExecuted++;
 							}
@@ -87,22 +88,7 @@ public class HandlerClone extends Handler {
 				}
 			}
 		} else if (age > 5) {
-			if (gamerulePermission) {
-				if (doTileDrops) {
-					mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule doTileDrops true"));
-				}
-				if (logAdminCommands) {
-					mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule logAdminCommands true"));
-				}
-				if (sendCommandfeedback) {
-					mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule sendCommandFeedback true"));
-				}
-				if (sendAffectedBlocks) {
-					mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("commands.fill.success", affectedBlocks));
-				}
-			}
-			getGameruleStates();
-			finished = true;
+			finish();
 		}
 	}
 

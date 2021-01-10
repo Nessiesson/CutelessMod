@@ -26,20 +26,20 @@ import static net.dugged.cutelessmod.chunk_display.CarpetPluginChannel.CARPET_CH
 
 @Mixin(FMLIndexedMessageToMessageCodec.class)
 public abstract class MixinFMLIndexedMessageToMessageCodec<A> extends MessageToMessageCodec<FMLProxyPacket, A> {
-	@Shadow
+	@Shadow(remap = false)
 	@Final
 	public static AttributeKey<ThreadLocal<WeakReference<FMLProxyPacket>>> INBOUNDPACKETTRACKER;
-	@Shadow
+	@Shadow(remap = false)
 	@Final
 	private Object2ByteMap<Class<? extends A>> types;
 
-	@Shadow
+	@Shadow(remap = false)
 	protected abstract void testMessageValidity(FMLProxyPacket msg);
 
-	@Shadow
+	@Shadow(remap = false)
 	public abstract void decodeInto(ChannelHandlerContext ctx, ByteBuf source, A msg);
 
-	@Shadow
+	@Shadow(remap = false)
 	public abstract void encodeInto(ChannelHandlerContext ctx, A msg, ByteBuf target) throws Exception;
 
 	// Sadly Forge SimpleNetworkWrapper contains a discriminator byte which carpet doesnt support

@@ -7,6 +7,7 @@
 	"mixins": [
         "IItemSword",
 		"IKeybinding",
+		"MixinGuiBossOverlay",
 		"MixinGuiScreen",
 		"MixinMinecraft",
 		"MixinNetHandlerPlayClient",

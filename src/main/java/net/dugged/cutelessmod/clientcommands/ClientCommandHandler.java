@@ -11,8 +11,8 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.IntStream;
 
 import static net.minecraft.util.text.TextFormatting.GRAY;
@@ -21,7 +21,7 @@ import static net.minecraft.util.text.TextFormatting.RESET;
 public class ClientCommandHandler extends CommandHandler {
 	public static final ClientCommandHandler instance = new ClientCommandHandler();
 	private final Minecraft mc = Minecraft.getMinecraft();
-	public List<Handler> handlers = new ArrayList<>();
+	public CopyOnWriteArrayList<Handler> handlers = new CopyOnWriteArrayList<>();
 	public String[] latestAutoComplete = null;
 	private long tick = 0;
 
@@ -127,6 +127,22 @@ public class ClientCommandHandler extends CommandHandler {
 		return (int) handlers.stream().filter(type::isInstance).count();
 	}
 
+	public float getProgress() {
+		float progress = 0;
+		if (handlers.size() > 0) {
+			for (Handler handler : handlers) {
+				if (handler.isWorldEditHandler && handler.running) {
+					progress += handler.getProgress();
+				}
+			}
+			return progress / handlers.stream().filter(hand -> hand.isWorldEditHandler && hand.running).count();
+		} else return 0;
+	}
+
+	public boolean otherHandlersRunning(Handler excluding) {
+		return handlers.stream().filter(hand -> hand != excluding && hand.running).count() > 0;
+	}
+
 	public void tick() {
 		if (handlers.size() > 0) {
 			if (mc.player == null) {
@@ -134,7 +150,9 @@ public class ClientCommandHandler extends CommandHandler {
 			}
 			handlers.removeIf(handler -> handler.finished);
 			for (Handler handler : handlers) {
-				handler.tick();
+				if (handler.running) {
+					handler.tick();
+				}
 			}
 		}
 		if (tick % 36000 == 0 && !mc.ingameGUI.getChatGUI().getChatOpen()) {

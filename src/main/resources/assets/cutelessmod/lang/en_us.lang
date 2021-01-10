@@ -21,6 +21,7 @@ text.cutelessmod.clientcommands.undo.invalidIndex=This history index doesn't exi
 text.cutelessmod.clientcommands.undo.startedSaving=Started saving undo...
 text.cutelessmod.clientcommands.undo.savedUndo=Saved undo! Executing command now...
 text.cutelessmod.clientcommands.undo.noHistoryAvaliable=Currently theres nothing to undo!
+text.cutelessmod.clientcommands.worldEdit.progressBar=WorldEdit Tasks
 text.cutelessmod.clientcommands.worldEdit.noAreaSelected=Theres currently no area selected!
 text.cutelessmod.clientcommands.worldEdit.noOneByOneSelected=Please select a region of 1x1!
 text.cutelessmod.clientcommands.worldEdit.set.usage=/set <block> <dataValue:state>

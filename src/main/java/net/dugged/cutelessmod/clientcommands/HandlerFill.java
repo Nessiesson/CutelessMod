@@ -5,7 +5,6 @@ import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.client.CPacketTabComplete;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -34,8 +33,9 @@ public class HandlerFill extends Handler {
 		}
 	}
 
-	synchronized public void fill(BlockPos pos1, BlockPos pos2, IBlockState blockStateToPlace) {
+	public void fill(BlockPos pos1, BlockPos pos2, IBlockState blockStateToPlace) {
 		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
+		totalCount += (bb.maxX - bb.minX + 1) * (bb.maxY - bb.minY + 1) * (bb.maxZ - bb.minZ + 1);
 		areas.add(bb);
 		blockStateMap.put(bb, blockStateToPlace);
 		iteratorPositions.put(bb, new BlockPos(bb.minX, bb.minY, bb.minZ));
@@ -68,6 +68,7 @@ public class HandlerFill extends Handler {
 								iteratorPositions.put(bb, pos1);
 								return;
 							}
+							currentCount += (Math.max(pos1.getX(), pos2.getX()) - Math.min(pos1.getX(), pos2.getX()) + 1) * (Math.max(pos1.getY(), pos2.getY()) - Math.min(pos1.getY(), pos2.getY()) + 1) * (Math.max(pos1.getZ(), pos2.getZ()) - Math.min(pos1.getZ(), pos2.getZ()) + 1);
 							if (sendFillCommand(pos1, pos2, blockState)) {
 								commandsExecuted++;
 							}
@@ -78,23 +79,8 @@ public class HandlerFill extends Handler {
 				blockStateMap.remove(bb);
 				areas.remove(0);
 			}
-		} else if (age > 5 && autoCancel) {
-			if (gamerulePermission) {
-				if (doTileDrops) {
-					mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule doTileDrops true"));
-				}
-				if (logAdminCommands) {
-					mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule logAdminCommands true"));
-				}
-				if (sendCommandfeedback) {
-					mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule sendCommandFeedback true"));
-				}
-				if (sendAffectedBlocks) {
-					mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("commands.fill.success", affectedBlocks));
-				}
-			}
-			getGameruleStates();
-			finished = true;
+		} else if (age > 5) {
+			finish();
 		}
 	}
 

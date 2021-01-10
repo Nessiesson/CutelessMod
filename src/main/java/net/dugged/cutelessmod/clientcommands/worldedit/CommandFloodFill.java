@@ -3,6 +3,7 @@ package net.dugged.cutelessmod.clientcommands.worldedit;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
+import net.dugged.cutelessmod.clientcommands.HandlerUndo;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.state.IBlockState;
@@ -29,9 +30,11 @@ public class CommandFloodFill extends ClientCommand {
 	}
 
 	private void floodFill(World world, IBlockState blockState, BlockPos startPos, int radius) {
-		HandlerSetBlock handler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
-		handler.isWorldEditHandler = true;
-		handler.autoCancel = false;
+		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
+		List<BlockPos> undoBlockPositions = new ArrayList<>();
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
+		undoHandler.setHandler(setBlockHandler);
+		undoHandler.running = false;
 		List<ChunkPos> chunkList = new ArrayList<>();
 		Map<ChunkPos, BlockPos> chunkMap = new HashMap<>();
 		chunkList.add(world.getChunk(startPos).getPos());
@@ -138,12 +141,14 @@ public class CommandFloodFill extends ClientCommand {
 						}
 					}
 				}
-				handler.setBlock(pos, blockState);
+				undoBlockPositions.add(pos);
+				setBlockHandler.setBlock(pos, blockState);
 				blocksToCheck.remove(0);
 			}
 			chunkList.remove(0);
 		}
-		handler.autoCancel = true;
+		undoHandler.saveBlocks(undoBlockPositions);
+		undoHandler.running = true;
 	}
 
 	@Override

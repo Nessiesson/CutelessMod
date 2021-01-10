@@ -3,6 +3,7 @@ package net.dugged.cutelessmod.clientcommands.worldedit;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
+import net.dugged.cutelessmod.clientcommands.HandlerUndo;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -30,9 +31,11 @@ public class CommandDrain extends ClientCommand {
 	}
 
 	private void drainBody(World world, BlockPos startPos, int radius) {
-		HandlerSetBlock handler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
-		handler.isWorldEditHandler = true;
-		handler.autoCancel = false;
+		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
+		List<BlockPos> undoBlockPositions = new ArrayList<>();
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
+		undoHandler.setHandler(setBlockHandler);
+		undoHandler.running = false;
 		Map<ChunkPos, BlockPos> chunkMap = new HashMap<>();
 		List<ChunkPos> chunkList = new ArrayList<>();
 		List<BlockPos> blockList = new ArrayList<>();
@@ -87,7 +90,8 @@ public class CommandDrain extends ClientCommand {
 							checkedBlocks.add(pos1);
 						}
 					} else {
-						handler.setBlock(pos1, Blocks.AIR.getDefaultState());
+						undoBlockPositions.add(pos1);
+						setBlockHandler.setBlock(pos1, Blocks.AIR.getDefaultState());
 						if (!chunkMap.containsKey(chunkPos1)) {
 							chunkList.add(chunkPos1);
 							chunkMap.put(chunkPos1, pos1);
@@ -103,7 +107,8 @@ public class CommandDrain extends ClientCommand {
 							checkedBlocks.add(pos1);
 						}
 					} else {
-						handler.setBlock(pos1, Blocks.AIR.getDefaultState());
+						undoBlockPositions.add(pos1);
+						setBlockHandler.setBlock(pos1, Blocks.AIR.getDefaultState());
 						if (!chunkMap.containsKey(chunkPos1)) {
 							chunkList.add(chunkPos1);
 							chunkMap.put(chunkPos1, pos1);
@@ -119,7 +124,8 @@ public class CommandDrain extends ClientCommand {
 							checkedBlocks.add(pos1);
 						}
 					} else {
-						handler.setBlock(pos1, Blocks.AIR.getDefaultState());
+						undoBlockPositions.add(pos1);
+						setBlockHandler.setBlock(pos1, Blocks.AIR.getDefaultState());
 						if (!chunkMap.containsKey(chunkPos1)) {
 							chunkList.add(chunkPos1);
 							chunkMap.put(chunkPos1, pos1);
@@ -135,7 +141,8 @@ public class CommandDrain extends ClientCommand {
 							checkedBlocks.add(pos1);
 						}
 					} else {
-						handler.setBlock(pos1, Blocks.AIR.getDefaultState());
+						undoBlockPositions.add(pos1);
+						setBlockHandler.setBlock(pos1, Blocks.AIR.getDefaultState());
 						if (!chunkMap.containsKey(chunkPos1)) {
 							chunkList.add(chunkPos1);
 							chunkMap.put(chunkPos1, pos1);
@@ -143,12 +150,14 @@ public class CommandDrain extends ClientCommand {
 					}
 				}
 				blocksToCheck.remove(0);
-				handler.setBlock(pos, Blocks.AIR.getDefaultState());
+				undoBlockPositions.add(pos);
+				setBlockHandler.setBlock(pos, Blocks.AIR.getDefaultState());
 				blockList.add(pos);
 			}
 			chunkList.remove(0);
 		}
-		handler.autoCancel = true;
+		undoHandler.saveBlocks(undoBlockPositions);
+		undoHandler.running = true;
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package net.dugged.cutelessmod.clientcommands.worldedit;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
+import net.dugged.cutelessmod.clientcommands.HandlerUndo;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
@@ -45,17 +46,21 @@ public class CommandRandomize extends ClientCommand {
 	}
 
 	private void placeRandomBlocks(World world, List<IBlockState> blockList, int percentage) {
-		HandlerSetBlock handler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
-		handler.autoCancel = false;
+		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
+		List<BlockPos> undoBlockPositions = new ArrayList<>();
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
+		undoHandler.setHandler(setBlockHandler);
+		undoHandler.running = false;
 		Random rand = new Random();
 		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(WorldEdit.minPos(), WorldEdit.maxPos())) {
 			if (rand.nextFloat() <= (float) percentage / 100F) {
 				IBlockState blockState = blockList.get(rand.nextInt(blockList.size()));
-				handler.setBlock(pos, blockState);
+				undoBlockPositions.add(pos);
+				setBlockHandler.setBlock(pos, blockState);
 			}
 		}
-		handler.autoCancel = true;
-		handler.sendAffectedBlocks = true;
+		undoHandler.saveBlocks(undoBlockPositions);
+		undoHandler.running = true;
 	}
 
 	@Override
