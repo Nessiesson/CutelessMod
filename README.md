@@ -3,11 +3,13 @@
 ### Forge Mod
 
 
-Result of the originally developed mod for LiteLoader called UselessMod with a later created forge branch UsefulMod
+Result of the originally developed mod for LiteLoader called UselessMod with a later created Forge branch UsefulMod
 
 Adds various tweaks/fixes/improvements using Mixin and Forge
 
 Features some dedicated hotkeys and auto-generates a seperate list of keybinds for all settings.
+
+Ported the chunk display debug tool from carpet client used for carpet servers. **Minimap currently not working**
 
 ### Client Commands:
 |Command|Parameters|Function|
@@ -53,4 +55,5 @@ Undo also records the vanilla commands /fill and /clone
 
 The Commands /selection clear and /ping can be executed in all gamemodes
 
+Be aware of potential rounding errors when generating circles, polygons or spheres due to math and rasterisation...
 
