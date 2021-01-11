@@ -24,7 +24,7 @@ Ported the chunk display debug tool from carpet client used for carpet servers. 
 
 |Command|Parameters|Function|
 | ------------ | ------------ | ------------ |
-|/center|\[block] \[dataValue:state]|Marks the center of the selection with default block glowstonek, min. 1x1 max. 2x2|
+|/center|\[block] \[dataValue:state]|Marks the center of the selection with default block glowstone, min. 1x1 max. 2x2|
 |/count|\<exclusive: false, true> \<block> \<dataValue:state>|Counts given block exclusive or inclusive|
 |/cyl|\<block> \<dataValue:state> <radius> \[height]|Generates a cylinder around 1x1 selection with given block and radius|
 |/drain|\<radius>|Drains water in player location up to default radius 100|
@@ -40,6 +40,7 @@ Ported the chunk display debug tool from carpet client used for carpet servers. 
 |/polygon|\<block> \<dataValue:state> \<radius> \<edges> \[halfstep:true, false]|Generates polygon with given block, radius, edges can be rotated by 360/edges degrees|
 |/pos|\<0, 1>|Sets position 0 or 1 at current location|
 |/randomize|\<percentage> \<block> \[dataValue:state],\<block> \[dataValue:state]...|Fills selected area with array of blocks by given percentage|
+|/replace|\<block> \<dataValue:state> \<block> \<dataValue:state>|Replaces one block by another|
 |/selection|\<move, expand> \<up, down, north, east, south, west> \[amount]|Expands or moves current selection in given direction by amount|
 |/selection|\<clear>|Clears current selection|
 |/set|\<block> \<dataValue:state>|Fills the selection with given block|
@@ -49,7 +50,9 @@ Ported the chunk display debug tool from carpet client used for carpet servers. 
 |/upscale|\<factor>|Upscales the selection by filling cubes of factor^2 size|
 |/walls|\<block> \<dataValue:state> \[wall thickness]|Generates walls around selection with a default thickness of 1 block|
 
-**Warning:** some commands involving heavier calculations like sphere or floodfill are threaded and can take some time before progress shows up
+**Warning:** Some commands involving heavier calculations like sphere or floodfill are threaded and can take some time before progress shows up
+
+**Warning:** Only /move and /stack use the /clone command in the background and properly copy Tile Entitys, all other commands **including /undo** do not copy Tile Entity data
 
 Undo also records the vanilla commands /fill and /clone
 

@@ -39,9 +39,9 @@ public class CommandCount extends ClientCommand {
 			}
 		}
 		if (exclusive) {
-			WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.count.responseExclusive", count));
-		} else {
 			WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.count.responseInclusive", count));
+		} else {
+			WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.count.responseExclusive", count));
 		}
 	}
 
@@ -73,6 +73,8 @@ public class CommandCount extends ClientCommand {
 
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
 		if (args.length == 1) {
+			return getListOfStringsMatchingLastWord(args, "true", "false");
+		} else if (args.length == 2) {
 			return getListOfStringsMatchingLastWord(args, Block.REGISTRY.getKeys());
 		} else {
 			return Collections.emptyList();

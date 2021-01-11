@@ -36,15 +36,15 @@ public abstract class MixinGuiInventory extends InventoryEffectRenderer {
 	@Inject(method = "drawScreen", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/inventory/GuiInventory;recipeBookGui:Lnet/minecraft/client/gui/recipebook/GuiRecipeBook;", ordinal = 1))
 	private void drawScreen(final CallbackInfo ci) {
 		this.hasActivePotionEffects = !this.recipeBookGui.isVisible() && cutelessModShowPotionEffects;
-		final IGuiButtonImage button = (IGuiButtonImage) this.recipeButton;
+		// Cast directly instead of creating var to prevent crash, see https://github.com/SpongePowered/Mixin/issues/305
 		if (GuiScreen.isShiftKeyDown() && this.recipeButton.isMouseOver()) {
-			button.setResourceLocation(CUTELESSMOD_POTION_BUTTON);
-			button.setXTexStart(0);
-			button.setYDiffText(0);
+			((IGuiButtonImage) this.recipeButton).setResourceLocation(CUTELESSMOD_POTION_BUTTON);
+			((IGuiButtonImage) this.recipeButton).setXTexStart(0);
+			((IGuiButtonImage) this.recipeButton).setYDiffText(0);
 		} else {
-			button.setResourceLocation(INVENTORY_BACKGROUND);
-			button.setXTexStart(178);
-			button.setYDiffText(19);
+			((IGuiButtonImage) this.recipeButton).setResourceLocation(INVENTORY_BACKGROUND);
+			((IGuiButtonImage) this.recipeButton).setXTexStart(178);
+			((IGuiButtonImage) this.recipeButton).setYDiffText(19);
 		}
 	}
 
