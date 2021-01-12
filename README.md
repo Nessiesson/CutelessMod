@@ -47,6 +47,7 @@ Ported the chunk display debug tool from carpet client used for carpet servers. 
 |/size|-|Outputs the current selection size and volume|
 |/sphere|\<block> \<dataValue:state> \<radius>|Generates a sphere centered on 1x1 selection with given block|
 |/stack|\<count> \[blocks in between] \[move selection:true, false]|Repeats selection count times in currently facing direction with optional airgap|
+|/stackquarter|\[blocks in between]|Mirrors one quarter to either a horizonal or vertical diagonal|
 |/upscale|\<factor>|Upscales the selection by filling cubes of factor^2 size|
 |/walls|\<block> \<dataValue:state> \[wall thickness]|Generates walls around selection with a default thickness of 1 block|
 

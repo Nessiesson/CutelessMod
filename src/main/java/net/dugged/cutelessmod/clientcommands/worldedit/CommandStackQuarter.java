@@ -32,7 +32,7 @@ public class CommandStackQuarter extends ClientCommand {
 		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.stackquarter.usage").getUnformattedText();
 	}
 
-	private void stackQuarter(World world) {
+	private void stackQuarter(World world, final int spacing) {
 		final int tollerance = 15;
 		final Minecraft mc = Minecraft.getMinecraft();
 		final float yaw = MathHelper.wrapDegrees(mc.getRenderViewEntity().rotationYaw);
@@ -49,73 +49,73 @@ public class CommandStackQuarter extends ClientCommand {
 					// Horizontal diagonals
 					// SW -X +Z
 					if (yaw >= 45 - tollerance && yaw <= 45 + tollerance && pitch >= -tollerance && pitch <= tollerance) {
-						blockList.put(WorldEdit.minPos().add(-x - 1, y, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
-						blockList.put(WorldEdit.minPos().add(x, y, widthZ - z - 1 + widthZ), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
-						blockList.put(WorldEdit.minPos().add(-x - 1, y, widthZ - z - 1 + widthZ), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X), EnumFacing.Axis.Z));
+						blockList.put(WorldEdit.minPos().add(-x - 1 - spacing, y, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
+						blockList.put(WorldEdit.minPos().add(x, y, widthZ - z - 1 + widthZ + spacing), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
+						blockList.put(WorldEdit.minPos().add(-x - 1 - spacing, y, widthZ - z - 1 + widthZ + spacing), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X), EnumFacing.Axis.Z));
 						// NW -X -Z
 					} else if (yaw >= 135 - tollerance && yaw <= 135 + tollerance && pitch >= -tollerance && pitch <= tollerance) {
-						blockList.put(WorldEdit.minPos().add(-x - 1, y, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
-						blockList.put(WorldEdit.minPos().add(x, y, -z - 1), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
-						blockList.put(WorldEdit.minPos().add(-x - 1, y, -z - 1), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X), EnumFacing.Axis.Z));
+						blockList.put(WorldEdit.minPos().add(-x - 1 - spacing, y, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
+						blockList.put(WorldEdit.minPos().add(x, y, -z - 1 - spacing), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
+						blockList.put(WorldEdit.minPos().add(-x - 1 - spacing, y, -z - 1 - spacing), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X), EnumFacing.Axis.Z));
 						// SE +X +Z
 					} else if (yaw >= -45 - tollerance && yaw <= -45 + tollerance && pitch >= -tollerance && pitch <= tollerance) {
-						blockList.put(WorldEdit.minPos().add(widthX - x - 1 + widthX, y, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
-						blockList.put(WorldEdit.minPos().add(x, y, widthZ - z - 1 + widthZ), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
-						blockList.put(WorldEdit.minPos().add(widthX - x - 1 + widthX, y, widthZ - z - 1 + widthZ), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X), EnumFacing.Axis.Z));
+						blockList.put(WorldEdit.minPos().add(widthX - x - 1 + widthX + spacing, y, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
+						blockList.put(WorldEdit.minPos().add(x, y, widthZ - z - 1 + widthZ + spacing), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
+						blockList.put(WorldEdit.minPos().add(widthX - x - 1 + widthX + spacing, y, widthZ - z - 1 + widthZ + spacing), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X), EnumFacing.Axis.Z));
 						// NE +X -Z
 					} else if (yaw >= -135 - tollerance && yaw <= -135 + tollerance && pitch >= -tollerance && pitch <= tollerance) {
-						blockList.put(WorldEdit.minPos().add(widthX - x - 1 + widthX, y, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
-						blockList.put(WorldEdit.minPos().add(x, y, -z - 1), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
-						blockList.put(WorldEdit.minPos().add(widthX - x - 1 + widthX, y, -z - 1), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X), EnumFacing.Axis.Z));
+						blockList.put(WorldEdit.minPos().add(widthX - x - 1 + widthX + spacing, y, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
+						blockList.put(WorldEdit.minPos().add(x, y, -z - 1 + spacing), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
+						blockList.put(WorldEdit.minPos().add(widthX - x - 1 + widthX + spacing, y, -z - 1 - spacing), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X), EnumFacing.Axis.Z));
 
 						// Vertical diagonals
 					} else if (yaw >= -tollerance && yaw <= tollerance) {
-						// S +Z +Y
+						// S +Z -Y
 						if (pitch >= 45 - tollerance && pitch <= 45 + tollerance) {
-							blockList.put(WorldEdit.minPos().add(x, y, widthZ - z - 1 + widthZ), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
-							blockList.put(WorldEdit.minPos().add(x, -y - 1, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Y));
-							blockList.put(WorldEdit.minPos().add(x, -y - 1, widthZ - z - 1 + widthZ), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z), EnumFacing.Axis.Y));
-							// S +Z -Y
+							blockList.put(WorldEdit.minPos().add(x, y, widthZ - z - 1 + widthZ + spacing), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
+							blockList.put(WorldEdit.minPos().add(x, -y - 1 - spacing, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Y));
+							blockList.put(WorldEdit.minPos().add(x, -y - 1 - spacing, widthZ - z - 1 + widthZ + spacing), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z), EnumFacing.Axis.Y));
+							// S +Z +Y
 						} else if (pitch >= -45 - tollerance && pitch <= -45 + tollerance) {
-							blockList.put(WorldEdit.minPos().add(x, y, widthZ - z - 1 + widthZ), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
-							blockList.put(WorldEdit.minPos().add(x, widthY - y - 1 + widthY, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Y));
-							blockList.put(WorldEdit.minPos().add(x, widthY - y - 1 + widthY, widthZ - z - 1 + widthZ), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z), EnumFacing.Axis.Y));
+							blockList.put(WorldEdit.minPos().add(x, y, widthZ - z - 1 + widthZ + spacing), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
+							blockList.put(WorldEdit.minPos().add(x, widthY - y - 1 + widthY + spacing, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Y));
+							blockList.put(WorldEdit.minPos().add(x, widthY - y - 1 + widthY + spacing, widthZ - z - 1 + widthZ + spacing), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z), EnumFacing.Axis.Y));
 						}
 					} else if (yaw >= 90 - tollerance && yaw <= 90 + tollerance) {
-						// W -X +Y
+						// W -X -Y
 						if (pitch >= 45 - tollerance && pitch <= 45 + tollerance) {
-							blockList.put(WorldEdit.minPos().add(-x - 1, y, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
-							blockList.put(WorldEdit.minPos().add(x, -y - 1, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
-							blockList.put(WorldEdit.minPos().add(-x - 1, -y - 1, z), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X), EnumFacing.Axis.Y));
-							// W -X -Y
+							blockList.put(WorldEdit.minPos().add(-x - 1 - spacing, y, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
+							blockList.put(WorldEdit.minPos().add(x, -y - 1 - spacing, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
+							blockList.put(WorldEdit.minPos().add(-x - 1 - spacing, -y - 1 - spacing, z), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X), EnumFacing.Axis.Y));
+							// W -X +Y
 						} else if (pitch >= -45 - tollerance && pitch <= -45 + tollerance) {
-							blockList.put(WorldEdit.minPos().add(-x - 1, y, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
-							blockList.put(WorldEdit.minPos().add(x, widthY - y - 1 + widthY, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Y));
-							blockList.put(WorldEdit.minPos().add(-x - 1, widthY - y - 1 + widthY, z), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X), EnumFacing.Axis.Y));
+							blockList.put(WorldEdit.minPos().add(-x - 1 - spacing, y, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
+							blockList.put(WorldEdit.minPos().add(x, widthY - y - 1 + widthY + spacing, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Y));
+							blockList.put(WorldEdit.minPos().add(-x - 1 - spacing, widthY - y - 1 + widthY + spacing, z), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X), EnumFacing.Axis.Y));
 						}
 					} else if (yaw >= -90 - tollerance && yaw <= -90 + tollerance) {
-						// E +X +Y
+						// E +X -Y
 						if (pitch >= 45 - tollerance && pitch <= 45 + tollerance) {
-							blockList.put(WorldEdit.minPos().add(widthX - x - 1 + widthX, y, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
-							blockList.put(WorldEdit.minPos().add(x, -y - 1, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Y));
-							blockList.put(WorldEdit.minPos().add(widthX - x - 1 + widthX, -y - 1, z), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X), EnumFacing.Axis.Y));
-							// E +X -Y
+							blockList.put(WorldEdit.minPos().add(widthX - x - 1 + widthX + spacing, y, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
+							blockList.put(WorldEdit.minPos().add(x, -y - 1 - spacing, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Y));
+							blockList.put(WorldEdit.minPos().add(widthX - x - 1 + widthX + spacing, -y - 1 - spacing, z), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X), EnumFacing.Axis.Y));
+							// E +X +Y
 						} else if (pitch >= -45 - tollerance && pitch <= -45 + tollerance) {
-							blockList.put(WorldEdit.minPos().add(widthX - x - 1 + widthX, y, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
-							blockList.put(WorldEdit.minPos().add(x, widthY - y - 1 + widthY, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Y));
-							blockList.put(WorldEdit.minPos().add(widthX - x - 1 + widthX, widthY - y - 1 + widthY, z), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X), EnumFacing.Axis.Y));
+							blockList.put(WorldEdit.minPos().add(widthX - x - 1 + widthX + spacing, y, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
+							blockList.put(WorldEdit.minPos().add(x, widthY - y - 1 + widthY + spacing, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Y));
+							blockList.put(WorldEdit.minPos().add(widthX - x - 1 + widthX + spacing, widthY - y - 1 + widthY + spacing, z), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X), EnumFacing.Axis.Y));
 						}
 					} else if (yaw >= 180 - tollerance || yaw <= -180 + tollerance) {
-						// N -Z +Y
+						// N -Z -Y
 						if (pitch >= 45 - tollerance && pitch <= 45 + tollerance) {
-							blockList.put(WorldEdit.minPos().add(x, y, -z - 1), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
-							blockList.put(WorldEdit.minPos().add(x, -y - 1, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Y));
-							blockList.put(WorldEdit.minPos().add(x, -y - 1, -z - 1), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z), EnumFacing.Axis.Y));
-							// N -Z -Y
+							blockList.put(WorldEdit.minPos().add(x, y, -z - 1 - spacing), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
+							blockList.put(WorldEdit.minPos().add(x, -y - 1 - spacing, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Y));
+							blockList.put(WorldEdit.minPos().add(x, -y - 1 - spacing, -z - 1 - spacing), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z), EnumFacing.Axis.Y));
+							// N -Z +Y
 						} else if (pitch >= -45 - tollerance && pitch <= -45 + tollerance) {
-							blockList.put(WorldEdit.minPos().add(x, y, -z - 1), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
-							blockList.put(WorldEdit.minPos().add(x, widthY - y - 1 + widthY, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Y));
-							blockList.put(WorldEdit.minPos().add(x, widthY - y - 1 + widthY, -z - 1), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z), EnumFacing.Axis.Y));
+							blockList.put(WorldEdit.minPos().add(x, y, -z - 1 - spacing), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
+							blockList.put(WorldEdit.minPos().add(x, widthY - y - 1 + widthY + spacing, z), WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Y));
+							blockList.put(WorldEdit.minPos().add(x, widthY - y - 1 + widthY + spacing, -z - 1 - spacing), WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z), EnumFacing.Axis.Y));
 						}
 					} else {
 						WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.stackquarter.invalidDirection"));
@@ -135,10 +135,16 @@ public class CommandStackQuarter extends ClientCommand {
 
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-		if (args.length == 0) {
+		if (args.length == 0 || args.length == 1) {
+			int spacing;
+			if (args.length == 1) {
+				spacing = parseInt(args[0]);
+			} else {
+				spacing = 0;
+			}
 			if (WorldEdit.hasSelection()) {
 				World world = sender.getEntityWorld();
-				Thread t = new Thread(() -> stackQuarter(world));
+				Thread t = new Thread(() -> stackQuarter(world, spacing));
 				t.start();
 			} else {
 				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
