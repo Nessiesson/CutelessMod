@@ -32,9 +32,6 @@ public class CommandWalls extends ClientCommand {
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (WorldEdit.hasSelection()) {
 			if (args.length > 0 && args.length <= 3) {
-				HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, sender.getEntityWorld());
-				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld());
-				undoHandler.setHandler(fillHandler);
 				Block block = getBlockByText(sender, args[0]);
 				IBlockState blockstate = block.getDefaultState();
 				int thickness = 0;
@@ -47,6 +44,9 @@ public class CommandWalls extends ClientCommand {
 						thickness = 0;
 					}
 				}
+				HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, sender.getEntityWorld());
+				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld());
+				undoHandler.setHandler(fillHandler);
 				BlockPos posMin = WorldEdit.minPos();
 				BlockPos posMax = WorldEdit.maxPos();
 				undoHandler.saveBox(posMin, new BlockPos(posMax.getX(), posMax.getY(), posMin.getZ() + Math.min(thickness, WorldEdit.widthZ() - 1)));

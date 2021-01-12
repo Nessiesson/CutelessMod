@@ -26,11 +26,6 @@ public class CommandStack extends ClientCommand {
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (WorldEdit.hasSelection()) {
 			if (args.length >= 1 && args.length <= 3) {
-				HandlerClone cloneHandler = (HandlerClone) ClientCommandHandler.instance.createHandler(HandlerClone.class, sender.getEntityWorld());
-				cloneHandler.moveBlocks = false;
-				cloneHandler.moveSelectionAfterwards = false;
-				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld());
-				undoHandler.setHandler(cloneHandler);
 				int count = parseInt(args[0]);
 				boolean moveSelection = false;
 				int blocksOffset = 0;
@@ -40,7 +35,12 @@ public class CommandStack extends ClientCommand {
 				if (args.length == 3) {
 					moveSelection = parseBoolean(args[2]);
 				}
-				EnumFacing facing = WorldEdit.getLookingDirection();
+				HandlerClone cloneHandler = (HandlerClone) ClientCommandHandler.instance.createHandler(HandlerClone.class, sender.getEntityWorld());
+				cloneHandler.moveBlocks = false;
+				cloneHandler.moveSelectionAfterwards = false;
+				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld());
+				undoHandler.setHandler(cloneHandler);
+				final EnumFacing facing = WorldEdit.getLookingDirection();
 				BlockPos minPos = WorldEdit.minPos();
 				BlockPos maxPos = WorldEdit.maxPos();
 				BlockPos endPos;

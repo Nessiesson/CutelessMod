@@ -55,6 +55,7 @@ public class ClientCommandHandler extends CommandHandler {
 		instance.registerCommand(new CommandFixSlabs());
 		instance.registerCommand(new CommandRandomize());
 		instance.registerCommand(new CommandReplace());
+		instance.registerCommand(new CommandStackQuarter());
 	}
 
 	@Override

@@ -31,14 +31,14 @@ public class CommandSet extends ClientCommand {
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (WorldEdit.hasSelection()) {
 			if (args.length > 0 && args.length <= 2) {
-				HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, sender.getEntityWorld());
-				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld());
-				undoHandler.setHandler(fillHandler);
 				Block block = getBlockByText(sender, args[0]);
 				IBlockState blockstate = block.getDefaultState();
 				if (args.length == 2) {
 					blockstate = convertArgToBlockState(block, args[1]);
 				}
+				HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, sender.getEntityWorld());
+				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld());
+				undoHandler.setHandler(fillHandler);
 				undoHandler.saveBox(WorldEdit.posA, WorldEdit.posB);
 				fillHandler.fill(WorldEdit.posA, WorldEdit.posB, blockstate);
 			} else {

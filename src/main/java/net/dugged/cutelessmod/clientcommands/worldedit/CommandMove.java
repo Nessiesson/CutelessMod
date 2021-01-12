@@ -24,20 +24,25 @@ public class CommandMove extends ClientCommand {
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (WorldEdit.hasSelection()) {
-			HandlerClone cloneHandler = (HandlerClone) ClientCommandHandler.instance.createHandler(HandlerClone.class, sender.getEntityWorld());
-			cloneHandler.moveBlocks = true;
-			HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld());
-			undoHandler.setHandler(cloneHandler);
-			if (args.length == 0) {
-				undoHandler.saveBox(WorldEdit.minPos(), WorldEdit.maxPos());
-				undoHandler.saveBox(WorldEdit.playerPos(), WorldEdit.playerPos().add(WorldEdit.widthX(), WorldEdit.widthY(), WorldEdit.widthZ()));
-				cloneHandler.clone(WorldEdit.minPos(), WorldEdit.maxPos(), WorldEdit.playerPos());
-			} else if (args.length == 1) {
-				int blocksToMove = parseInt(args[0]);
-				BlockPos pos = WorldEdit.offsetLookingDirection(WorldEdit.minPos(), blocksToMove);
-				undoHandler.saveBox(WorldEdit.minPos(), WorldEdit.maxPos());
-				undoHandler.saveBox(pos, pos.add(WorldEdit.widthX(), WorldEdit.widthY(), WorldEdit.widthZ()));
-				cloneHandler.clone(WorldEdit.minPos(), WorldEdit.maxPos(), pos);
+			if (args.length == 0 || args.length == 1) {
+				int blocksToMove = 0;
+				if (args.length == 1) {
+					blocksToMove = parseInt(args[0]);
+				}
+				HandlerClone cloneHandler = (HandlerClone) ClientCommandHandler.instance.createHandler(HandlerClone.class, sender.getEntityWorld());
+				cloneHandler.moveBlocks = true;
+				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld());
+				undoHandler.setHandler(cloneHandler);
+				if (blocksToMove > 0) {
+					undoHandler.saveBox(WorldEdit.minPos(), WorldEdit.maxPos());
+					undoHandler.saveBox(WorldEdit.playerPos(), WorldEdit.playerPos().add(WorldEdit.widthX(), WorldEdit.widthY(), WorldEdit.widthZ()));
+					cloneHandler.clone(WorldEdit.minPos(), WorldEdit.maxPos(), WorldEdit.playerPos());
+				} else {
+					final BlockPos pos = WorldEdit.offsetLookingDirection(WorldEdit.minPos(), blocksToMove);
+					undoHandler.saveBox(WorldEdit.minPos(), WorldEdit.maxPos());
+					undoHandler.saveBox(pos, pos.add(WorldEdit.widthX(), WorldEdit.widthY(), WorldEdit.widthZ()));
+					cloneHandler.clone(WorldEdit.minPos(), WorldEdit.maxPos(), pos);
+				}
 			} else {
 				WorldEdit.sendMessage(getUsage(sender));
 			}

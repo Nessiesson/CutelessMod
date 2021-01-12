@@ -57,3 +57,5 @@ text.cutelessmod.clientcommands.worldEdit.fixslabs.usage=/fixslabs
 text.cutelessmod.clientcommands.worldEdit.fixslabs.response=Changed %s doubleslabs to full blocks
 text.cutelessmod.clientcommands.worldEdit.randomize.usage=/randomize <percentage> <block> [dataValue|state],<block> [dataValue|state]...
 text.cutelessmod.clientcommands.worldEdit.replace.usage=/replace <block> <dataValue:state> <block> <dataValue:state>
+text.cutelessmod.clientcommands.worldEdit.stackquarter.usage=/stackquarter
+text.cutelessmod.clientcommands.worldEdit.stackquarter.invalidDirection=Please align yourself looking at a diagonal!

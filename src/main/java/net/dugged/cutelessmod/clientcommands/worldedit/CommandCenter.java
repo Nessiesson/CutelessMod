@@ -33,10 +33,6 @@ public class CommandCenter extends ClientCommand {
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (WorldEdit.hasSelection()) {
 			if (args.length >= 0 && args.length <= 2) {
-				HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, sender.getEntityWorld());
-				List<BlockPos> undoBlockPositions = new ArrayList<>();
-				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld());
-				undoHandler.setHandler(setBlockHandler);
 				Block block = Blocks.GLOWSTONE;
 				if (args.length > 0) {
 					block = getBlockByText(sender, args[0]);
@@ -45,6 +41,10 @@ public class CommandCenter extends ClientCommand {
 				if (args.length >= 2) {
 					blockstate = convertArgToBlockState(block, args[1]);
 				}
+				HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, sender.getEntityWorld());
+				List<BlockPos> undoBlockPositions = new ArrayList<>();
+				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld());
+				undoHandler.setHandler(setBlockHandler);
 				BlockPos center = new BlockPos(WorldEdit.minPos().getX() + WorldEdit.widthX() / 2, WorldEdit.minPos().getY() + WorldEdit.widthY() / 2, WorldEdit.minPos().getZ() + WorldEdit.widthZ() / 2);
 				setBlockHandler.setBlock(center, blockstate);
 				undoBlockPositions.add(center);

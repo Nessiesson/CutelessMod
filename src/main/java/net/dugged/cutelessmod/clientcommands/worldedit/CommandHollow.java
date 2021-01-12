@@ -31,9 +31,6 @@ public class CommandHollow extends ClientCommand {
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (WorldEdit.hasSelection()) {
 			if (args.length > 0 && args.length <= 3) {
-				HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, sender.getEntityWorld());
-				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld());
-				undoHandler.setHandler(fillHandler);
 				Block block = getBlockByText(sender, args[0]);
 				IBlockState blockstate = block.getDefaultState();
 				int thickness = 0;
@@ -46,8 +43,11 @@ public class CommandHollow extends ClientCommand {
 						thickness = 0;
 					}
 				}
-				BlockPos posMin = new BlockPos(Math.min(WorldEdit.posA.getX(), WorldEdit.posB.getX()), Math.min(WorldEdit.posA.getY(), WorldEdit.posB.getY()), Math.min(WorldEdit.posA.getZ(), WorldEdit.posB.getZ()));
-				BlockPos posMax = new BlockPos(Math.max(WorldEdit.posA.getX(), WorldEdit.posB.getX()), Math.max(WorldEdit.posA.getY(), WorldEdit.posB.getY()), Math.max(WorldEdit.posA.getZ(), WorldEdit.posB.getZ()));
+				HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, sender.getEntityWorld());
+				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld());
+				undoHandler.setHandler(fillHandler);
+				BlockPos posMin = WorldEdit.minPos();
+				BlockPos posMax = WorldEdit.maxPos();
 				undoHandler.saveBox(posMin, new BlockPos(posMax.getX(), posMax.getY(), posMin.getZ() + Math.min(thickness, WorldEdit.widthZ() - 1)));
 				fillHandler.fill(posMin, new BlockPos(posMax.getX(), posMax.getY(), posMin.getZ() + Math.min(thickness, WorldEdit.widthZ() - 1)), blockstate);
 				undoHandler.saveBox(posMin, new BlockPos(posMin.getX() + Math.min(thickness, WorldEdit.widthX() - 1), posMax.getY(), posMax.getZ()));

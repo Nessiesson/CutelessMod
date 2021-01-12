@@ -33,9 +33,6 @@ public class CommandHCyl extends ClientCommand {
 		if (args.length >= 3 && args.length <= 4) {
 			if (WorldEdit.hasSelection() && WorldEdit.isOneByOne()) {
 				World world = sender.getEntityWorld();
-				HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, world);
-				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
-				undoHandler.setHandler(fillHandler);
 				Block block = getBlockByText(sender, args[0]);
 				IBlockState blockstate = convertArgToBlockState(block, args[1]);
 				double radius = parseInt(args[2]) + 0.5;
@@ -46,6 +43,9 @@ public class CommandHCyl extends ClientCommand {
 						height = 1;
 					}
 				}
+				HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, world);
+				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
+				undoHandler.setHandler(fillHandler);
 				if (height > world.getHeight() - WorldEdit.posA.getY()) {
 					height = world.getHeight() - WorldEdit.posA.getY();
 				}
