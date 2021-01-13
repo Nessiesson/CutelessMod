@@ -16,6 +16,7 @@
 		"ISoundHandler",
 		"MixinBlock",
 		"MixinBlockConcretePowder",
+		"MixinBlockHugeMushroom",
 		"MixinBlockLiquid",
 		"MixinBlockMobSpawner",
 		"MixinBlockPistonBase",
