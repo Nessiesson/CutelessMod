@@ -10,16 +10,15 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.entity.Entity;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(DebugRendererChunkBorder.class)
 public abstract class MixinDebugRendererChunkBorder {
-	/**
-	 * @author nessie
-	 * @reason sadly the easiest way to achieve what i want.
-	 */
-	@Overwrite
-	public void render(final float partialTicks, final long finishTimeNano) {
+	@Inject(method = "render", at = @At("HEAD"), cancellable = true)
+	public void onRender(final float partialTicks, final long finishTimeNano, CallbackInfo ci) {
+		ci.cancel();
 		final Minecraft mc = Minecraft.getMinecraft();
 		Entity player = mc.player;
 		if (((EntityPlayerSP) player).isSpectator()) {

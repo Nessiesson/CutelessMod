@@ -6,7 +6,6 @@ import net.dugged.cutelessmod.DesktopApi;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -35,13 +34,10 @@ public abstract class MixinGuiScreen {
 		DesktopApi.browse(url);
 	}
 
-	/**
-	 * @author nessie
-	 * @reason Using @Overwrite is the simplest way to do this.
-	 */
-	@Overwrite
-	public void sendChatMessage(String msg) {
-		for (String message : Splitter.fixedLength(256).split(msg)) {
+	@Inject(method = "sendChatMessage(Ljava/lang/String;)V", at = @At("HEAD"), cancellable = true)
+	public void onSendChatMessage(final String msg, CallbackInfo ci) {
+		ci.cancel();
+		for (final String message : Splitter.fixedLength(256).split(msg)) {
 			this.sendChatMessage(message, true);
 		}
 	}

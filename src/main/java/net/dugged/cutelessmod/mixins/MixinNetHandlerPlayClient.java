@@ -2,25 +2,24 @@ package net.dugged.cutelessmod.mixins;
 
 import net.dugged.cutelessmod.Configuration;
 import net.dugged.cutelessmod.CutelessMod;
-import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ChatLine;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.init.Blocks;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.network.play.server.*;
+import net.minecraft.network.play.server.SPacketChat;
+import net.minecraft.network.play.server.SPacketCombatEvent;
+import net.minecraft.network.play.server.SPacketJoinGame;
+import net.minecraft.network.play.server.SPacketOpenWindow;
+import net.minecraft.network.play.server.SPacketStatistics;
+import net.minecraft.network.play.server.SPacketTimeUpdate;
+import net.minecraft.network.play.server.SPacketWindowItems;
 import net.minecraft.stats.StatBase;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityPiston;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.event.ClickEvent;
 import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -37,8 +36,6 @@ import java.util.Map;
 public abstract class MixinNetHandlerPlayClient {
 	@Unique
 	private static final String START_OF_PACKET = "Lnet/minecraft/network/PacketThreadUtil;checkThreadAndEnqueue(Lnet/minecraft/network/Packet;Lnet/minecraft/network/INetHandler;Lnet/minecraft/util/IThreadListener;)V";
-	@Shadow
-	private WorldClient world;
 
 	@Inject(method = "handleCombatEvent", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;displayGuiScreen(Lnet/minecraft/client/gui/GuiScreen;)V"))
 	private void sendDeathLocation(SPacketCombatEvent packetIn, CallbackInfo ci) {
@@ -84,39 +81,6 @@ public abstract class MixinNetHandlerPlayClient {
 	@Redirect(method = "handleSetPassengers", at = @At(value = "INVOKE", target = "Lorg/apache/logging/log4j/Logger;warn(Ljava/lang/String;)V", remap = false))
 	private void noopWarn(Logger logger, String message) {
 		// noop
-	}
-
-	@Redirect(method = "handleChunkData", at = @At(value = "INVOKE", target = "Ljava/util/Iterator;hasNext()Z", remap = false))
-	private boolean replaceChunkDataBlockEntityLoop(Iterator<NBTTagCompound> iterator) {
-		while (iterator.hasNext()) {
-			final NBTTagCompound compound = iterator.next();
-			final BlockPos pos = new BlockPos(compound.getInteger("x"), compound.getInteger("y"), compound.getInteger("z"));
-			final boolean isPiston = compound.getString("id").equals("minecraft:piston");
-			if (isPiston) {
-				compound.setFloat("progress", Math.min(compound.getFloat("progress") + 0.5F, 1F));
-			}
-
-			TileEntity te = this.world.getTileEntity(pos);
-			if (te != null) {
-				te.readFromNBT(compound);
-			} else {
-				if (!isPiston) {
-					continue;
-				}
-
-				final IBlockState state = this.world.getBlockState(pos);
-				if (state.getBlock() != Blocks.PISTON_EXTENSION) {
-					continue;
-				}
-
-				te = new TileEntityPiston();
-				te.readFromNBT(compound);
-				this.world.setTileEntity(pos, te);
-				te.updateContainingBlockInfo();
-			}
-		}
-
-		return false;
 	}
 
 	@Inject(method = "handleOpenWindow", at = @At(value = "INVOKE", target = START_OF_PACKET, shift = At.Shift.AFTER), cancellable = true)
