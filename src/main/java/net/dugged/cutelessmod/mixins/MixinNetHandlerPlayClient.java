@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ChatLine;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.network.play.server.SPacketBlockAction;
 import net.minecraft.network.play.server.SPacketChat;
 import net.minecraft.network.play.server.SPacketCombatEvent;
 import net.minecraft.network.play.server.SPacketJoinGame;
@@ -129,6 +130,13 @@ public abstract class MixinNetHandlerPlayClient {
 	private void addStat(final SPacketStatistics packetIn, final CallbackInfo ci, final Iterator<Map.Entry<StatBase, Integer>> it, final Map.Entry<StatBase, Integer> b, final StatBase key, final int value) {
 		if (key.statId.matches(CutelessMod.statPluginFilter)) {
 			CutelessMod.statPlugin.sendStatIncrease(value, true);
+		}
+	}
+
+	@Inject(method = "handleBlockAction", at = @At(value = "INVOKE", target = START_OF_PACKET), cancellable = true)
+	private void onHandleBlockAction(final SPacketBlockAction packet, final CallbackInfo ci) {
+		if (Configuration.ignoreBlockEvents) {
+			ci.cancel();
 		}
 	}
 }
