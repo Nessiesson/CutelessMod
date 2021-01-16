@@ -57,7 +57,7 @@ Ported the chunk display debug tool from carpet client used for carpet servers. 
 
 Undo also records the vanilla commands /fill and /clone
 
-The Commands /selection clear and /ping can be executed in all gamemodes
+The commands /selection clear and /ping can be executed in all gamemodes
 
 Be aware of potential rounding errors when generating circles, polygons or spheres due to math and rasterisation...
 

@@ -1,5 +1,6 @@
 package net.dugged.cutelessmod.mixins;
 
+import net.dugged.cutelessmod.Configuration;
 import net.dugged.cutelessmod.CutelessMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderGlobal;
@@ -24,7 +25,9 @@ public abstract class MixinRenderGlobal {
 
 	@Inject(method = "notifyLightSet", at = @At("HEAD"), cancellable = true)
 	private void noLight(BlockPos pos, CallbackInfo ci) {
-		ci.cancel();
+		if (!Configuration.lightUpdates) {
+			ci.cancel();
+		}
 	}
 
 	@Inject(method = "isOutlineActive", at = @At("HEAD"), cancellable = true)
