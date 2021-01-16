@@ -34,14 +34,14 @@ public class CommandMove extends ClientCommand {
 				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld());
 				undoHandler.setHandler(cloneHandler);
 				if (blocksToMove > 0) {
-					undoHandler.saveBox(WorldEdit.minPos(), WorldEdit.maxPos());
-					undoHandler.saveBox(WorldEdit.playerPos(), WorldEdit.playerPos().add(WorldEdit.widthX(), WorldEdit.widthY(), WorldEdit.widthZ()));
-					cloneHandler.clone(WorldEdit.minPos(), WorldEdit.maxPos(), WorldEdit.playerPos());
-				} else {
 					final BlockPos pos = WorldEdit.offsetLookingDirection(WorldEdit.minPos(), blocksToMove);
 					undoHandler.saveBox(WorldEdit.minPos(), WorldEdit.maxPos());
 					undoHandler.saveBox(pos, pos.add(WorldEdit.widthX(), WorldEdit.widthY(), WorldEdit.widthZ()));
 					cloneHandler.clone(WorldEdit.minPos(), WorldEdit.maxPos(), pos);
+				} else {
+					undoHandler.saveBox(WorldEdit.minPos(), WorldEdit.maxPos());
+					undoHandler.saveBox(WorldEdit.playerPos(), WorldEdit.playerPos().add(WorldEdit.widthX(), WorldEdit.widthY(), WorldEdit.widthZ()));
+					cloneHandler.clone(WorldEdit.minPos(), WorldEdit.maxPos(), WorldEdit.playerPos());
 				}
 			} else {
 				WorldEdit.sendMessage(getUsage(sender));
