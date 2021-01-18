@@ -46,6 +46,7 @@ public class Configuration {
 	public static boolean showIdealToolMarker = false;
 	public static boolean showItemAttributes = true;
 	public static boolean showItemFrameFrame = true;
+	public static boolean showHandChangeAnimation = true;
 	public static boolean showOneBossBar = false;
 	public static boolean showPotionShift = true;
 	public static boolean showRain = true;

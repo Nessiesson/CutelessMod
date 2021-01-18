@@ -57,6 +57,7 @@
 		"MixinInventoryEffectRenderer",
 		"MixinItemFirework",
 		"MixinItemFlintAndSteel",
+		"MixinItemRenderer",
 		"MixinItemStack",
 		"MixinLayerArmorBase",
 		"MixinMinecraft",
