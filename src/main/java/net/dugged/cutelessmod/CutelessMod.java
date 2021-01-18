@@ -79,6 +79,7 @@ public class CutelessMod {
 	public static String statPluginFilter = "stat.useItem.minecraft.diamond_pickaxe";
 	public static StatPlugin statPlugin = new StatPlugin();
 	public static String lastCommand = "";
+	public static GuiCompass guiCompass = new GuiCompass(mc);
 	private String originalTitle;
 	private long axeCooldown = 0;
 	private boolean loggedOut;
@@ -356,6 +357,17 @@ public class CutelessMod {
 				TextComponentTranslation error = new TextComponentTranslation("text.cutelessmod.error_while_teleporting");
 				error.getStyle().setColor(TextFormatting.RED);
 				mc.player.sendMessage(error);
+			}
+		}
+	}
+
+	@SubscribeEvent
+	public void onRightClickEmpty(final PlayerInteractEvent.RightClickEmpty event) {
+		if (Configuration.worldeditCompass && mc.world != null && mc.player.isCreative() && mc.player.getHeldItemMainhand().getItem() instanceof ItemCompass && guiCompass != null) {
+			if (guiCompass.isMenuActive()) {
+				guiCompass.exit();
+			} else {
+				guiCompass.onRightClick();
 			}
 		}
 	}

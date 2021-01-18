@@ -1,10 +1,15 @@
 package net.dugged.cutelessmod.mixins;
 
 import com.mojang.authlib.GameProfile;
+import net.dugged.cutelessmod.CutelessMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.spectator.PlayerMenuObject;
+import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.CPacketChatMessage;
+import net.minecraft.network.play.client.CPacketSpectate;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -24,6 +29,18 @@ public abstract class MixinPlayerMenuObject {
 		final NetworkPlayerInfo npi = mc.player.connection.getPlayerInfo(this.profile.getName());
 		if (npi != null) {
 			mc.getTextureManager().bindTexture(npi.getLocationSkin());
+		}
+	}
+
+	@Redirect(method = "selectItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/NetHandlerPlayClient;sendPacket(Lnet/minecraft/network/Packet;)V"))
+	private void teleportCompassMenu(NetHandlerPlayClient netHandlerPlayClient, Packet<?> packetIn) {
+		NetHandlerPlayClient connection = Minecraft.getMinecraft().getConnection();
+		if (CutelessMod.guiCompass.isMenuActive()) {
+			connection.sendPacket(new CPacketChatMessage("/gamemode spectator"));
+			connection.sendPacket(new CPacketSpectate(this.profile.getId()));
+			connection.sendPacket(new CPacketChatMessage("/gamemode creative"));
+		} else {
+			connection.sendPacket(new CPacketSpectate(this.profile.getId()));
 		}
 	}
 }

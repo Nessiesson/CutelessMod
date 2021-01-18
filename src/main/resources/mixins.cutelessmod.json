@@ -58,6 +58,7 @@
 		"MixinItemFirework",
 		"MixinItemFlintAndSteel",
 		"MixinItemStack",
+		"MixinLayerArmorBase",
 		"MixinMinecraft",
 		"MixinNetHandlerPlayClient",
 		"MixinNetworkManager",

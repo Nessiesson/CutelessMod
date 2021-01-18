@@ -33,6 +33,7 @@ public class Configuration {
 	public static boolean performanceImprovements = false;
 	public static boolean respawnOnDeath = false;
 	public static boolean rocketCooldown = false;
+	public static boolean showArmor = true;
 	public static boolean showBlockBreakingParticles = true;
 	public static boolean showBlockSelectorUnderwater = false;
 	public static boolean showCenteredPlants = false;

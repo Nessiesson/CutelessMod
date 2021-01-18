@@ -1,9 +1,11 @@
 package net.dugged.cutelessmod.mixins;
 
 import net.dugged.cutelessmod.Configuration;
+import net.dugged.cutelessmod.CutelessMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.profiler.ISnooperInfo;
@@ -16,6 +18,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Minecraft.class)
@@ -52,6 +55,24 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo {
 			currentItem.setCount(currentItem.getMaxStackSize());
 			inv.setPickedItemStack(currentItem);
 			this.playerController.sendSlotPacket(this.player.getHeldItem(EnumHand.MAIN_HAND), 36 + inv.currentItem);
+		}
+	}
+
+	@Redirect(method = "runTickMouse", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/InventoryPlayer;changeCurrentItem(I)V"))
+	private void scrollCompassMenu(InventoryPlayer inventoryPlayer, int direction) {
+		if (CutelessMod.guiCompass.isMenuActive()) {
+			CutelessMod.guiCompass.onMouseScroll(direction);
+		} else {
+			player.inventory.changeCurrentItem(direction);
+		}
+	}
+
+	@Redirect(method = "runTickMouse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/settings/KeyBinding;onTick(I)V"))
+	private void clickCompassMenu(int keyCode) {
+		if (CutelessMod.guiCompass.isMenuActive() && (keyCode + 100) == 2) {
+			CutelessMod.guiCompass.onMiddleClick();
+		} else {
+			KeyBinding.onTick(keyCode);
 		}
 	}
 }

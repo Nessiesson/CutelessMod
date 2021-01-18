@@ -1,10 +1,13 @@
 package net.dugged.cutelessmod.mixins;
 
+import net.dugged.cutelessmod.Configuration;
 import net.dugged.cutelessmod.CutelessMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiNewChat;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.item.ItemCompass;
 import org.apache.commons.lang3.StringUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -38,6 +41,17 @@ public abstract class MixinGuiIngame extends Gui {
 			final GuiNewChat chat = mc.ingameGUI.getChatGUI();
 			CutelessMod.tabCompleteHistory.put(currentServer, new ArrayList<>(chat.getSentMessages()));
 			CutelessMod.chatHistory.put(currentServer, new ArrayList<>(((IGuiNewChat) chat).getChatLines()));
+		}
+	}
+
+	@Inject(method = "renderHotbar", at = @At("RETURN"))
+	public void renderCompassMenu(ScaledResolution scaledResolution, float partialTicks, CallbackInfo ci) {
+		final Minecraft mc = Minecraft.getMinecraft();
+		if (Configuration.worldeditCompass && mc.player.isCreative() && mc.player.getHeldItemMainhand().getItem() instanceof ItemCompass) {
+			CutelessMod.guiCompass.renderTooltip(scaledResolution);
+			CutelessMod.guiCompass.renderSelectedItem(scaledResolution);
+		} else if (CutelessMod.guiCompass.isMenuActive()) {
+			CutelessMod.guiCompass.exit();
 		}
 	}
 }
