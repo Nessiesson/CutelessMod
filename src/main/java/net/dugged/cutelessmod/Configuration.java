@@ -31,6 +31,7 @@ public class Configuration {
 	public static boolean miningGhostBlockFix = false;
 	public static boolean noFall = false;
 	public static boolean performanceImprovements = false;
+	public static boolean removeBats = false;
 	public static boolean respawnOnDeath = false;
 	public static boolean rocketCooldown = false;
 	public static boolean showArmor = true;

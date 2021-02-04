@@ -17,7 +17,6 @@ import net.minecraft.world.World;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class CommandStackQuarter extends ClientCommand {

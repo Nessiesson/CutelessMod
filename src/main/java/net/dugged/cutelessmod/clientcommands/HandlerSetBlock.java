@@ -102,7 +102,8 @@ public class HandlerSetBlock extends Handler {
 	}
 
 	private boolean sendSetBlockCommand(BlockPos pos, IBlockState blockState) {
-		final String name = blockState.getBlock().getRegistryName().toString();
+		final String name = RegistryCache.getBlockName(blockState);
+		//final String name = blockState.getBlock().getRegistryName().toString();
 		final String metadata = Integer.toString(blockState.getBlock().getMetaFromState(blockState));
 		if (setblockPermission && world.isBlockLoaded(pos) && pos.getY() >= 0 && pos.getY() < 256 && !world.getBlockState(pos).equals(blockState)) {
 			last_execution = age;

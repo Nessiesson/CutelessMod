@@ -21,6 +21,7 @@ public class HandlerClone extends Handler {
 	private final List<BlockPos> destinations = new ArrayList<>();
 	private final Map<BlockPos, AxisAlignedBB> sourceAreaMap = new HashMap<>();
 	private final Map<BlockPos, BlockPos> iteratorPositions = new HashMap<>();
+	public boolean masked = false;
 	public boolean moveBlocks = false;
 	public boolean moveSelectionAfterwards = true;
 
@@ -96,12 +97,17 @@ public class HandlerClone extends Handler {
 	private boolean sendCloneCommand(BlockPos pos1, BlockPos pos2, BlockPos pos3) {
 		if (clonePermission && world.isBlockLoaded(pos1) && world.isBlockLoaded(pos2) && world.isBlockLoaded(pos3) && Math.min(pos1.getY(), Math.min(pos2.getY(), pos3.getY())) >= 0 && Math.max(pos1.getY(), Math.max(pos2.getY(), pos3.getY())) < 256) {
 			last_execution = age;
-			if (moveBlocks) {
-				world.sendPacketToServer(new CPacketChatMessage("/clone " + pos1.getX() + " " + pos1.getY() + " " + pos1.getZ() + " " + pos2.getX() + " " + pos2.getY() + " " + pos2.getZ() + " " + pos3.getX() + " " + pos3.getY() + " " + pos3.getZ() + " replace move"));
-			} else {
-				world.sendPacketToServer(new CPacketChatMessage("/clone " + pos1.getX() + " " + pos1.getY() + " " + pos1.getZ() + " " + pos2.getX() + " " + pos2.getY() + " " + pos2.getZ() + " " + pos3.getX() + " " + pos3.getY() + " " + pos3.getZ() + " replace force"));
+			String modifiers = " replace";
+			if (masked) {
+				modifiers = " masked";
 			}
-			affectedBlocks += (Math.max(pos1.getX(), pos2.getX()) - Math.min(pos1.getX(), pos2.getX()) + 1) * (Math.max(pos1.getY(), pos2.getY()) - Math.min(pos1.getY(), pos2.getY()) + 1) * (Math.max(pos1.getZ(), pos2.getZ()) - Math.min(pos1.getZ(), pos2.getZ()) + 1);
+			if (moveBlocks) {
+				modifiers += " move";
+			} else {
+				modifiers += " force";
+			}
+			world.sendPacketToServer(new CPacketChatMessage("/clone " + pos1.getX() + " " + pos1.getY() + " " + pos1.getZ() + " " + pos2.getX() + " " + pos2.getY() + " " + pos2.getZ() + " " + pos3.getX() + " " + pos3.getY() + " " + pos3.getZ() + modifiers));
+			affectedBlocks += (long) (Math.max(pos1.getX(), pos2.getX()) - Math.min(pos1.getX(), pos2.getX()) + 1) * (Math.max(pos1.getY(), pos2.getY()) - Math.min(pos1.getY(), pos2.getY()) + 1) * (Math.max(pos1.getZ(), pos2.getZ()) - Math.min(pos1.getZ(), pos2.getZ()) + 1);
 			return true;
 		} else {
 			return false;

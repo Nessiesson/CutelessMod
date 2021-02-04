@@ -11,6 +11,10 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 
+import javax.annotation.Nullable;
+import java.util.Collections;
+import java.util.List;
+
 public class CommandStack extends ClientCommand {
 	@Override
 	public String getName() {
@@ -25,18 +29,22 @@ public class CommandStack extends ClientCommand {
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (WorldEdit.hasSelection()) {
-			if (args.length >= 1 && args.length <= 3) {
+			if (args.length >= 1 && args.length <= 4) {
 				int count = parseInt(args[0]);
+				boolean masked = false;
 				boolean moveSelection = false;
 				int blocksOffset = 0;
 				if (args.length >= 2) {
 					blocksOffset = parseInt(args[1]);
 				}
-				if (args.length == 3) {
-					moveSelection = parseBoolean(args[2]);
+				if (args.length >= 3) {
+					masked = parseBoolean(args[2]);
+				}
+				if (args.length == 4) {
+					moveSelection = parseBoolean(args[3]);
 				}
 				HandlerClone cloneHandler = (HandlerClone) ClientCommandHandler.instance.createHandler(HandlerClone.class, sender.getEntityWorld());
-				cloneHandler.moveBlocks = false;
+				cloneHandler.masked = masked;
 				cloneHandler.moveSelectionAfterwards = false;
 				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld());
 				undoHandler.setHandler(cloneHandler);
@@ -88,6 +96,14 @@ public class CommandStack extends ClientCommand {
 			}
 		} else {
 			WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
+		}
+	}
+
+	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
+		if (args.length == 3 || args.length == 4) {
+			return getListOfStringsMatchingLastWord(args, "true", "false");
+		} else {
+			return Collections.emptyList();
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package net.dugged.cutelessmod.clientcommands;
 
+import net.dugged.cutelessmod.clientcommands.worldedit.WorldEdit;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.util.math.BlockPos;
@@ -39,6 +40,13 @@ public class HandlerUndo extends Handler {
 	}
 
 	synchronized public void tick() {
+		if (!WorldEdit.undo) {
+			if (handler != null) {
+				handler.running = true;
+			}
+			finished = true;
+			return;
+		}
 		super.tick();
 		if (!started) {
 			started = true;

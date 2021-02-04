@@ -1,5 +1,6 @@
 package net.dugged.cutelessmod.clientcommands;
 
+import net.dugged.cutelessmod.clientcommands.worldedit.WorldEdit;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -8,9 +9,12 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.command.NumberInvalidException;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +29,9 @@ public class CommandUndo extends ClientCommand {
 	}
 
 	public static boolean saveHistory(String msg) {
+		if (!WorldEdit.undo) {
+			return false;
+		}
 		final World world = mc.player.world;
 		if (world != null) {
 			final String[] temp = msg.split(" ");
@@ -76,24 +83,41 @@ public class CommandUndo extends ClientCommand {
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (sender instanceof EntityPlayerSP) {
 			if (mc.player.isCreative() || mc.player.isSpectator()) {
-				if (undoHistory.size() > 0) {
-					int historyIndex = 0;
-					if (args.length >= 1) {
-						historyIndex = parseInt(args[0], 0, 100);
-					}
-					if (undoHistory.size() - 1 >= historyIndex) {
-						World world = sender.getEntityWorld();
-						HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
-						setBlockHandler.setBlocks(undoHistory.get(historyIndex));
+				if (args.length == 1 && args[0].equalsIgnoreCase("toggle")) {
+					WorldEdit.undo = !WorldEdit.undo;
+					if (WorldEdit.undo) {
+						WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.undo.enabledUndo"));
 					} else {
-						throw new CommandException("text.cutelessmod.clientcommands.undo.invalidIndex");
+						WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.undo.disabledUndo"));
 					}
 				} else {
-					throw new CommandException("text.cutelessmod.clientcommands.undo.noHistoryAvaliable");
+					if (undoHistory.size() > 0) {
+						int historyIndex = 0;
+						if (args.length >= 1) {
+							historyIndex = parseInt(args[0], 0, 100);
+						}
+						if (undoHistory.size() - 1 >= historyIndex) {
+							World world = sender.getEntityWorld();
+							HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
+							setBlockHandler.setBlocks(undoHistory.get(historyIndex));
+						} else {
+							throw new CommandException("text.cutelessmod.clientcommands.undo.invalidIndex");
+						}
+					} else {
+						throw new CommandException("text.cutelessmod.clientcommands.undo.noHistoryAvaliable");
+					}
 				}
 			} else {
 				throw new CommandException("text.cutelessmod.clientcommands.wrongGamemode");
 			}
+		}
+	}
+
+	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
+		if (args.length == 1) {
+			return getListOfStringsMatchingLastWord(args, "toggle");
+		} else {
+			return Collections.emptyList();
 		}
 	}
 }

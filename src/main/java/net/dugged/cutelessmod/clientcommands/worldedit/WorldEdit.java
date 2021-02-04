@@ -13,6 +13,7 @@ public class WorldEdit {
 	private static final Minecraft mc = Minecraft.getMinecraft();
 	public static BlockPos posA = null;
 	public static BlockPos posB = null;
+	public static boolean undo = true;
 
 	public static boolean hasSelection() {
 		return posA != null && posB != null;

@@ -1,5 +1,6 @@
 package net.dugged.cutelessmod.clientcommands;
 
+import net.dugged.cutelessmod.CutelessMod;
 import net.dugged.cutelessmod.clientcommands.worldedit.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
@@ -11,6 +12,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.IntStream;
@@ -20,6 +22,7 @@ import static net.minecraft.util.text.TextFormatting.RESET;
 
 public class ClientCommandHandler extends CommandHandler {
 	public static final ClientCommandHandler instance = new ClientCommandHandler();
+	public static int PACKET_LIMIT = 5000;
 	private final Minecraft mc = Minecraft.getMinecraft();
 	public CopyOnWriteArrayList<Handler> handlers = new CopyOnWriteArrayList<>();
 	public String[] latestAutoComplete = null;
@@ -146,7 +149,7 @@ public class ClientCommandHandler extends CommandHandler {
 	}
 
 	public void tick() {
-		if (handlers.size() > 0) {
+		if (handlers.size() > 0 && Arrays.stream(CutelessMod.receivedPackets).sum() <= PACKET_LIMIT && Arrays.stream(CutelessMod.sendPackets).sum() <= PACKET_LIMIT) {
 			if (mc.player == null) {
 				handlers.clear();
 			}

@@ -1,6 +1,9 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
-import net.dugged.cutelessmod.clientcommands.*;
+import net.dugged.cutelessmod.clientcommands.ClientCommand;
+import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
+import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
+import net.dugged.cutelessmod.clientcommands.HandlerUndo;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
@@ -54,7 +57,7 @@ public class CommandReplace extends ClientCommand {
 				if (args.length == 4) {
 					blockstate2 = convertArgToBlockState(block2, args[3]);
 				} else {
-					blockstate2 =  block2.getDefaultState();
+					blockstate2 = block2.getDefaultState();
 				}
 				Thread t = new Thread(() -> replaceBlocks(world, blockstate1, blockstate2));
 				t.start();
