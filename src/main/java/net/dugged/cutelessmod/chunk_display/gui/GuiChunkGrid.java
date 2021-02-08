@@ -13,7 +13,6 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
-import java.util.Random;
 
 public class GuiChunkGrid extends GuiScreen {
 
@@ -33,7 +32,7 @@ public class GuiChunkGrid extends GuiScreen {
 	private static final float MINIMAP_HEIGHT = 0.45f;
 	public static GuiChunkGrid instance;
 	public static ChunkGridStyle style = ChunkGridStyle.CHECKERBOARD;
-//	public static ChunkGridStyle style = ChunkGridStyle.values()[new Random().nextInt(ChunkGridStyle.values().length)];
+	//	public static ChunkGridStyle style = ChunkGridStyle.values()[new Random().nextInt(ChunkGridStyle.values().length)];
 	private final Controller controller;
 	private final ChunkGrid chunkgrid = new ChunkGrid();
 	private GuiButton startStopButton;

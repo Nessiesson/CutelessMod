@@ -14,8 +14,8 @@ import net.minecraft.util.math.MathHelper;
 
 public class GuiCompass extends Gui implements ISpectatorMenuRecipient {
 
-	private static final ResourceLocation WIDGETS = new ResourceLocation("textures/gui/widgets.png");
 	public static final ResourceLocation SPECTATOR_WIDGETS = new ResourceLocation("textures/gui/spectator_widgets.png");
+	private static final ResourceLocation WIDGETS = new ResourceLocation("textures/gui/widgets.png");
 	private final Minecraft mc;
 	private long lastSelectionTime;
 	private SpectatorMenu menu;
@@ -110,7 +110,6 @@ public class GuiCompass extends Gui implements ISpectatorMenuRecipient {
 		scrollValue = -(scrollValue < 0 ? -1 : 1);
 		int i;
 		for (i = menu.getSelectedSlot() + scrollValue; i >= 0 && i <= 8 && (menu.getItem(i) == SpectatorMenu.EMPTY_SLOT || !menu.getItem(i).isEnabled()); i += scrollValue) {
-			;
 		}
 
 		if (i >= 0 && i <= 8) {

@@ -58,6 +58,8 @@ public class CutelessMod {
 	private static final KeyBinding spyKey = new KeyBinding("key.cutelessmod.spy", KeyConflictContext.IN_GAME, Keyboard.KEY_Y, Reference.NAME);
 	private static final KeyBinding toggleBeaconAreaKey = new KeyBinding("key.cutelessmod.toggle_beacon_area", KeyConflictContext.IN_GAME, Keyboard.KEY_J, Reference.NAME);
 	private static final KeyBinding chunkDebug = new KeyBinding("key.cutelessmod.chunk_debug", KeyConflictContext.IN_GAME, Keyboard.KEY_F6, Reference.NAME);
+	private static final KeyBinding putItemCounterKey = new KeyBinding("key.cutelessmod.put_item_counter", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
+	private static final KeyBinding resetItemCounterKey = new KeyBinding("key.cutelessmod.reset_item_counter", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	private static final Minecraft mc = Minecraft.getMinecraft();
 	private static final StepAssistHelper stepAssistHelper = new StepAssistHelper();
 	private static final List<KeyBinding> keybinds = new ArrayList<>();
@@ -83,7 +85,7 @@ public class CutelessMod {
 	private String originalTitle;
 	private long axeCooldown = 0;
 	private boolean loggedOut;
-	private CarpetPluginChannel carpetPluginChannel = new CarpetPluginChannel();
+	private final CarpetPluginChannel carpetPluginChannel = new CarpetPluginChannel();
 
 	@Mod.EventHandler
 	public void preInit(final FMLPreInitializationEvent event) {
@@ -110,6 +112,8 @@ public class CutelessMod {
 		ClientRegistry.registerKeyBinding(spyKey);
 		ClientRegistry.registerKeyBinding(toggleBeaconAreaKey);
 		ClientRegistry.registerKeyBinding(chunkDebug);
+		ClientRegistry.registerKeyBinding(putItemCounterKey);
+		ClientRegistry.registerKeyBinding(resetItemCounterKey);
 
 		spy = new ContainerSpy();
 		ClientCommandHandler.instance.init();
@@ -180,6 +184,20 @@ public class CutelessMod {
 
 		if (chunkDebug.isPressed()) {
 			mc.displayGuiScreen(GuiChunkGrid.instance);
+		}
+
+		if (putItemCounterKey.isPressed()) {
+			if (ItemCounter.position != null) {
+				ItemCounter.reset();
+				ItemCounter.position = null;
+			} else {
+				ItemCounter.position = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
+			}
+		}
+
+		if (resetItemCounterKey.isPressed()) {
+			mc.ingameGUI.setOverlayMessage("Reset Item Counter", false);
+			ItemCounter.reset();
 		}
 	}
 

@@ -18,6 +18,7 @@ Ported the chunk display debug tool from carpet client used for carpet servers. 
 |/repeatlast|-|Repeats the last send command, alias /; theres also an additional hotkey|
 |/stone|-|Places a stone at the current location|
 |/undo|\<index>|Undo for /fill /clone and WorldEdit operations, default index 0 is latest operation|
+|/undo|toggle|Toggle if operations are recorded for undo, defaults to true on startup|
 
 
 ### WorldEdit Commands:
@@ -42,11 +43,11 @@ Ported the chunk display debug tool from carpet client used for carpet servers. 
 |/randomize|\<percentage> \<block> \[dataValue:state],\<block> \[dataValue:state]...|Fills selected area with array of blocks by given percentage|
 |/replace|\<block> \<dataValue:state> \<block> \<dataValue:state>|Replaces one block by another|
 |/selection|\<move, expand> \<up, down, north, east, south, west> \[amount]|Expands or moves current selection in given direction by amount|
-|/selection|\<clear>|Clears current selection|
+|/selection|\clear|Clears current selection|
 |/set|\<block> \<dataValue:state>|Fills the selection with given block|
 |/size|-|Outputs the current selection size and volume|
 |/sphere|\<block> \<dataValue:state> \<radius>|Generates a sphere centered on 1x1 selection with given block|
-|/stack|\<count> \[blocks in between] \[move selection:true, false]|Repeats selection count times in currently facing direction with optional airgap|
+|/stack|\<count> \[blocks in between] \[masked: true, false] \[move selection:true, false]|Repeats selection count times in currently facing direction with optional airgap|
 |/stackquarter|\[blocks in between]|Mirrors one quarter to either a horizonal or vertical diagonal|
 |/upscale|\<factor>|Upscales the selection by filling cubes of factor^2 size|
 |/walls|\<block> \<dataValue:state> \[wall thickness]|Generates walls around selection with a default thickness of 1 block|

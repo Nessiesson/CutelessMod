@@ -3,7 +3,7 @@ package net.dugged.cutelessmod.mixins;
 import net.dugged.cutelessmod.AreaSelectionRenderer;
 import net.dugged.cutelessmod.Configuration;
 import net.dugged.cutelessmod.CutelessMod;
-import net.dugged.cutelessmod.chunk_display.gui.GuiChunkGrid;
+import net.dugged.cutelessmod.ItemCounter;
 import net.dugged.cutelessmod.clientcommands.worldedit.WorldEdit;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -32,6 +32,7 @@ public abstract class MixinEntityRenderer {
 	@Inject(method = "renderWorldPass", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/profiler/Profiler;endStartSection(Ljava/lang/String;)V", args = "ldc=litParticles"))
 	private void onPostRenderEntities(final int pass, final float partialTicks, final long finishTimeNano, final CallbackInfo ci) {
 		AreaSelectionRenderer.render(partialTicks);
+		ItemCounter.renderPos(partialTicks);
 		if (WorldEdit.posA != null | WorldEdit.posB != null) {
 			final EntityPlayerSP player = Minecraft.getMinecraft().player;
 			final double d1 = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
