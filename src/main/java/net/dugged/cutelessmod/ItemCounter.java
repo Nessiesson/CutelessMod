@@ -15,9 +15,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ItemCounter {
-	public static BlockPos position = null;
 	private static final Map<ItemStack, Long> itemList = new HashMap<>();
 	private static final List<Integer> itemIds = new ArrayList<>();
+	public static BlockPos position = null;
 
 	public static void renderPos(float partialTicks) {
 		if (position == null) {
@@ -59,11 +59,12 @@ public class ItemCounter {
 			if (8 + ((count + 1) * 4 + 16 * (count + 1)) > sr.getScaledHeight()) {
 				break;
 			}
+			int yOffset = mc.player.getActivePotionEffects().isEmpty() ? 0 : 20;
 			String s = sortedMap.get(stack).toString();
-			mc.fontRenderer.drawString(s, sr.getScaledWidth() - 24 - 4 - mc.fontRenderer.getStringWidth(s), 17 - (mc.fontRenderer.FONT_HEIGHT / 2) + (count * 4 + 16 * count), 16777215);
+			mc.fontRenderer.drawString(s, sr.getScaledWidth() - 24 - 4 - mc.fontRenderer.getStringWidth(s), yOffset + 13 - (mc.fontRenderer.FONT_HEIGHT / 2) + (count * 4 + 16 * count), 16777215);
 			float f = (float) stack.getAnimationsToGo() - partialTicks;
 			int x = sr.getScaledWidth() - 24;
-			int y = 8 + (count * 4 + 16 * count);
+			int y = yOffset + 4 + (count * 4 + 16 * count);
 			if (f > 0.0F) {
 				GlStateManager.pushMatrix();
 				float f1 = 1.0F + f / 5.0F;
