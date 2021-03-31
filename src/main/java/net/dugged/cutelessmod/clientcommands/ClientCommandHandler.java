@@ -59,6 +59,7 @@ public class ClientCommandHandler extends CommandHandler {
 		instance.registerCommand(new CommandRandomize());
 		instance.registerCommand(new CommandReplace());
 		instance.registerCommand(new CommandStackQuarter());
+		instance.registerCommand(new CommandCancel());
 	}
 
 	@Override
@@ -67,6 +68,8 @@ public class ClientCommandHandler extends CommandHandler {
 
 		if (message.startsWith("/")) {
 			message = message.substring(1);
+		} else {
+			return 0;
 		}
 
 		final String[] temp = message.split(" ");
@@ -140,7 +143,12 @@ public class ClientCommandHandler extends CommandHandler {
 					progress += handler.getProgress();
 				}
 			}
-			return progress / handlers.stream().filter(hand -> hand.isWorldEditHandler && hand.running).count();
+			float percent = progress / handlers.stream().filter(hand -> hand.isWorldEditHandler && hand.running).count();
+			if (percent > 0) {
+				return percent;
+			} else {
+				return -1;
+			}
 		} else return 0;
 	}
 

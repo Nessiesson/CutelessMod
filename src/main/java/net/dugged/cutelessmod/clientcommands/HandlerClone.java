@@ -50,14 +50,14 @@ public class HandlerClone extends Handler {
 			final int handlerCount = ClientCommandHandler.instance.countHandlerType(HandlerClone.class);
 			int commandsExecuted = 0;
 			while (destinations.size() > 0 && commandsExecuted < (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
-				BlockPos destinationPosition = destinations.get(0);
+				BlockPos destinationPosition = destinations.get(destinations.size() - 1);
 				BlockPos iteratorPosition = iteratorPositions.get(destinationPosition);
 				AxisAlignedBB bb = sourceAreaMap.get(destinationPosition);
 				for (int x = (int) bb.minX; x < bb.maxX + 1; x += CUBE_LENGTH) {
 					for (int y = (int) bb.minY; y < bb.maxY + 1; y += CUBE_LENGTH) {
 						for (int z = (int) bb.minZ; z < bb.maxZ + 1; z += CUBE_LENGTH) {
 							if (iteratorPosition == null) {
-								destinations.remove(0);
+								destinations.remove(destinations.size() - 1);
 								return;
 							}
 							if (x == (int) bb.minX && y == (int) bb.minY && z == (int) bb.minZ) {
@@ -85,7 +85,7 @@ public class HandlerClone extends Handler {
 				sourceAreaMap.remove(bb);
 				if (!sourceAreaMap.containsKey(bb)) {
 					iteratorPositions.remove(bb);
-					destinations.remove(0);
+					destinations.remove(destinations.size() - 1);
 				}
 			}
 		} else if (age > 5) {

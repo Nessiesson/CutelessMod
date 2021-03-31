@@ -43,7 +43,7 @@ public class CutelessModUtils {
 		return Keyboard.isKeyDown(42) || Keyboard.isKeyDown(54);
 	}
 
-	public static RayTraceResult rayTrace(Vec3d vec31, Vec3d vec32, boolean displayRaytrace) {
+	public static RayTraceResult rayTrace(Vec3d vec31, Vec3d vec32, int dist, boolean displayRaytrace, boolean stopMidAir) {
 		World world = mc.world;
 		if (!Double.isNaN(vec31.x) && !Double.isNaN(vec31.y) && !Double.isNaN(vec31.z)) {
 			if (!Double.isNaN(vec32.x) && !Double.isNaN(vec32.y) && !Double.isNaN(vec32.z)) {
@@ -65,7 +65,7 @@ public class CutelessModUtils {
 				}
 
 				RayTraceResult raytraceresult2 = null;
-				int k1 = 500;
+				int k1 = dist;
 
 				while (k1-- >= 0) {
 					if (Double.isNaN(vec31.x) || Double.isNaN(vec31.y) || Double.isNaN(vec31.z)) {
@@ -151,7 +151,7 @@ public class CutelessModUtils {
 					blockpos = new BlockPos(l, i1, j1);
 					IBlockState iblockstate1 = world.getBlockState(blockpos);
 					Block block1 = iblockstate1.getBlock();
-					if (displayRaytrace && k1 <= 494) {
+					if (displayRaytrace && k1 <= dist - 1) {
 						mc.world.spawnParticle(EnumParticleTypes.CRIT, true, vec31.x, vec31.y, vec31.z, 0, 0, 0, 5);
 					}
 					if (iblockstate1.getMaterial() == Material.PORTAL || iblockstate1.getCollisionBoundingBox(world, blockpos) != Block.NULL_AABB) {
@@ -164,6 +164,8 @@ public class CutelessModUtils {
 						} else {
 							raytraceresult2 = new RayTraceResult(RayTraceResult.Type.MISS, vec31, enumfacing, blockpos);
 						}
+					} else if (stopMidAir) {
+						raytraceresult2 = new RayTraceResult(RayTraceResult.Type.MISS, vec31, enumfacing, blockpos);
 					}
 				}
 				return raytraceresult2;

@@ -25,6 +25,7 @@ Ported the chunk display debug tool from carpet client used for carpet servers. 
 
 |Command|Parameters|Function|
 | ------------ | ------------ | ------------ |
+|/cancel|-|Cancels all running operations|
 |/center|\[block] \[dataValue:state]|Marks the center of the selection with default block glowstone, min. 1x1 max. 2x2|
 |/count|\<exclusive: false, true> \<block> \<dataValue:state>|Counts given block exclusive or inclusive|
 |/cyl|\<block> \<dataValue:state> <radius> \[height]|Generates a cylinder around 1x1 selection with given block and radius|

@@ -48,7 +48,6 @@ public class ItemCounter {
 		}
 		Minecraft mc = Minecraft.getMinecraft();
 		ScaledResolution sr = new ScaledResolution(mc);
-		sr.getScaledWidth();
 		GlStateManager.enableRescaleNormal();
 		GlStateManager.enableBlend();
 		GlStateManager.tryBlendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA, GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
@@ -59,12 +58,11 @@ public class ItemCounter {
 			if (8 + ((count + 1) * 4 + 16 * (count + 1)) > sr.getScaledHeight()) {
 				break;
 			}
-			int yOffset = mc.player.getActivePotionEffects().isEmpty() ? 0 : 20;
+			int yOffset = mc.player.getActivePotionEffects().isEmpty() ? 0 : 16;
 			String s = sortedMap.get(stack).toString();
-			mc.fontRenderer.drawString(s, sr.getScaledWidth() - 24 - 4 - mc.fontRenderer.getStringWidth(s), yOffset + 13 - (mc.fontRenderer.FONT_HEIGHT / 2) + (count * 4 + 16 * count), 16777215);
 			float f = (float) stack.getAnimationsToGo() - partialTicks;
 			int x = sr.getScaledWidth() - 24;
-			int y = yOffset + 4 + (count * 4 + 16 * count);
+			int y = yOffset + 8 + (count * 4 + 16 * count);
 			if (f > 0.0F) {
 				GlStateManager.pushMatrix();
 				float f1 = 1.0F + f / 5.0F;
@@ -77,6 +75,7 @@ public class ItemCounter {
 			if (f > 0.0F) {
 				GlStateManager.popMatrix();
 			}
+			mc.fontRenderer.drawString(s, sr.getScaledWidth() - 24 - 4 - mc.fontRenderer.getStringWidth(s), yOffset + 17 - (mc.fontRenderer.FONT_HEIGHT / 2) + (count * 4 + 16 * count), 16777215);
 			count++;
 		}
 		RenderHelper.disableStandardItemLighting();

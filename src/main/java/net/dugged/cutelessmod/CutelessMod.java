@@ -330,14 +330,15 @@ public class CutelessMod {
 	public void onLeftClickEmpty(final PlayerInteractEvent.LeftClickEmpty event) {
 		if (Configuration.worldeditCompass && mc.world != null && mc.player.isCreative() && mc.player.getHeldItemMainhand().getItem() instanceof ItemCompass) {
 			boolean teleported = false;
-			boolean displayOnly = CutelessModUtils.isShiftKeyDown();
+			boolean stopInAir = CutelessModUtils.isShiftKeyDown();
+			int distance = stopInAir ? 50 : 500;
 			Vec3d vec3d = mc.player.getPositionEyes(mc.getRenderPartialTicks());
 			Vec3d vec3d1 = mc.player.getLook(mc.getRenderPartialTicks());
 			Vec3d vec3d2 = vec3d.add(vec3d1.x * 500, vec3d1.y * 500, vec3d1.z * 500);
-			RayTraceResult rayTraceResult = CutelessModUtils.rayTrace(vec3d, vec3d2, displayOnly);
+			RayTraceResult rayTraceResult = CutelessModUtils.rayTrace(vec3d, vec3d2, distance, true, stopInAir);
 			if (rayTraceResult != null) {
 				BlockPos destinationBlock = rayTraceResult.getBlockPos();
-				if (displayOnly) {
+				if (stopInAir) {
 					for (int y = 0; y < 2; y++) {
 						for (int z = 0; z < 2; z++) {
 							for (float i = 0; i < 1.25; i += 0.25) {
@@ -359,6 +360,11 @@ public class CutelessMod {
 							}
 						}
 					}
+					destinationBlock = destinationBlock.up();
+					if (mc.world.getBlockState(destinationBlock).getCollisionBoundingBox(mc.world, destinationBlock) == null && mc.world.getBlockState(destinationBlock.up()).getCollisionBoundingBox(mc.world, destinationBlock.up()) == null) {
+						mc.player.connection.sendPacket(new CPacketChatMessage("/tp " + destinationBlock.getX() + " " + destinationBlock.getY() + " " + destinationBlock.getZ()));
+						teleported = true;
+					}
 				} else {
 					destinationBlock = destinationBlock.up();
 					while (destinationBlock.getY() <= mc.world.getHeight()) {
@@ -371,7 +377,7 @@ public class CutelessMod {
 					}
 				}
 			}
-			if (!teleported && !displayOnly) {
+			if (!teleported) {
 				TextComponentTranslation error = new TextComponentTranslation("text.cutelessmod.error_while_teleporting");
 				error.getStyle().setColor(TextFormatting.RED);
 				mc.player.sendMessage(error);

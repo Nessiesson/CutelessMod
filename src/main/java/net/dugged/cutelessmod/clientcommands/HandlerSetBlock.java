@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class HandlerSetBlock extends Handler {
 	private static final int COMMANDS_EXECUTED_PER_TICK = 512;
-	private static final int BLOCKS_PROCESSED_PER_TICK = 4096;
+	private static final int BLOCKS_PROCESSED_PER_TICK = 16384;
 	public static boolean setblockPermission = false;
 	private final List<BlockPos> blockPositions = new ArrayList<>();
 	private final List<BlockPos> skippedPositions = new ArrayList<>();
@@ -79,13 +79,13 @@ public class HandlerSetBlock extends Handler {
 			int commandsExecuted = 0;
 			int counter = 0;
 			while (counter <= BLOCKS_PROCESSED_PER_TICK && blockPositions.size() > 0 && commandsExecuted < (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
-				final BlockPos pos = blockPositions.get(0);
+				final BlockPos pos = blockPositions.get(blockPositions.size() - 1);
 				IBlockState blockState = blocksToPlace.get(pos);
 				counter++;
 				currentCount++;
 				if (blockState != null) {
 					if (placeLast(blockState.getBlock()) && !skippedPositions.contains(pos)) {
-						blockPositions.add(blockPositions.size(), pos);
+						blockPositions.add(0, pos);
 						skippedPositions.add(pos);
 					} else {
 						if (sendSetBlockCommand(pos, blockState)) {
@@ -94,7 +94,7 @@ public class HandlerSetBlock extends Handler {
 						blocksToPlace.remove(pos);
 					}
 				}
-				blockPositions.remove(0);
+				blockPositions.remove(blockPositions.size() - 1);
 			}
 		} else if (age > 5) {
 			finish();
@@ -103,7 +103,6 @@ public class HandlerSetBlock extends Handler {
 
 	private boolean sendSetBlockCommand(BlockPos pos, IBlockState blockState) {
 		final String name = RegistryCache.getBlockName(blockState);
-		//final String name = blockState.getBlock().getRegistryName().toString();
 		final String metadata = Integer.toString(blockState.getBlock().getMetaFromState(blockState));
 		if (setblockPermission && world.isBlockLoaded(pos) && pos.getY() >= 0 && pos.getY() < 256 && !world.getBlockState(pos).equals(blockState)) {
 			last_execution = age;

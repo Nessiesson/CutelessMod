@@ -47,14 +47,14 @@ public class HandlerFill extends Handler {
 			final int handlerCount = ClientCommandHandler.instance.countHandlerType(HandlerFill.class);
 			int commandsExecuted = 0;
 			while (areas.size() > 0 && commandsExecuted < (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
-				AxisAlignedBB bb = areas.get(0);
+				AxisAlignedBB bb = areas.get(areas.size() - 1);
 				BlockPos iteratorPosition = iteratorPositions.get(bb);
 				IBlockState blockState = blockStateMap.get(bb);
 				for (int x = (int) bb.minX; x < bb.maxX + 1; x += CUBE_LENGTH) {
 					for (int y = (int) bb.minY; y < bb.maxY + 1; y += CUBE_LENGTH) {
 						for (int z = (int) bb.minZ; z < bb.maxZ + 1; z += CUBE_LENGTH) {
 							if (iteratorPosition == null) {
-								areas.remove(0);
+								areas.remove(areas.size() - 1);
 								return;
 							}
 							if (x == (int) bb.minX && y == (int) bb.minY && z == (int) bb.minZ) {
@@ -77,7 +77,7 @@ public class HandlerFill extends Handler {
 				}
 				iteratorPositions.remove(bb);
 				blockStateMap.remove(bb);
-				areas.remove(0);
+				areas.remove(areas.size() - 1);
 			}
 		} else if (age > 5) {
 			finish();
