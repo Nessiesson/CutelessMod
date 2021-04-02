@@ -1,6 +1,7 @@
 package net.dugged.cutelessmod.mixins;
 
 import net.dugged.cutelessmod.CutelessMod;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiOverlayDebug;
 import net.minecraft.util.math.BlockPos;
@@ -9,6 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,5 +34,10 @@ public abstract class MixinGuiOverlayDebug {
 	@Redirect(method = "call", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;getVersion()Ljava/lang/String;"))
 	private String pureVanilla(final Minecraft mc) {
 		return "vanilla++";
+	}
+
+	@Inject(method = "getDebugInfoRight", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/registry/RegistryNamespacedDefaultedByKey;getNameForObject(Ljava/lang/Object;)Ljava/lang/Object;"), locals = LocalCapture.CAPTURE_FAILHARD)
+	private void showBlockMetadata(final CallbackInfoReturnable<List<String>> cir, final long i, final long j, final long k, final long l, final List<String> list, final BlockPos pos, final IBlockState state) {
+		list.add("Metadata: " + state.getBlock().getMetaFromState(state));
 	}
 }

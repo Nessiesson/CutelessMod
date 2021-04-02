@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class HandlerSetBlock extends Handler {
 	private static final int COMMANDS_EXECUTED_PER_TICK = 512;
-	private static final int BLOCKS_PROCESSED_PER_TICK = 16384;
+	private static final int BLOCKS_PROCESSED_PER_TICK = 32768;
 	public static boolean setblockPermission = false;
 	private final List<BlockPos> blockPositions = new ArrayList<>();
 	private final List<BlockPos> skippedPositions = new ArrayList<>();

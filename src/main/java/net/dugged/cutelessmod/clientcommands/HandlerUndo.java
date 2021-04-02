@@ -10,7 +10,7 @@ import net.minecraft.world.World;
 import java.util.*;
 
 public class HandlerUndo extends Handler {
-	private static final int BLOCKS_PROCESSED_PER_TICK = 4096;
+	private static final int BLOCKS_PROCESSED_PER_TICK = 32768;
 	private final List<Iterator> iterators = new ArrayList<>();
 	private final Map<BlockPos, IBlockState> blockList = new HashMap<>();
 	public String command;

@@ -170,7 +170,7 @@ public class CommandDrain extends ClientCommand {
 				if (args.length == 1) {
 					radius = parseInt(args[0]);
 				} else {
-					radius = 100;
+					radius = 50;
 				}
 				Thread t = new Thread(() -> drainBody(world, pos, radius));
 				t.start();
