@@ -11,6 +11,7 @@
 		"MixinGuiScreen",
 		"MixinMinecraft",
 		"MixinNetHandlerPlayClient",
+		"MixinPlayerMenuObject",
 		"MixinTabCompleter"
 	]
 }

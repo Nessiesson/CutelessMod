@@ -1,7 +1,11 @@
 package net.dugged.cutelessmod.clientcommands.mixins;
 
 import net.dugged.cutelessmod.clientcommands.*;
+import net.dugged.cutelessmod.clientcommands.worldedit.WorldEdit;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.network.Packet;
+import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.server.SPacketChat;
 import net.minecraft.network.play.server.SPacketTabComplete;
 import org.spongepowered.asm.mixin.Mixin;
@@ -58,6 +62,17 @@ public class MixinNetHandlerPlayClient {
 			HandlerClone.clonePermission = true;
 		} else if (contains(packetIn.getMatches(), "gamerule")) {
 			Handler.gamerulePermission = true;
+		}
+	}
+
+	@Inject(method = "sendPacket", at = @At(value = "INVOKE"))
+	private void onSendChat(Packet<?> packetIn, CallbackInfo ci) {
+		if (packetIn instanceof CPacketChatMessage) {
+			String msg = ((CPacketChatMessage) packetIn).getMessage();
+			String[] args = msg.split(" ");
+			if (args[0].equals("/tp")) {
+				ClientCommandHandler.instance.lastPosition.update(WorldEdit.playerPos(), Minecraft.getMinecraft().player.dimension);
+			}
 		}
 	}
 }

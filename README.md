@@ -14,6 +14,7 @@ Ported the chunk display debug tool from carpet client used for carpet servers. 
 ### Client Commands:
 |Command|Parameters|Function|
 | ------------ | ------------ | ------------ |
+|/back|-|Teleports you back to the last location where /tp or spectator teleport was used|
 |/ping|-|Returns current ping, might take a while after login to normalize|
 |/repeatlast|-|Repeats the last send command, alias /; theres also an additional hotkey|
 |/stone|-|Places a stone at the current location|

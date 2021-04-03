@@ -82,10 +82,10 @@ public class CutelessMod {
 	public static StatPlugin statPlugin = new StatPlugin();
 	public static String lastCommand = "";
 	public static GuiCompass guiCompass = new GuiCompass(mc);
+	private final CarpetPluginChannel carpetPluginChannel = new CarpetPluginChannel();
 	private String originalTitle;
 	private long axeCooldown = 0;
 	private boolean loggedOut;
-	private final CarpetPluginChannel carpetPluginChannel = new CarpetPluginChannel();
 
 	@Mod.EventHandler
 	public void preInit(final FMLPreInitializationEvent event) {

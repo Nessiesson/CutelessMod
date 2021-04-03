@@ -8,6 +8,7 @@ import net.minecraft.command.CommandHandler;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
@@ -25,6 +26,7 @@ public class ClientCommandHandler extends CommandHandler {
 	public static int PACKET_LIMIT = 5000;
 	private final Minecraft mc = Minecraft.getMinecraft();
 	public CopyOnWriteArrayList<Handler> handlers = new CopyOnWriteArrayList<>();
+	public Position lastPosition = new Position(null, 0);
 	public String[] latestAutoComplete = null;
 	private long tick = 0;
 
@@ -46,7 +48,6 @@ public class ClientCommandHandler extends CommandHandler {
 		instance.registerCommand(new CommandMove());
 		instance.registerCommand(new CommandFlip());
 		instance.registerCommand(new CommandStack());
-		//instance.registerCommand(new CommandRotate());
 		instance.registerCommand(new CommandLine());
 		instance.registerCommand(new CommandPolygon());
 		instance.registerCommand(new CommandSelection());
@@ -60,6 +61,7 @@ public class ClientCommandHandler extends CommandHandler {
 		instance.registerCommand(new CommandReplace());
 		instance.registerCommand(new CommandStackQuarter());
 		instance.registerCommand(new CommandCancel());
+		instance.registerCommand(new CommandBack());
 	}
 
 	@Override
@@ -173,5 +175,19 @@ public class ClientCommandHandler extends CommandHandler {
 			HandlerFill.getGameruleStates();
 		}
 		tick++;
+	}
+
+	public class Position {
+		public BlockPos position;
+		public int dimension;
+
+		Position(BlockPos pos, int dim) {
+			update(pos, dim);
+		}
+
+		public void update(BlockPos pos, int dim) {
+			dimension = dim;
+			position = pos;
+		}
 	}
 }
