@@ -34,11 +34,14 @@ public abstract class MixinGuiMultiplayer {
 			final int startIndex = this.serverListSelector.getAmountScrolled() / this.serverListSelector.getSlotHeight();
 			if (++cutelessmodTick >= 300) {
 				cutelessmodTick = 0;
-				for (int j = startIndex; j <= visibleSlots; j++) {
-					try {
-						this.oldServerPinger.ping(this.savedServerList.getServerData(j));
-					} catch (Exception ignored) {
-					}
+				for (int i = startIndex; i <= visibleSlots; i++) {
+					final int j = i;
+					IServerListEntryNormal.getExecutor().execute(() -> {
+						try {
+							this.oldServerPinger.ping(this.savedServerList.getServerData(j));
+						} catch (Exception ignored) {
+						}
+					});
 				}
 
 				this.serverListSelector.updateOnlineServers(this.savedServerList);
