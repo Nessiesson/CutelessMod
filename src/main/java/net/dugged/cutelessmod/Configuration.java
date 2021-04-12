@@ -10,6 +10,8 @@ public class Configuration {
 	public static boolean alwaysRenderTileEntities = false;
 	public static boolean alwaysShowPing = false;
 	public static boolean alwaysSingleplayerCheats = false;
+	@Config.RequiresMcRestart
+	public static boolean chestWithoutTESR = false;
 	public static boolean clickBlockMining = false;
 	public static boolean clientEntityUpdates = true;
 	public static boolean colouredFireworksTrail = false;
