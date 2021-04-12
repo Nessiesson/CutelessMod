@@ -2,13 +2,14 @@ buildscript {
 	repositories {
 		jcenter()
 		maven { url = "https://files.minecraftforge.net/maven" }
-		maven { url = "https://repo.spongepowered.org/maven" }
+		maven { url = "https://repo.spongepowered.org/repository/maven-public" }
 		maven { url = "https://plugins.gradle.org/m2" }
 	}
+
 	dependencies {
 		classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
 		classpath "org.spongepowered:mixingradle:0.6-SNAPSHOT"
-		classpath "com.github.jengelman.gradle.plugins:shadow:2.0.4"
+		classpath "com.github.jengelman.gradle.plugins:shadow:4.0.4"
 	}
 }
 
@@ -36,11 +37,7 @@ minecraft {
 	replace "@MODNAME@", modName
 	replace "@MODID@", modId
 
-	def args = [
-			"-Dmixin.debug=true"
-	]
-	clientJvmArgs.addAll(args)
-	serverJvmArgs.addAll(args)
+	clientJvmArgs.add("-Dmixin.debug=true")
 }
 
 jar.manifest.attributes(
@@ -52,11 +49,11 @@ jar.manifest.attributes(
 
 repositories {
 	mavenCentral()
-	maven { url = "https://repo.spongepowered.org/maven" }
+	maven { url = "https://repo.spongepowered.org/repository/maven-public" }
 }
 
 dependencies {
-	compile "org.spongepowered:mixin:0.8.2"
+	compile "org.spongepowered:mixin:0.8.3-SNAPSHOT"
 }
 
 mixin {
@@ -88,13 +85,4 @@ processResources {
 
 		expand "version": project.version, "mcversion": project.minecraft.version, "modName": modName, "modId": modId
 	}
-
-	from(sourceSets.main.resources.srcDirs) {
-		exclude "mcmod.info"
-		exclude "pack.mcmeta"
-	}
-}
-
-runClient {
-	jvmArgs "-Dmixin.debug=true"
 }

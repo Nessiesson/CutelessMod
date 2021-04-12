@@ -15,12 +15,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Block.class)
 public abstract class MixinBlock {
-	@ModifyArg(method = "registerBlocks", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;setTranslationKey(Ljava/lang/String;)Lnet/minecraft/block/Block;", ordinal = 0), slice = @Slice(from = @At(value = "NEW", target = "net/minecraft/block/BlockMushroom")))
+	@ModifyArg(method = "registerBlocks", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;setTranslationKey(Ljava/lang/String;)Lnet/minecraft/block/Block;", ordinal = 0), slice = @Slice(from = @At(value = "NEW", args = "class=net/minecraft/block/BlockMushroom", ordinal = 0)))
 	private static String brownMushroomTranslationKey(final String key) {
 		return "brown_mushroom";
 	}
 
-	@ModifyArg(method = "registerBlocks", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;setTranslationKey(Ljava/lang/String;)Lnet/minecraft/block/Block;", ordinal = 1), slice = @Slice(from = @At(value = "NEW", target = "net/minecraft/block/BlockMushroom")))
+	@ModifyArg(method = "registerBlocks", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;setTranslationKey(Ljava/lang/String;)Lnet/minecraft/block/Block;", ordinal = 1), slice = @Slice(from = @At(value = "NEW", args = "class=net/minecraft/block/BlockMushroom", ordinal = 0)))
 	private static String redMushroomTranslationKey(final String key) {
 		return "red_mushroom";
 	}
