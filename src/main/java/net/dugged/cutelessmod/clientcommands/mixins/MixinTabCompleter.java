@@ -7,7 +7,11 @@ import net.minecraft.util.TabCompleter;
 import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.StringUtils;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TabCompleter.class)
@@ -32,8 +36,8 @@ public abstract class MixinTabCompleter {
 	}
 
 	@Redirect(method = "setCompletions", at = @At(value = "INVOKE", target = "Lorg/apache/commons/lang3/StringUtils;getCommonPrefix([Ljava/lang/String;)Ljava/lang/String;", remap = false))
-	private String adjustedGetCommonPrefix(String... strs) {
-		final String string = StringUtils.getCommonPrefix(strs);
+	private String adjustedGetCommonPrefix(String[] strings) {
+		final String string = StringUtils.getCommonPrefix(strings);
 		return TextFormatting.getTextWithoutFormattingCodes(string);
 	}
 }
