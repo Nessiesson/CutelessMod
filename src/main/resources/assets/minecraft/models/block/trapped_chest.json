@@ -4,7 +4,8 @@
 		"all": "cutelessmod:blocks/trapped_chest"
 	},
 	"elements": [
-		{   "from": [ 1, 0, 1 ],
+		{
+			"from": [ 1, 0, 1 ],
 			"to": [ 15, 14, 15 ],
 			"faces": {
 				"down":  { "texture": "#all" },
