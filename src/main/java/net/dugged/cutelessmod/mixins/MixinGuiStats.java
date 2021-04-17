@@ -6,8 +6,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.gui.achievement.GuiStats;
 import net.minecraft.client.resources.I18n;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -17,8 +15,6 @@ import java.io.IOException;
 
 @Mixin(GuiStats.class)
 public class MixinGuiStats extends GuiScreen {
-
-	private static final Logger LOGGER = LogManager.getLogger();
 	private GuiTextField textField;
 	private long lastTick = 0;
 	private int cooldown = 0;
@@ -52,7 +48,7 @@ public class MixinGuiStats extends GuiScreen {
 					button.displayString = I18n.format("text.cutelessmod.disconnect");
 				}
 			} catch (Exception exception) {
-				LOGGER.warn("Unable to execute StatPlugin: {}", exception.getMessage());
+				CutelessMod.LOGGER.warn("Unable to execute StatPlugin: {}", exception.getMessage());
 			}
 			cooldown = 10;
 			ci.cancel();

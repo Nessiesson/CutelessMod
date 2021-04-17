@@ -1,8 +1,5 @@
 package net.dugged.cutelessmod;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -10,7 +7,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class StatPlugin {
-	private static final Logger LOGGER = LogManager.getLogger();
 	private final ExecutorService service = Executors.newCachedThreadPool();
 	public long lastTick = 0;
 	private DataOutputStream streamOut;
@@ -54,7 +50,7 @@ public class StatPlugin {
 				}
 				streamOut.flush();
 			} catch (IOException e) {
-				LOGGER.info("An error occured while sending to the OBS-Plugin!");
+				CutelessMod.LOGGER.info("An error occured while sending to the OBS-Plugin!");
 			}
 		}
 	}
