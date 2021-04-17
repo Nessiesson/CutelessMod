@@ -53,11 +53,11 @@ repositories {
 }
 
 dependencies {
-	compile "org.spongepowered:mixin:0.8.3-SNAPSHOT"
+	compile "org.spongepowered:mixin:0.8.2"
 }
 
 mixin {
-	add sourceSets.main, "mixins.cutelessmod.refmap.json"
+	add sourceSets.main, "mixins.${modId}.refmap.json"
 }
 
 shadowJar {
