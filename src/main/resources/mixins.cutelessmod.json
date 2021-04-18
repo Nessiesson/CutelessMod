@@ -5,7 +5,6 @@
 	"minVersion": "0.7.3",
 	"compatibilityLevel": "JAVA_8",
 	"mixins": [
-		"IBlockChest",
 		"IEntityBeacon",
 		"IGuiButtonImage",
 		"IGuiChat",
@@ -85,7 +84,6 @@
 		"MixinSpectatorMenu",
 		"MixinTeleportToPlayer",
 		"MixinTileEntityBeaconRenderer",
-		"MixinTileEntityChest",
 		"MixinTileEntityChestRenderer",
 		"MixinTileEntityPiston",
 		"MixinTileEntityPistonRenderer",

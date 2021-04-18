@@ -4,15 +4,15 @@ import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IStringSerializable;
 
-public enum DoubleChestUtils implements IStringSerializable {
-	NONE("none"),
+public enum DoubleChestSide implements IStringSerializable {
 	LEFT("left"),
-	RIGHT("right");
+	RIGHT("right"),
+	NONE("none");
 
 	private final String name;
-	public static final PropertyEnum<DoubleChestUtils> AABB = PropertyEnum.create("aabb", DoubleChestUtils.class);
+	public static final PropertyEnum<DoubleChestSide> AABB = PropertyEnum.create("aabb", DoubleChestSide.class);
 
-	DoubleChestUtils(String name) {
+	DoubleChestSide(String name) {
 		this.name = name;
 	}
 
@@ -26,7 +26,7 @@ public enum DoubleChestUtils implements IStringSerializable {
 		return this.name;
 	}
 
-	public static DoubleChestUtils getSide(final EnumFacing chestFace, final EnumFacing connection) {
+	public static DoubleChestSide getSide(final EnumFacing chestFace, final EnumFacing connection) {
 		if (chestFace.getAxis().isVertical() || connection.getAxis().isVertical()) {
 			return NONE;
 		}
