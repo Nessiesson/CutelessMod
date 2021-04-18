@@ -39,9 +39,7 @@ public abstract class MixinTileEntityChest extends TileEntity {
 			}
 
 			final IBlockState clientState = serverState.withProperty(DoubleChestUtils.AABB, dir);
-			CutelessMod.LOGGER.info("{} {}", this.pos, clientState);
 			this.world.setBlockState(this.pos, clientState);
-
 		} catch (Throwable t) {
 			CutelessMod.LOGGER.error(t.getStackTrace());
 		}
