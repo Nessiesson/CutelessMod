@@ -1,0 +1,19 @@
+{
+	"variants": {
+		"aabb=none,facing=north":  { "model": "minecraft:trapped_chest_none" },
+		"aabb=left,facing=north":  { "model": "minecraft:trapped_chest_left" },
+		"aabb=right,facing=north": { "model": "minecraft:trapped_chest_right" },
+
+		"aabb=none,facing=south":  { "model": "minecraft:trapped_chest_none", "y": 180 },
+		"aabb=left,facing=south":  { "model": "minecraft:trapped_chest_left", "y": 180 },
+		"aabb=right,facing=south": { "model": "minecraft:trapped_chest_right", "y": 180 },
+
+		"aabb=none,facing=west":   { "model": "minecraft:trapped_chest_none", "y": 270 },
+		"aabb=left,facing=west":   { "model": "minecraft:trapped_chest_left", "y": 270 },
+		"aabb=right,facing=west":  { "model": "minecraft:trapped_chest_right", "y": 270 },
+
+		"aabb=none,facing=east":   { "model": "minecraft:trapped_chest_none", "y": 90 },
+		"aabb=left,facing=east":   { "model": "minecraft:trapped_chest_left", "y": 90 },
+		"aabb=right,facing=east":  { "model": "minecraft:trapped_chest_right", "y": 90 }
+	}
+}
