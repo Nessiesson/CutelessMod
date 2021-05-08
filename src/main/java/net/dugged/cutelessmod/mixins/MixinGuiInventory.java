@@ -35,6 +35,19 @@ public abstract class MixinGuiInventory extends InventoryEffectRenderer {
 		super(container);
 	}
 
+	@ModifyVariable(method = "drawEntityOnScreen(IIIFFLnet/minecraft/entity/EntityLivingBase;)V", ordinal = 1, index = 1, name = "posY", at = @At("HEAD"), argsOnly = true)
+	private static int centreElytraFlyingPlayer(int value, final int posX, final int posY, final int scale) {
+		if (Minecraft.getMinecraft().player.isElytraFlying()) {
+			if (scale == 30) {
+				value -= 25;
+			} else if (scale == 20) {
+				value -= 16;
+			}
+		}
+
+		return value;
+	}
+
 	@Inject(method = "drawScreen", at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/inventory/GuiInventory;recipeBookGui:Lnet/minecraft/client/gui/recipebook/GuiRecipeBook;", ordinal = 1))
 	private void drawScreen(final CallbackInfo ci) {
 		this.hasActivePotionEffects = !this.recipeBookGui.isVisible() && cutelessModShowPotionEffects;
@@ -56,18 +69,5 @@ public abstract class MixinGuiInventory extends InventoryEffectRenderer {
 			this.cutelessModShowPotionEffects = !this.cutelessModShowPotionEffects;
 			ci.cancel();
 		}
-	}
-
-	@ModifyVariable(method = "drawEntityOnScreen(IIIFFLnet/minecraft/entity/EntityLivingBase;)V", ordinal = 1, index = 1, name = "posY", at = @At("HEAD"), argsOnly = true)
-	private static int centreElytraFlyingPlayer(int value, final int posX, final int posY, final int scale) {
-		if (Minecraft.getMinecraft().player.isElytraFlying()) {
-			if (scale == 30) {
-				value -= 25;
-			} else if (scale == 20) {
-				value -= 16;
-			}
-		}
-
-		return value;
 	}
 }

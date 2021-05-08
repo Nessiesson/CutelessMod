@@ -18,10 +18,29 @@ public class CutelessModLoadingPlugin implements IFMLLoadingPlugin {
 	}
 
 	// @formatter:off
-	@Override public String getAccessTransformerClass() { return null; }
-	@Override public void injectData(final Map<String, Object> data) {}
-	@Override public String[] getASMTransformerClass() { return null; }
-	@Nullable @Override public String getSetupClass() { return null; }
-	@Override public String getModContainerClass() { return null; }
+	@Override
+	public String getAccessTransformerClass() {
+		return null;
+	}
+
+	@Override
+	public void injectData(final Map<String, Object> data) {
+	}
+
+	@Override
+	public String[] getASMTransformerClass() {
+		return null;
+	}
+
+	@Nullable
+	@Override
+	public String getSetupClass() {
+		return null;
+	}
+
+	@Override
+	public String getModContainerClass() {
+		return null;
+	}
 	// @formatter:on
 }

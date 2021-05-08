@@ -20,7 +20,7 @@ public abstract class MixinBlock {
 		return "brown_mushroom";
 	}
 
-	@ModifyArg(method = "registerBlocks", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;setTranslationKey(Ljava/lang/String;)Lnet/minecraft/block/Block;", ordinal = 1), slice = @Slice(from = @At(value = "NEW", args ="class=net/minecraft/block/BlockMushroom", ordinal = 0)))
+	@ModifyArg(method = "registerBlocks", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;setTranslationKey(Ljava/lang/String;)Lnet/minecraft/block/Block;", ordinal = 1), slice = @Slice(from = @At(value = "NEW", args = "class=net/minecraft/block/BlockMushroom", ordinal = 0)))
 	private static String redMushroomTranslationKey(final String key) {
 		return "red_mushroom";
 	}

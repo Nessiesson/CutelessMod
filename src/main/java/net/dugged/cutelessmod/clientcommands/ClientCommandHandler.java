@@ -173,6 +173,7 @@ public class ClientCommandHandler extends CommandHandler {
 		if (tick % 36000 == 0 && !mc.ingameGUI.getChatGUI().getChatOpen()) {
 			HandlerSetBlock.getGameruleStates();
 			HandlerFill.getGameruleStates();
+			HandlerClone.getGameruleStates();
 		}
 		tick++;
 	}

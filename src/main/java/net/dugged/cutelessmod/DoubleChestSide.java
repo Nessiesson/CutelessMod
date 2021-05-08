@@ -9,21 +9,11 @@ public enum DoubleChestSide implements IStringSerializable {
 	RIGHT("right"),
 	NONE("none");
 
-	private final String name;
 	public static final PropertyEnum<DoubleChestSide> AABB = PropertyEnum.create("aabb", DoubleChestSide.class);
+	private final String name;
 
 	DoubleChestSide(String name) {
 		this.name = name;
-	}
-
-	@Override
-	public String toString() {
-		return this.name;
-	}
-
-	@Override
-	public String getName() {
-		return this.name;
 	}
 
 	public static DoubleChestSide getSide(final EnumFacing chestFace, final EnumFacing connection) {
@@ -40,5 +30,15 @@ public enum DoubleChestSide implements IStringSerializable {
 		}
 
 		return NONE;
+	}
+
+	@Override
+	public String toString() {
+		return this.name;
+	}
+
+	@Override
+	public String getName() {
+		return this.name;
 	}
 }

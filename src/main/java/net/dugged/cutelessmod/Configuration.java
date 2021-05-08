@@ -61,6 +61,7 @@ public class Configuration {
 	public static boolean showSpectatorTeamMenu = true;
 	public static boolean smoothItemMovement = false;
 	public static boolean sortEnchantmentTooltip = false;
+	public static boolean stackedEntities = false;
 	public static boolean stepAssist = false;
 	public static boolean waterModifiesFoV = true;
 	public static boolean worldeditCompass = false;
