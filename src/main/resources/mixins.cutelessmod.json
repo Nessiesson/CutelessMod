@@ -63,6 +63,7 @@
 		"MixinItemRenderer",
 		"MixinItemStack",
 		"MixinLayerArmorBase",
+		"MixinLazyLoadBase",
 		"MixinMinecraft",
 		"MixinNetHandlerPlayClient",
 		"MixinNetworkManager",
