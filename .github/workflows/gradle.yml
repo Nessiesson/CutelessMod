@@ -25,3 +25,8 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew setupCiWorkspace build
+    - name: Publish .jar file
+      uses: actions/upload-artifact@v2
+      with:
+        name: Jar file
+        path: build/libs/*.jar
