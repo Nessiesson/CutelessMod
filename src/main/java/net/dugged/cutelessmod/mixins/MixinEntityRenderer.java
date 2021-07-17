@@ -64,21 +64,6 @@ public abstract class MixinEntityRenderer {
 			GlStateManager.disableBlend();
 			GlStateManager.depthMask(true);
 		}
-		if (Configuration.showDungeonLocations && CutelessMod.dungeonPositions.size() > 0) {
-			GlStateManager.depthMask(false);
-			GlStateManager.disableFog();
-			GlStateManager.disableLighting();
-			GlStateManager.disableTexture2D();
-			GlStateManager.glLineWidth(3F);
-			for (BlockPos blockpos : CutelessMod.dungeonPositions.keySet()) {
-				AxisAlignedBB posBB = new AxisAlignedBB(blockpos);
-				RenderGlobal.drawSelectionBoundingBox(posBB, 1.0F, 1.0F, 1.0F, 0.75F);
-			}
-			GlStateManager.enableTexture2D();
-			GlStateManager.enableLighting();
-			GlStateManager.enableFog();
-			GlStateManager.depthMask(true);
-		}
 	}
 
 	@Inject(method = "renderHand", at = @At("HEAD"), cancellable = true)

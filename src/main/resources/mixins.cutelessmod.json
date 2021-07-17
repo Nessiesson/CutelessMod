@@ -13,6 +13,7 @@
 		"IGuiMultiplayer",
 		"IGuiNewChat",
 		"INBTTagList",
+		"IRenderManager",
 		"IServerListEntryNormal",
 		"ISoundHandler",
 		"MixinBlock",

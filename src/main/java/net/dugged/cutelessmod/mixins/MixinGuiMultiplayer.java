@@ -3,6 +3,7 @@ package net.dugged.cutelessmod.mixins;
 import net.dugged.cutelessmod.Configuration;
 import net.dugged.cutelessmod.CutelessMod;
 import net.minecraft.client.gui.GuiMultiplayer;
+import net.minecraft.client.gui.ServerListEntryNormal;
 import net.minecraft.client.gui.ServerSelectionList;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.ServerList;
@@ -35,15 +36,16 @@ public abstract class MixinGuiMultiplayer {
 			if (++cutelessmodTick >= 300) {
 				cutelessmodTick = 0;
 				for (int i = startIndex; i <= visibleSlots; i++) {
-					final int j = i;
-					IServerListEntryNormal.getExecutor().execute(() -> {
-						try {
-							this.oldServerPinger.ping(this.savedServerList.getServerData(j));
-						} catch (Exception ignored) {
-						}
-					});
+					if (((ServerListEntryNormal) this.serverListSelector.getListEntry(i)).getServerData().pinged) {
+						final int j = i;
+						IServerListEntryNormal.getExecutor().execute(() -> {
+							try {
+								this.oldServerPinger.ping(this.savedServerList.getServerData(j));
+							} catch (Exception ignored) {
+							}
+						});
+					}
 				}
-
 				this.serverListSelector.updateOnlineServers(this.savedServerList);
 			}
 		}
