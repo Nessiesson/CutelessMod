@@ -28,7 +28,8 @@ Ported the chunk display debug tool from carpet client used for carpet servers. 
 | ------------ | ------------ | ------------ |
 |/cancel|-|Cancels all running operations|
 |/center|\[block] \[dataValue:state]|Marks the center of the selection with default block glowstone, min. 1x1 max. 2x2|
-|/count|\<exclusive: false, true> \<block> \<dataValue:state>|Counts given block exclusive or inclusive|
+|/copyhere|\[move selection:true, false]|Copies selection to current player position|
+/count|\<exclusive: false, true> \<block> \<dataValue:state>|Counts given block exclusive or inclusive|
 |/cyl|\<block> \<dataValue:state> <radius> \[height]|Generates a cylinder around 1x1 selection with given block and radius|
 |/drain|\<radius>|Drains water in player location up to default radius 100|
 |/fixslabs|-|Changes doubleslabs to full blocks and old oak slabs to planks|

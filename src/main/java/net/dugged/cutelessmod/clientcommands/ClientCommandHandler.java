@@ -62,6 +62,7 @@ public class ClientCommandHandler extends CommandHandler {
 		instance.registerCommand(new CommandStackQuarter());
 		instance.registerCommand(new CommandCancel());
 		instance.registerCommand(new CommandBack());
+		instance.registerCommand(new CommandCopyHere());
 	}
 
 	@Override
