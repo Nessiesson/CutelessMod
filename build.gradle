@@ -17,7 +17,7 @@ apply plugin: "net.minecraftforge.gradle.forge"
 apply plugin: "org.spongepowered.mixin"
 apply plugin: "com.github.johnrengelman.shadow"
 
-version = "0.2.3"
+version = "0.2.4"
 def modName = "CutelessMod".toString()
 def modId = modName.toLowerCase()
 group = "net.dugged.${modId}"

@@ -76,18 +76,17 @@ public class Handler {
 	}
 
 	synchronized public void tick() {
-		if (age - last_execution > 300) {
-			if (!warned) {
-				warned = true;
-				TextComponentTranslation warning = new TextComponentTranslation("text.cutelessmod.clientcommands.handlerAgeWarning", getClass());
-				if (isWorldEditHandler) {
-					warning.getStyle().setColor(TextFormatting.LIGHT_PURPLE);
-				} else {
-					warning.getStyle().setColor(TextFormatting.RED);
-				}
-				mc.ingameGUI.getChatGUI().printChatMessage(warning);
+		if (age - last_execution > 300 && !warned) {
+			warned = true;
+			TextComponentTranslation warning = new TextComponentTranslation("text.cutelessmod.clientcommands.handlerAgeWarning", getClass());
+			if (isWorldEditHandler) {
+				warning.getStyle().setColor(TextFormatting.LIGHT_PURPLE);
+			} else {
+				warning.getStyle().setColor(TextFormatting.RED);
 			}
-		} else if (age - last_execution > 600 && warned) {
+			mc.ingameGUI.getChatGUI().printChatMessage(warning);
+		}
+		if (age - last_execution > 600 && warned) {
 			TextComponentTranslation error = new TextComponentTranslation("text.cutelessmod.clientcommands.handlerTermination", getClass());
 			if (isWorldEditHandler) {
 				error.getStyle().setColor(TextFormatting.LIGHT_PURPLE);
