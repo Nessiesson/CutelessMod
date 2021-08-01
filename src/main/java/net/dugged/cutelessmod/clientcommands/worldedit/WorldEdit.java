@@ -5,6 +5,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.Mirror;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
@@ -91,6 +92,11 @@ public class WorldEdit {
 		if (blockState == null) {
 			return null;
 		}
+		if (axis == EnumFacing.Axis.X) {
+			return blockState.withMirror(Mirror.FRONT_BACK);
+		} else if (axis == EnumFacing.Axis.Z) {
+			return blockState.withMirror(Mirror.LEFT_RIGHT);
+		}
 		if (axis == EnumFacing.Axis.Y && blockState.getProperties().containsKey(BlockSlab.HALF)) {
 			if (blockState.getValue(BlockSlab.HALF) == BlockSlab.EnumBlockHalf.BOTTOM) {
 				return blockState.withProperty(BlockSlab.HALF, BlockSlab.EnumBlockHalf.TOP);
@@ -105,76 +111,29 @@ public class WorldEdit {
 				return blockState.withProperty(BlockStairs.HALF, BlockStairs.EnumHalf.BOTTOM);
 			}
 		}
-		if (blockState.getProperties().containsKey(BlockLever.FACING)) {
-			switch (axis) {
-				case X:
-					if (blockState.getValue(BlockLever.FACING) == BlockLever.EnumOrientation.WEST) {
-						return blockState.withProperty(BlockLever.FACING, BlockLever.EnumOrientation.EAST);
-					} else if (blockState.getValue(BlockLever.FACING) == BlockLever.EnumOrientation.EAST) {
-						return blockState.withProperty(BlockLever.FACING, BlockLever.EnumOrientation.WEST);
-					}
-					break;
-				case Y:
-					if (blockState.getValue(BlockLever.FACING) == BlockLever.EnumOrientation.DOWN_X) {
-						return blockState.withProperty(BlockLever.FACING, BlockLever.EnumOrientation.UP_X);
-					} else if (blockState.getValue(BlockLever.FACING) == BlockLever.EnumOrientation.DOWN_Z) {
-						return blockState.withProperty(BlockLever.FACING, BlockLever.EnumOrientation.UP_Z);
-					} else if (blockState.getValue(BlockLever.FACING) == BlockLever.EnumOrientation.UP_X) {
-						return blockState.withProperty(BlockLever.FACING, BlockLever.EnumOrientation.DOWN_X);
-					} else if (blockState.getValue(BlockLever.FACING) == BlockLever.EnumOrientation.UP_Z) {
-						return blockState.withProperty(BlockLever.FACING, BlockLever.EnumOrientation.DOWN_Z);
-					}
-					break;
-				case Z:
-					if (blockState.getValue(BlockLever.FACING) == BlockLever.EnumOrientation.NORTH) {
-						return blockState.withProperty(BlockLever.FACING, BlockLever.EnumOrientation.SOUTH);
-					} else if (blockState.getValue(BlockLever.FACING) == BlockLever.EnumOrientation.SOUTH) {
-						return blockState.withProperty(BlockLever.FACING, BlockLever.EnumOrientation.NORTH);
-					}
-					break;
+		if (axis == EnumFacing.Axis.Y && blockState.getProperties().containsKey(BlockTrapDoor.HALF)) {
+			if (blockState.getValue(BlockTrapDoor.HALF) == BlockTrapDoor.DoorHalf.BOTTOM) {
+				return blockState.withProperty(BlockTrapDoor.HALF, BlockTrapDoor.DoorHalf.TOP);
+			} else if (blockState.getValue(BlockTrapDoor.HALF) == BlockTrapDoor.DoorHalf.TOP) {
+				return blockState.withProperty(BlockTrapDoor.HALF, BlockTrapDoor.DoorHalf.BOTTOM);
 			}
 		}
-		if (blockState.getProperties().containsKey(BlockHorizontal.FACING)) {
-			switch (axis) {
-				case X:
-					if (blockState.getValue(BlockHorizontal.FACING) == EnumFacing.WEST) {
-						return blockState.withProperty(BlockHorizontal.FACING, EnumFacing.EAST);
-					} else if (blockState.getValue(BlockHorizontal.FACING) == EnumFacing.EAST) {
-						return blockState.withProperty(BlockHorizontal.FACING, EnumFacing.WEST);
-					}
-					break;
-				case Z:
-					if (blockState.getValue(BlockHorizontal.FACING) == EnumFacing.NORTH) {
-						return blockState.withProperty(BlockHorizontal.FACING, EnumFacing.SOUTH);
-					} else if (blockState.getValue(BlockHorizontal.FACING) == EnumFacing.SOUTH) {
-						return blockState.withProperty(BlockHorizontal.FACING, EnumFacing.NORTH);
-					}
-					break;
+		if (axis == EnumFacing.Axis.Y && blockState.getProperties().containsKey(BlockLever.FACING)) {
+			if (blockState.getValue(BlockLever.FACING) == BlockLever.EnumOrientation.DOWN_X) {
+				return blockState.withProperty(BlockLever.FACING, BlockLever.EnumOrientation.UP_X);
+			} else if (blockState.getValue(BlockLever.FACING) == BlockLever.EnumOrientation.DOWN_Z) {
+				return blockState.withProperty(BlockLever.FACING, BlockLever.EnumOrientation.UP_Z);
+			} else if (blockState.getValue(BlockLever.FACING) == BlockLever.EnumOrientation.UP_X) {
+				return blockState.withProperty(BlockLever.FACING, BlockLever.EnumOrientation.DOWN_X);
+			} else if (blockState.getValue(BlockLever.FACING) == BlockLever.EnumOrientation.UP_Z) {
+				return blockState.withProperty(BlockLever.FACING, BlockLever.EnumOrientation.DOWN_Z);
 			}
 		}
-		if (blockState.getProperties().containsKey(BlockDirectional.FACING)) {
-			switch (axis) {
-				case X:
-					if (blockState.getValue(BlockDirectional.FACING) == EnumFacing.WEST) {
-						return blockState.withProperty(BlockDirectional.FACING, EnumFacing.EAST);
-					} else if (blockState.getValue(BlockDirectional.FACING) == EnumFacing.EAST) {
-						return blockState.withProperty(BlockDirectional.FACING, EnumFacing.WEST);
-					}
-					break;
-				case Y:
-					if (blockState.getValue(BlockDirectional.FACING) == EnumFacing.DOWN) {
-						return blockState.withProperty(BlockDirectional.FACING, EnumFacing.UP);
-					} else if (blockState.getValue(BlockDirectional.FACING) == EnumFacing.UP) {
-						return blockState.withProperty(BlockDirectional.FACING, EnumFacing.DOWN);
-					}
-					break;
-				case Z:
-					if (blockState.getValue(BlockDirectional.FACING) == EnumFacing.NORTH) {
-						return blockState.withProperty(BlockDirectional.FACING, EnumFacing.SOUTH);
-					} else if (blockState.getValue(BlockDirectional.FACING) == EnumFacing.SOUTH) {
-						return blockState.withProperty(BlockDirectional.FACING, EnumFacing.NORTH);
-					}
-					break;
+		if (axis == EnumFacing.Axis.Y && blockState.getProperties().containsKey(BlockDirectional.FACING)) {
+			if (blockState.getValue(BlockDirectional.FACING) == EnumFacing.DOWN) {
+				return blockState.withProperty(BlockDirectional.FACING, EnumFacing.UP);
+			} else if (blockState.getValue(BlockDirectional.FACING) == EnumFacing.UP) {
+				return blockState.withProperty(BlockDirectional.FACING, EnumFacing.DOWN);
 			}
 		}
 		return blockState;
