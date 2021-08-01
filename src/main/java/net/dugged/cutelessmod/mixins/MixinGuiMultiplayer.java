@@ -31,22 +31,25 @@ public abstract class MixinGuiMultiplayer {
 	@Inject(method = "updateScreen", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ServerPinger;pingPendingNetworks()V"))
 	private void dynamicListUpdates(final CallbackInfo ci) {
 		if (Configuration.dynamicServerListUpdates) {
-			final int visibleSlots = (this.serverListSelector.bottom - this.serverListSelector.top) / this.serverListSelector.getSlotHeight();
-			final int startIndex = this.serverListSelector.getAmountScrolled() / this.serverListSelector.getSlotHeight();
-			if (++cutelessmodTick >= 300) {
-				cutelessmodTick = 0;
-				for (int i = startIndex; i <= visibleSlots; i++) {
-					if (((ServerListEntryNormal) this.serverListSelector.getListEntry(i)).getServerData().pinged) {
-						final int j = i;
-						IServerListEntryNormal.getExecutor().execute(() -> {
-							try {
-								this.oldServerPinger.ping(this.savedServerList.getServerData(j));
-							} catch (Exception ignored) {
-							}
-						});
+			try {
+				final int visibleSlots = (this.serverListSelector.bottom - this.serverListSelector.top) / this.serverListSelector.getSlotHeight();
+				final int startIndex = this.serverListSelector.getAmountScrolled() / this.serverListSelector.getSlotHeight();
+				if (++cutelessmodTick >= 300) {
+					cutelessmodTick = 0;
+					for (int i = startIndex; i <= visibleSlots; i++) {
+						if (serverListSelector.getListEntry(i) instanceof ServerListEntryNormal && ((ServerListEntryNormal) this.serverListSelector.getListEntry(i)).getServerData().pinged) {
+							final int j = i;
+							IServerListEntryNormal.getExecutor().execute(() -> {
+								try {
+									this.oldServerPinger.ping(this.savedServerList.getServerData(j));
+								} catch (Exception ignored) {
+								}
+							});
+						}
 					}
+					this.serverListSelector.updateOnlineServers(this.savedServerList);
 				}
-				this.serverListSelector.updateOnlineServers(this.savedServerList);
+			} catch (Exception ignored) {
 			}
 		}
 	}
