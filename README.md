@@ -31,6 +31,7 @@ Ported the chunk display debug tool from carpet client used for carpet servers. 
 |/copyhere|\[move selection:true, false]|Copies selection to current player position|
 /count|\<exclusive: false, true> \<block> \<dataValue:state>|Counts given block exclusive or inclusive|
 |/cyl|\<block> \<dataValue:state> <radius> \[height]|Generates a cylinder around 1x1 selection with given block and radius|
+|/fillinventories|\<item> \<count> \[damage]|Fills all hoppers, droppers and chests in selection with specified item (Existing content gets deleted!)|
 |/drain|\<radius>|Drains water in player location up to default radius 100|
 |/fixslabs|-|Changes doubleslabs to full blocks and old oak slabs to planks|
 |/flip|-|Flips selection in the currently facing direction|

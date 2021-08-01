@@ -5,10 +5,11 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.client.CPacketTabComplete;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,13 +19,13 @@ public class HandlerSetBlock extends Handler {
 	public static boolean setblockPermission = false;
 	private final List<BlockPos> blockPositions = new ArrayList<>();
 	private final List<BlockPos> skippedPositions = new ArrayList<>();
-	private final Map<BlockPos, IBlockState> blocksToPlace = new HashMap<>();
+	private final Map<BlockPos, IBlockState> blocksToPlace = new LinkedHashMap<>();
 
 	public HandlerSetBlock(World worldIn) {
 		super(worldIn);
 	}
 
-	public static void getGameruleStates() {
+	public static void getCommandPermission() {
 		if (mc.player != null && mc.player.connection != null) {
 			setblockPermission = false;
 			mc.player.connection.sendPacket(new CPacketTabComplete("/setbloc", null, false));
@@ -101,8 +102,15 @@ public class HandlerSetBlock extends Handler {
 		}
 	}
 
+	public void finish() {
+		if (sendAffectedBlocks) {
+			mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("commands.fill.success", affectedBlocks));
+		}
+		super.finish();
+	}
+
 	private boolean sendSetBlockCommand(BlockPos pos, IBlockState blockState) {
-		final String name = RegistryCache.getBlockName(blockState);
+		final String name = blockState.getBlock().getRegistryName().toString();
 		final String metadata = Integer.toString(blockState.getBlock().getMetaFromState(blockState));
 		if (setblockPermission && world.isBlockLoaded(pos) && pos.getY() >= 0 && pos.getY() < 256 && !world.getBlockState(pos).equals(blockState)) {
 			last_execution = age;

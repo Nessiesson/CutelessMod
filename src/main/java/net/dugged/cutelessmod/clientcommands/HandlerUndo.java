@@ -12,7 +12,7 @@ import java.util.*;
 public class HandlerUndo extends Handler {
 	private static final int BLOCKS_PROCESSED_PER_TICK = 32768;
 	private final List<Iterator> iterators = new ArrayList<>();
-	private final Map<BlockPos, IBlockState> blockList = new HashMap<>();
+	private final Map<BlockPos, IBlockState> blockList = new LinkedHashMap<>();
 	public String command;
 	public boolean message = true;
 	private Handler handler = null;

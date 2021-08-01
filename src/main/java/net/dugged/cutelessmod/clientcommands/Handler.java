@@ -68,9 +68,6 @@ public class Handler {
 				mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule sendCommandFeedback true"));
 			}
 		}
-		if (sendAffectedBlocks) {
-			mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("commands.fill.success", affectedBlocks));
-		}
 		getGameruleStates();
 		finished = true;
 	}

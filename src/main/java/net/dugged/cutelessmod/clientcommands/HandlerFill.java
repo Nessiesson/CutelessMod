@@ -5,6 +5,7 @@ import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.client.CPacketTabComplete;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
@@ -26,7 +27,7 @@ public class HandlerFill extends Handler {
 		super(worldIn);
 	}
 
-	public static void getGameruleStates() {
+	public static void getCommandPermission() {
 		if (mc.player != null && mc.player.connection != null) {
 			fillPermission = false;
 			mc.player.connection.sendPacket(new CPacketTabComplete("/fil", null, false));
@@ -84,6 +85,12 @@ public class HandlerFill extends Handler {
 		}
 	}
 
+	public void finish() {
+		if (sendAffectedBlocks) {
+			mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("commands.fill.success", affectedBlocks));
+		}
+		super.finish();
+	}
 
 	private boolean sendFillCommand(BlockPos pos1, BlockPos pos2, IBlockState blockState) {
 		final String name = blockState.getBlock().getRegistryName().toString();

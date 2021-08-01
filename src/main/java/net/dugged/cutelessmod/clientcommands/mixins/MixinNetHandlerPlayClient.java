@@ -60,6 +60,8 @@ public class MixinNetHandlerPlayClient {
 			HandlerFill.fillPermission = true;
 		} else if (contains(packetIn.getMatches(), "clone")) {
 			HandlerClone.clonePermission = true;
+		} else if (contains(packetIn.getMatches(), "replaceitem")) {
+			HandlerReplaceItem.replaceitemPermission = true;
 		} else if (contains(packetIn.getMatches(), "gamerule")) {
 			Handler.gamerulePermission = true;
 		}

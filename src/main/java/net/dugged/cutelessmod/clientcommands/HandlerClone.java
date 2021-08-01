@@ -6,10 +6,11 @@ import net.minecraft.network.play.client.CPacketTabComplete;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,8 +21,8 @@ public class HandlerClone extends Handler {
 
 	public static boolean clonePermission = false;
 	private final List<BlockPos> destinations = new ArrayList<>();
-	private final Map<BlockPos, AxisAlignedBB> sourceAreaMap = new HashMap<>();
-	private final Map<BlockPos, BlockPos> iteratorPositions = new HashMap<>();
+	private final Map<BlockPos, AxisAlignedBB> sourceAreaMap = new LinkedHashMap<>();
+	private final Map<BlockPos, BlockPos> iteratorPositions = new LinkedHashMap<>();
 	public boolean masked = false;
 	public boolean moveBlocks = false;
 	public EnumFacing facing = WorldEdit.getLookingDirection();
@@ -31,7 +32,7 @@ public class HandlerClone extends Handler {
 		super(worldIn);
 	}
 
-	public static void getGameruleStates() {
+	public static void getCommandPermission() {
 		if (mc.player != null && mc.player.connection != null) {
 			clonePermission = false;
 			mc.player.connection.sendPacket(new CPacketTabComplete("/clon", null, false));
@@ -177,6 +178,13 @@ public class HandlerClone extends Handler {
 		} else if (age > 5) {
 			finish();
 		}
+	}
+
+	public void finish() {
+		if (sendAffectedBlocks) {
+			mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("commands.fill.success", affectedBlocks));
+		}
+		super.finish();
 	}
 
 	private boolean sendCloneCommand(BlockPos pos1, BlockPos pos2, BlockPos pos3) {

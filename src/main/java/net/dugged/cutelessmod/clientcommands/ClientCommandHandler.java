@@ -63,6 +63,7 @@ public class ClientCommandHandler extends CommandHandler {
 		instance.registerCommand(new CommandCancel());
 		instance.registerCommand(new CommandBack());
 		instance.registerCommand(new CommandCopyHere());
+		instance.registerCommand(new CommandFillInventories());
 	}
 
 	@Override
@@ -172,9 +173,10 @@ public class ClientCommandHandler extends CommandHandler {
 			}
 		}
 		if (tick % 36000 == 0 && !mc.ingameGUI.getChatGUI().getChatOpen()) {
-			HandlerSetBlock.getGameruleStates();
-			HandlerFill.getGameruleStates();
-			HandlerClone.getGameruleStates();
+			HandlerSetBlock.getCommandPermission();
+			HandlerFill.getCommandPermission();
+			HandlerClone.getCommandPermission();
+			HandlerReplaceItem.getCommandPermission();
 		}
 		tick++;
 	}
