@@ -14,16 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Set up JDK 8
-      uses: actions/setup-java@v2
-      with:
-        java-version: '8'
-        distribution: 'adopt'
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
-    - name: Build with Gradle
-      run: ./gradlew setupCiWorkspace build
-    - name: Get version from gradle build to env var
+    - name: Get version from gradle.build
       run: echo VERSION=$(grep -Po '(?<=^version = ").*(?=")' build.gradle) >> $GITHUB_ENV
     - name: Check if tag for version already exists
       uses: mukunku/tag-exists-action@v1.0.0
@@ -32,20 +23,36 @@ jobs:
         tag: ${{ env.VERSION }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Create tag for current version
-      uses: laputansoft/github-tag-action@v4.6
+    - name: Output and stop if it does
       if: steps.checkTag.outputs.exists == 'true'
+      run: echo Release for this version already exists, skipping build process!
+    - name: Set up JDK 8
+      if: steps.checkTag.outputs.exists == 'false'
+      uses: actions/setup-java@v2
+      with:
+        java-version: '8'
+        distribution: 'adopt'
+    - name: Grant execute permission for gradlew
+      if: steps.checkTag.outputs.exists == 'false'
+      run: chmod +x gradlew
+    - name: Build with Gradle
+      if: steps.checkTag.outputs.exists == 'false'
+      run: ./gradlew setupCiWorkspace build
+    - name: Create tag for current version
+      if: steps.checkTag.outputs.exists == 'false'
+      uses: laputansoft/github-tag-action@v4.6
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ env.VERSION }}
     - name: Upload jar as artifact
+      if: steps.checkTag.outputs.exists == 'false'
       uses: actions/upload-artifact@v2
       with:
         name: Jar file
         path: build/libs/*.jar
     - name: Create release from new jar
+      if: steps.checkTag.outputs.exists == 'false'
       uses: softprops/action-gh-release@v0.1.7
-      if: steps.checkTag.outputs.exists == 'true'
       with:
         tag_name: ${{ env.VERSION }}
         files: build/libs/*.jar
