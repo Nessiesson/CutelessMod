@@ -24,7 +24,7 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew setupCiWorkspace build
     - name: Get version from gradle build to env var
-      run: echo $(grep -Po '(?<=^version = ").*(?=")' build.gradle) >> $GITHUB_ENV
+      run: echo VERSION=$(grep -Po '(?<=^version = ").*(?=")' build.gradle) >> $GITHUB_ENV
     - name: Create tag for current version
       uses: laputansoft/github-tag-action@v4.6
       with:
