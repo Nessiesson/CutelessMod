@@ -1,6 +1,7 @@
 package net.dugged.cutelessmod.clientcommands;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.play.client.CPacketChatMessage;
@@ -19,7 +20,6 @@ public class HandlerReplaceItem extends Handler {
 	public static boolean replaceitemPermission = false;
 	private final List<BlockPos> containerPositions = new ArrayList<>();
 	private final Map<BlockPos, SimpleContainer> containers = new LinkedHashMap<>();
-	private final int blockCount = 0;
 
 	public HandlerReplaceItem(World worldIn) {
 		super(worldIn);
@@ -32,10 +32,10 @@ public class HandlerReplaceItem extends Handler {
 		}
 	}
 
-	public void fillContainer(BlockPos pos, ItemStack stack) {
-		int slotCount = ((IInventory) world.getTileEntity(pos)).getSizeInventory();
-		containerPositions.add(pos);
+	synchronized public void fillContainer(BlockPos pos, ItemStack stack) {
+		final int slotCount = ((IInventory) world.getTileEntity(pos)).getSizeInventory();
 		containers.put(pos, new SimpleContainer(world.getBlockState(pos), stack, slotCount));
+		containerPositions.add(containerPositions.size(), pos);
 		totalCount += slotCount;
 		affectedBlocks++;
 	}
@@ -46,7 +46,8 @@ public class HandlerReplaceItem extends Handler {
 			final int handlerCount = ClientCommandHandler.instance.countHandlerType(HandlerReplaceItem.class);
 			int commandsExecuted = 0;
 			while (containerPositions.size() > 0 && commandsExecuted < (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
-				final BlockPos pos = containerPositions.get(containerPositions.size() - 1);
+				int i = containerPositions.size() - 1;
+				final BlockPos pos = containerPositions.get(i);
 				SimpleContainer container = containers.get(pos);
 				for (int slot = 0; slot < container.slotCount; slot++) {
 					if (commandsExecuted >= (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
@@ -59,7 +60,7 @@ public class HandlerReplaceItem extends Handler {
 						commandsExecuted++;
 					}
 				}
-				containerPositions.remove(containerPositions.size() - 1);
+				containerPositions.remove(i);
 				containers.remove(pos);
 			}
 		} else if (age > 5) {
@@ -76,8 +77,13 @@ public class HandlerReplaceItem extends Handler {
 
 	private boolean sendReplaceItemCommand(BlockPos pos, ItemStack stack, int slot) {
 		final String name = stack.getItem().getRegistryName().toString();
-		final int count = stack.getCount();
 		final int damage = stack.getItemDamage();
+		int count;
+		if (stack.getItem().getRegistryName().equals(Blocks.AIR.getRegistryName())) {
+			count = 1;
+		} else {
+			count = stack.getCount();
+		}
 		if (replaceitemPermission && world.isBlockLoaded(pos) && Math.min(pos.getY(), pos.getY()) >= 0 && Math.max(pos.getY(), pos.getY()) < 256) {
 			last_execution = age;
 			world.sendPacketToServer(new CPacketChatMessage("/replaceitem block " + pos.getX() + " " + pos.getY() + " " + pos.getZ() + " slot.container." + slot + " " + name + " " + count + " " + damage));

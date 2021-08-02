@@ -59,18 +59,18 @@ public class HandlerSetBlock extends Handler {
 				block instanceof BlockTripWireHook);
 	}
 
-	public void setBlock(final BlockPos pos, final IBlockState blockState) {
+	synchronized public void setBlock(final BlockPos pos, final IBlockState blockState) {
 		if (!blockPositions.contains(pos)) {
 			totalCount++;
-			blockPositions.add(pos);
 			blocksToPlace.put(pos, blockState);
+			blockPositions.add(blockPositions.size(), pos);
 		}
 	}
 
-	public void setBlocks(Map<BlockPos, IBlockState> blockList) {
+	synchronized public void setBlocks(Map<BlockPos, IBlockState> blockList) {
 		totalCount += blockList.size();
-		blockPositions.addAll(blockList.keySet());
 		blocksToPlace.putAll(blockList);
+		blockPositions.addAll(blockPositions.size(), blockList.keySet());
 	}
 
 	synchronized public void tick() {
@@ -80,14 +80,15 @@ public class HandlerSetBlock extends Handler {
 			int commandsExecuted = 0;
 			int counter = 0;
 			while (counter <= BLOCKS_PROCESSED_PER_TICK && blockPositions.size() > 0 && commandsExecuted < (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
-				final BlockPos pos = blockPositions.get(blockPositions.size() - 1);
+				final int i = blockPositions.size() - 1;
+				final BlockPos pos = blockPositions.get(i);
 				IBlockState blockState = blocksToPlace.get(pos);
 				counter++;
 				currentCount++;
 				if (blockState != null) {
 					if (placeLast(blockState.getBlock()) && !skippedPositions.contains(pos)) {
 						blockPositions.add(0, pos);
-						skippedPositions.add(pos);
+						skippedPositions.add(skippedPositions.size(), pos);
 					} else {
 						if (sendSetBlockCommand(pos, blockState)) {
 							commandsExecuted++;
@@ -95,7 +96,7 @@ public class HandlerSetBlock extends Handler {
 						blocksToPlace.remove(pos);
 					}
 				}
-				blockPositions.remove(blockPositions.size() - 1);
+				blockPositions.remove(i);
 			}
 		} else if (age > 5) {
 			finish();
