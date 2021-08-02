@@ -25,8 +25,16 @@ jobs:
       run: ./gradlew setupCiWorkspace build
     - name: Get version from gradle build to env var
       run: echo VERSION=$(grep -Po '(?<=^version = ").*(?=")' build.gradle) >> $GITHUB_ENV
+    - name: Check if tag for version already exists
+      uses: mukunku/tag-exists-action@v1.0.0
+      id: checkTag
+      with:
+        tag: ${{ env.VERSION }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Create tag for current version
       uses: laputansoft/github-tag-action@v4.6
+      if: steps.checkTag.outputs.exists == 'true'
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ env.VERSION }}
@@ -37,6 +45,7 @@ jobs:
         path: build/libs/*.jar
     - name: Create release from new jar
       uses: softprops/action-gh-release@v0.1.7
+      if: steps.checkTag.outputs.exists == 'true'
       with:
         tag_name: ${{ env.VERSION }}
         files: build/libs/*.jar
