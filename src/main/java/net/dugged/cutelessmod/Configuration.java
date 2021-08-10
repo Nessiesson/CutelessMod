@@ -59,6 +59,7 @@ public class Configuration {
 	public static boolean showSneakEyeHeight = false;
 	public static boolean showSnowDripParticles = false;
 	public static boolean showSpectatorTeamMenu = true;
+	public static boolean smootherPistons = false;
 	public static boolean smoothItemMovement = false;
 	public static boolean sortEnchantmentTooltip = false;
 	public static boolean stackedEntities = false;
