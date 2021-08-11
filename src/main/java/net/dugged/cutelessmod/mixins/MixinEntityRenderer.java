@@ -2,19 +2,13 @@ package net.dugged.cutelessmod.mixins;
 
 import net.dugged.cutelessmod.AreaSelectionRenderer;
 import net.dugged.cutelessmod.Configuration;
-import net.dugged.cutelessmod.CutelessMod;
 import net.dugged.cutelessmod.ItemCounter;
-import net.dugged.cutelessmod.clientcommands.worldedit.WorldEdit;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -33,37 +27,6 @@ public abstract class MixinEntityRenderer {
 	private void onPostRenderEntities(final int pass, final float partialTicks, final long finishTimeNano, final CallbackInfo ci) {
 		AreaSelectionRenderer.render(partialTicks);
 		ItemCounter.renderPos(partialTicks);
-		if (WorldEdit.posA != null | WorldEdit.posB != null) {
-			final EntityPlayerSP player = Minecraft.getMinecraft().player;
-			final double d1 = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
-			final double d2 = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
-			final double d3 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks;
-			GlStateManager.depthMask(false);
-			GlStateManager.disableTexture2D();
-			GlStateManager.disableLighting();
-			GlStateManager.disableCull();
-			GlStateManager.disableBlend();
-			GlStateManager.glLineWidth(4F);
-			if (WorldEdit.posA != null) {
-				AxisAlignedBB posBB = new AxisAlignedBB(WorldEdit.posA).offset(-d1, -d2, -d3);
-				RenderGlobal.drawSelectionBoundingBox(posBB, 1F, 0F, 0F, 0.75F);
-			}
-			if (WorldEdit.posB != null) {
-				AxisAlignedBB posBB = new AxisAlignedBB(WorldEdit.posB).offset(-d1, -d2, -d3);
-				RenderGlobal.drawSelectionBoundingBox(posBB, 0F, 0F, 1F, 0.75F);
-			}
-			if (WorldEdit.posA != null && WorldEdit.posB != null) {
-				AxisAlignedBB posBB = new AxisAlignedBB(WorldEdit.posA, WorldEdit.posB).offset(-d1, -d2, -d3).expand(1, 1, 1);
-				//Purple BB to differentiate from structure block
-				RenderGlobal.drawSelectionBoundingBox(posBB, 1.0F, 85.0F / 255, 1.0F, 0.75F);
-			}
-			GlStateManager.glLineWidth(1F);
-			GlStateManager.enableTexture2D();
-			GlStateManager.enableLighting();
-			GlStateManager.enableCull();
-			GlStateManager.disableBlend();
-			GlStateManager.depthMask(true);
-		}
 	}
 
 	@Inject(method = "renderHand", at = @At("HEAD"), cancellable = true)
