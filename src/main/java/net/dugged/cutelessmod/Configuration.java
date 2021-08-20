@@ -31,6 +31,7 @@ public class Configuration {
 	public static boolean jumpBoostStepAssist = false;
 	public static boolean lightUpdates = true;
 	public static boolean miningGhostBlockFix = false;
+	public static boolean noClip = false;
 	public static boolean noFall = false;
 	public static boolean performanceImprovements = false;
 	public static boolean respawnOnDeath = false;

@@ -4,7 +4,12 @@
 	"refmap": "mixins.cutelessmod.refmap.json",
 	"minVersion": "0.7.3",
 	"compatibilityLevel": "JAVA_8",
+	"injectors": {
+		"maxShiftBy": 3
+	},
 	"mixins": [
+		"CMixinNoClip$MixinEntityPlayer",
+		"CMixinNoClip$MixinEntityRenderer",
 		"IEntityBeacon",
 		"IGuiButtonImage",
 		"IGuiChat",
