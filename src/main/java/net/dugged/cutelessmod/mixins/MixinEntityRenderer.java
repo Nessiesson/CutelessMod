@@ -3,6 +3,7 @@ package net.dugged.cutelessmod.mixins;
 import net.dugged.cutelessmod.AreaSelectionRenderer;
 import net.dugged.cutelessmod.Configuration;
 import net.dugged.cutelessmod.ItemCounter;
+import net.dugged.cutelessmod.PistonHelper;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -27,6 +28,7 @@ public abstract class MixinEntityRenderer {
 	private void onPostRenderEntities(final int pass, final float partialTicks, final long finishTimeNano, final CallbackInfo ci) {
 		AreaSelectionRenderer.render(partialTicks);
 		ItemCounter.renderPos(partialTicks);
+		PistonHelper.draw(partialTicks);
 	}
 
 	@Inject(method = "renderHand", at = @At("HEAD"), cancellable = true)

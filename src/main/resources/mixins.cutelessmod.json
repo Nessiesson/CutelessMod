@@ -29,6 +29,7 @@
 		"MixinBlockMobSpawner",
 		"MixinBlockModelShapes",
 		"MixinBlockPistonBase",
+		"MixinBlockSlime",
 		"MixinBlockSnow",
 		"MixinChunk",
 		"MixinChunkGeneratorOverworld",

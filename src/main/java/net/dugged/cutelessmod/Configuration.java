@@ -51,6 +51,7 @@ public class Configuration {
 	public static boolean showItemFrameFrame = true;
 	public static boolean showHandChangeAnimation = true;
 	public static boolean showOneBossBar = false;
+	public static boolean showPistonOrder = false;
 	public static boolean showPotionShift = true;
 	public static boolean showRain = true;
 	public static boolean showRainbowLeaves = false;

@@ -275,6 +275,7 @@ public class CutelessMod {
 				loggedOut = false;
 				GuiChunkGrid.instance = new GuiChunkGrid();
 			}
+			PistonHelper.updatePistonMovement(mc.world);
 		}
 
 		final EntityPlayerSP player = mc.player;
