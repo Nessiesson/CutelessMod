@@ -1,23 +1,75 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
+import net.dugged.cutelessmod.clientcommands.mixins.IItemSword;
 import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemSword;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.Mirror;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 
+import java.util.HashMap;
+
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
+
 public class WorldEdit {
 	private static final Minecraft mc = Minecraft.getMinecraft();
-	public static BlockPos posA = null;
-	public static BlockPos posB = null;
 	public static boolean undo = true;
+	protected static HashMap<WorldEditSelection.SelectionType, WorldEditSelection> selections = new HashMap();
 
-	public static boolean hasSelection() {
-		return posA != null && posB != null;
+	public static BlockPos getPos(WorldEditSelection.SelectionType type, WorldEditSelection.Position pos) {
+		WorldEditSelection selection = selections.getOrDefault(type, null);
+		if (selection != null) {
+			return selection.getPos(pos);
+		} else {
+			return null;
+		}
+	}
+
+	public static BlockPos getPos(Item.ToolMaterial material, WorldEditSelection.Position pos) {
+		return getPos(WorldEditSelection.getTypeForMaterial(material), pos);
+	}
+
+	public static void setPos(WorldEditSelection.SelectionType type, WorldEditSelection.Position pos, BlockPos blockPos) {
+		if (selections.containsKey(type)) {
+			WorldEditSelection selection = selections.get(type);
+			selection.setPos(pos, blockPos);
+			selections.put(type, selection);
+		} else {
+			WorldEditSelection selection = new WorldEditSelection(type);
+			selection.setPos(pos, blockPos);
+			selections.put(type, selection);
+		}
+	}
+
+	public static void setPos(Item.ToolMaterial material, WorldEditSelection.Position pos, BlockPos blockPos) {
+		setPos(WorldEditSelection.getTypeForMaterial(material), pos, blockPos);
+	}
+
+	public static WorldEditSelection getCurrentSelection() {
+		Item itemInHand = mc.player.getHeldItemMainhand().getItem();
+		if (mc.player.isCreative() && itemInHand instanceof ItemSword) {
+			return selections.get(WorldEditSelection.getTypeForMaterial(((IItemSword) itemInHand).getMaterial()));
+		} else {
+			return null;
+		}
+	}
+
+	public static boolean hasCurrentSelection() {
+		return getCurrentSelection() != null && getCurrentSelection().isCompleted();
+	}
+
+	public static void clearAllSelections() {
+		for (WorldEditSelection.SelectionType type : selections.keySet()) {
+			setPos(type, A, null);
+			setPos(type, B, null);
+		}
 	}
 
 	public static BlockPos playerPos() {
@@ -48,44 +100,12 @@ public class WorldEdit {
 		Minecraft.getMinecraft().ingameGUI.getChatGUI().printChatMessage(msg);
 	}
 
-	public static BlockPos minPos() {
-		return new BlockPos(Math.min(posA.getX(), posB.getX()), Math.min(posA.getY(), posB.getY()), Math.min(posA.getZ(), posB.getZ()));
-	}
-
-	public static BlockPos maxPos() {
-		return new BlockPos(Math.max(posA.getX(), posB.getX()), Math.max(posA.getY(), posB.getY()), Math.max(posA.getZ(), posB.getZ()));
-	}
-
-	public static int widthX() {
-		return maxPos().getX() - minPos().getX() + 1;
-	}
-
-	public static int widthY() {
-		return maxPos().getY() - minPos().getY() + 1;
-	}
-
-	public static int widthZ() {
-		return maxPos().getZ() - minPos().getZ() + 1;
-	}
-
-	public static long volume() {
-		return widthX() * widthY() * widthZ();
-	}
-
-	public static boolean isOneByOne() {
-		return widthX() == 1 && widthY() == 1 && widthZ() == 1;
-	}
-
 	public static boolean checkSphere(final double x, final double y, final double z, final double r) {
 		return x * x + y * y + z * z <= r * r;
 	}
 
 	public static boolean checkCircle(final double x, final double z, final double r) {
 		return x * x + z * z <= r * r;
-	}
-
-	public static int maxWidth() {
-		return Math.max(widthX(), Math.max(widthY(), widthZ()));
 	}
 
 	public static IBlockState flipBlockstate(IBlockState blockState, EnumFacing.Axis axis) {

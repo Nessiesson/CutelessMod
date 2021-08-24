@@ -31,52 +31,53 @@ public class CommandCenter extends ClientCommand {
 
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-		if (WorldEdit.hasSelection()) {
+		if (WorldEdit.hasCurrentSelection()) {
 			if (args.length >= 0 && args.length <= 2) {
+				WorldEditSelection selection = WorldEdit.getCurrentSelection();
 				Block block = Blocks.GLOWSTONE;
 				if (args.length > 0) {
 					block = getBlockByText(sender, args[0]);
 				}
-				IBlockState blockstate = block.getDefaultState();
+				IBlockState blockState = block.getDefaultState();
 				if (args.length >= 2) {
-					blockstate = convertArgToBlockState(block, args[1]);
+					blockState = convertArgToBlockState(block, args[1]);
 				}
-				HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, sender.getEntityWorld());
+				HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, sender.getEntityWorld(), selection);
 				List<BlockPos> undoBlockPositions = new ArrayList<>();
-				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld());
+				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld(), selection);
 				undoHandler.setHandler(setBlockHandler);
-				BlockPos center = new BlockPos(WorldEdit.minPos().getX() + WorldEdit.widthX() / 2, WorldEdit.minPos().getY() + WorldEdit.widthY() / 2, WorldEdit.minPos().getZ() + WorldEdit.widthZ() / 2);
-				setBlockHandler.setBlock(center, blockstate);
+				BlockPos center = new BlockPos(selection.minPos().getX() + selection.widthX() / 2, selection.minPos().getY() + selection.widthY() / 2, selection.minPos().getZ() + selection.widthZ() / 2);
+				setBlockHandler.setBlock(center, blockState);
 				undoBlockPositions.add(center);
-				boolean x = WorldEdit.widthX() % 2 == 0;
-				boolean y = WorldEdit.widthY() % 2 == 0;
-				boolean z = WorldEdit.widthZ() % 2 == 0;
+				boolean x = selection.widthX() % 2 == 0;
+				boolean y = selection.widthY() % 2 == 0;
+				boolean z = selection.widthZ() % 2 == 0;
 				if (x) {
-					setBlockHandler.setBlock(center.west(), blockstate);
+					setBlockHandler.setBlock(center.west(), blockState);
 					undoBlockPositions.add(center.west());
 				}
 				if (y) {
-					setBlockHandler.setBlock(center.down(), blockstate);
+					setBlockHandler.setBlock(center.down(), blockState);
 					undoBlockPositions.add(center.down());
 				}
 				if (z) {
-					setBlockHandler.setBlock(center.north(), blockstate);
+					setBlockHandler.setBlock(center.north(), blockState);
 					undoBlockPositions.add(center.north());
 				}
 				if (x && y) {
-					setBlockHandler.setBlock(center.west().down(), blockstate);
+					setBlockHandler.setBlock(center.west().down(), blockState);
 					undoBlockPositions.add(center.west().down());
 				}
 				if (y && z) {
-					setBlockHandler.setBlock(center.down().north(), blockstate);
+					setBlockHandler.setBlock(center.down().north(), blockState);
 					undoBlockPositions.add(center.down().north());
 				}
 				if (x && z) {
-					setBlockHandler.setBlock(center.west().north(), blockstate);
+					setBlockHandler.setBlock(center.west().north(), blockState);
 					undoBlockPositions.add(center.west().north());
 				}
 				if (x && y && z) {
-					setBlockHandler.setBlock(center.west().down().north(), blockstate);
+					setBlockHandler.setBlock(center.west().down().north(), blockState);
 					undoBlockPositions.add(center.west().down().north());
 				}
 				undoHandler.saveBlocks(undoBlockPositions);

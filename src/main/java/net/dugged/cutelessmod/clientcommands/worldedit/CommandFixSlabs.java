@@ -17,6 +17,9 @@ import net.minecraft.world.World;
 import java.util.ArrayList;
 import java.util.List;
 
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
+
 public class CommandFixSlabs extends ClientCommand {
 	@Override
 	public String getName() {
@@ -28,14 +31,14 @@ public class CommandFixSlabs extends ClientCommand {
 		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.fixslabs.usage").getUnformattedText();
 	}
 
-	private void fixSlabs(World world) {
+	private void fixSlabs(World world, WorldEditSelection selection) {
 		int count = 0;
-		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
+		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world, selection);
 		List<BlockPos> undoBlockPositions = new ArrayList<>();
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world, selection);
 		undoHandler.setHandler(setBlockHandler);
 		undoHandler.running = false;
-		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(WorldEdit.posA, WorldEdit.posB)) {
+		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.getPos(A), selection.getPos(B))) {
 			IBlockState blockState = world.getBlockState(pos);
 			if (blockState.getBlock() instanceof BlockDoubleStoneSlab && blockState.getProperties().containsKey(BlockDoubleStoneSlab.VARIANT)) {
 				switch (blockState.getValue(BlockDoubleStoneSlab.VARIANT)) {
@@ -140,9 +143,10 @@ public class CommandFixSlabs extends ClientCommand {
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (args.length == 0) {
-			if (WorldEdit.hasSelection()) {
+			if (WorldEdit.hasCurrentSelection()) {
+				WorldEditSelection selection = WorldEdit.getCurrentSelection();
 				World world = sender.getEntityWorld();
-				Thread t = new Thread(() -> fixSlabs(world));
+				Thread t = new Thread(() -> fixSlabs(world, selection));
 				t.start();
 			} else {
 				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));

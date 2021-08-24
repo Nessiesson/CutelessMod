@@ -20,6 +20,9 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
+
 public class CommandFillInventories extends ClientCommand {
 	@Override
 	public String getName() {
@@ -31,9 +34,9 @@ public class CommandFillInventories extends ClientCommand {
 		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.fillinventories.usage").getUnformattedText();
 	}
 
-	private void fillInventories(World world, ItemStack stack) {
-		HandlerReplaceItem handler = (HandlerReplaceItem) ClientCommandHandler.instance.createHandler(HandlerReplaceItem.class, world);
-		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(WorldEdit.posA, WorldEdit.posB)) {
+	private void fillInventories(World world, WorldEditSelection selection, ItemStack stack) {
+		HandlerReplaceItem handler = (HandlerReplaceItem) ClientCommandHandler.instance.createHandler(HandlerReplaceItem.class, world, selection);
+		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.getPos(A), selection.getPos(B))) {
 			IBlockState blockState = world.getBlockState(pos);
 			if (blockState.getBlock() instanceof BlockDispenser || blockState.getBlock() instanceof BlockChest || blockState.getBlock() instanceof BlockHopper) {
 				handler.fillContainer(pos, stack);
@@ -43,8 +46,9 @@ public class CommandFillInventories extends ClientCommand {
 
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-		if (WorldEdit.hasSelection()) {
+		if (WorldEdit.hasCurrentSelection()) {
 			if (args.length == 2 || args.length == 3) {
+				WorldEditSelection selection = WorldEdit.getCurrentSelection();
 				Item item = getItemByText(sender, args[0]);
 				int count = Math.min(item.getItemStackLimit(), Math.max(parseInt(args[1]), 1));
 				int damage = 0;
@@ -53,7 +57,7 @@ public class CommandFillInventories extends ClientCommand {
 				}
 				ItemStack stack = new ItemStack(item, count, damage);
 				World world = sender.getEntityWorld();
-				Thread t = new Thread(() -> fillInventories(world, stack));
+				Thread t = new Thread(() -> fillInventories(world, selection, stack));
 				t.start();
 			} else {
 				WorldEdit.sendMessage(getUsage(sender));

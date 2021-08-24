@@ -39,7 +39,7 @@ public class CommandUndo extends ClientCommand {
 			System.arraycopy(temp, 1, args, 0, args.length);
 			try {
 				if (msg.startsWith("/fill") && args.length >= 7) {
-					HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
+					HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world, null);
 					undoHandler.command = msg;
 					undoHandler.isWorldEditHandler = false;
 					undoHandler.message = true;
@@ -50,7 +50,7 @@ public class CommandUndo extends ClientCommand {
 					final BlockPos pos2 = parseBlockPos(args, 3);
 					final BlockPos pos3 = parseBlockPos(args, 6);
 					final BlockPos pos4 = pos3.add(Math.max(pos1.getX(), pos2.getX()) - Math.min(pos1.getX(), pos2.getX()), Math.max(pos1.getY(), pos2.getY()) - Math.min(pos1.getY(), pos2.getY()), Math.max(pos1.getZ(), pos2.getZ()) - Math.min(pos1.getZ(), pos2.getZ()));
-					HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
+					HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world, null);
 					undoHandler.command = msg;
 					undoHandler.isWorldEditHandler = false;
 					undoHandler.message = true;
@@ -98,7 +98,7 @@ public class CommandUndo extends ClientCommand {
 						}
 						if (undoHistory.size() - 1 >= historyIndex) {
 							World world = sender.getEntityWorld();
-							HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
+							HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world, null);
 							setBlockHandler.setBlocks(undoHistory.get(historyIndex));
 						} else {
 							throw new CommandException("text.cutelessmod.clientcommands.undo.invalidIndex");

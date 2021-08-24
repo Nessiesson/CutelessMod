@@ -52,6 +52,9 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
+
 @Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION, clientSideOnly = true)
 public class CutelessMod {
 	public static final Logger LOGGER = LogManager.getLogger(Reference.NAME);
@@ -88,7 +91,7 @@ public class CutelessMod {
 	public static GuiCompass guiCompass = new GuiCompass(mc);
 	private final CarpetPluginChannel carpetPluginChannel = new CarpetPluginChannel();
 	private String originalTitle;
-	private long axeCooldown = 0;
+	private long swordCooldown = 0;
 	private boolean loggedOut;
 
 	@Mod.EventHandler
@@ -218,7 +221,7 @@ public class CutelessMod {
 		}
 		ClientCommandHandler.instance.tick();
 		tickCounter++;
-		axeCooldown--;
+		swordCooldown--;
 		if (overlayTimer > 0) {
 			overlayTimer--;
 		}
@@ -299,16 +302,17 @@ public class CutelessMod {
 	@SubscribeEvent
 	public void onleftClickBlock(final PlayerInteractEvent.LeftClickBlock event) {
 		Item itemInHand = mc.player.getHeldItemMainhand().getItem();
-		if (mc.player.isCreative() && itemInHand instanceof ItemSword && ((IItemSword) itemInHand).getMaterial() == Item.ToolMaterial.WOOD) {
-			if (axeCooldown > tickCounter) {
+		if (mc.player.isCreative() && itemInHand instanceof ItemSword) {
+			Item.ToolMaterial material = ((IItemSword) itemInHand).getMaterial();
+			if (swordCooldown > tickCounter) {
 				event.setCanceled(true);
 			} else if (mc.player instanceof EntityPlayerSP) {
-				if (WorldEdit.posA == null || !WorldEdit.posA.equals(event.getPos())) {
-					WorldEdit.posA = event.getPos();
+				if (WorldEdit.getPos(material, A) == null || !WorldEdit.getPos(material, A).equals(event.getPos())) {
+					WorldEdit.setPos(material, A, event.getPos());
 				} else {
-					WorldEdit.posA = null;
+					WorldEdit.setPos(material, A, null);
 				}
-				axeCooldown = tickCounter + 10;
+				swordCooldown = tickCounter + 10;
 				event.setCanceled(true);
 			}
 		}
@@ -317,16 +321,17 @@ public class CutelessMod {
 	@SubscribeEvent
 	public void onRighClickBlock(final PlayerInteractEvent.RightClickBlock event) {
 		Item itemInHand = mc.player.getHeldItemMainhand().getItem();
-		if (mc.player.isCreative() && itemInHand instanceof ItemSword && ((IItemSword) itemInHand).getMaterial() == Item.ToolMaterial.WOOD) {
-			if (axeCooldown > tickCounter) {
+		if (mc.player.isCreative() && itemInHand instanceof ItemSword) {
+			Item.ToolMaterial material = ((IItemSword) itemInHand).getMaterial();
+			if (swordCooldown > tickCounter) {
 				event.setCanceled(true);
-			} else if (mc.player instanceof EntityPlayerSP) {
-				if (WorldEdit.posB == null || !WorldEdit.posB.equals(event.getPos())) {
-					WorldEdit.posB = event.getPos();
+			} else if (mc.player != null) {
+				if (WorldEdit.getPos(material, B) == null || !WorldEdit.getPos(material, B).equals(event.getPos())) {
+					WorldEdit.setPos(material, B, event.getPos());
 				} else {
-					WorldEdit.posB = null;
+					WorldEdit.setPos(material, B, null);
 				}
-				axeCooldown = tickCounter + 10;
+				swordCooldown = tickCounter + 10;
 				event.setCanceled(true);
 			}
 		}

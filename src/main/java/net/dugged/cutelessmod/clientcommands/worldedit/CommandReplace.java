@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
+
 public class CommandReplace extends ClientCommand {
 	@Override
 	public String getName() {
@@ -29,13 +32,13 @@ public class CommandReplace extends ClientCommand {
 		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.replace.usage").getUnformattedText();
 	}
 
-	public void replaceBlocks(World world, IBlockState stateToReplace, IBlockState replacementState) {
-		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
+	public void replaceBlocks(World world, WorldEditSelection selection, IBlockState stateToReplace, IBlockState replacementState) {
+		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world, selection);
 		List<BlockPos> undoBlockPositions = new ArrayList<>();
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world, selection);
 		undoHandler.setHandler(setBlockHandler);
 		undoHandler.running = false;
-		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(WorldEdit.posA, WorldEdit.posB)) {
+		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.getPos(A), selection.getPos(B))) {
 			if (world.getBlockState(pos) == stateToReplace) {
 				undoBlockPositions.add(pos);
 				setBlockHandler.setBlock(pos, replacementState);
@@ -47,19 +50,20 @@ public class CommandReplace extends ClientCommand {
 
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-		if (WorldEdit.hasSelection()) {
+		if (WorldEdit.hasCurrentSelection()) {
+			WorldEditSelection selection = WorldEdit.getCurrentSelection();
 			if (args.length == 3 || args.length == 4) {
 				final World world = sender.getEntityWorld();
 				Block block1 = getBlockByText(sender, args[0]);
-				IBlockState blockstate1 = convertArgToBlockState(block1, args[1]);
+				IBlockState blockState1 = convertArgToBlockState(block1, args[1]);
 				Block block2 = getBlockByText(sender, args[2]);
-				IBlockState blockstate2;
+				IBlockState blockState2;
 				if (args.length == 4) {
-					blockstate2 = convertArgToBlockState(block2, args[3]);
+					blockState2 = convertArgToBlockState(block2, args[3]);
 				} else {
-					blockstate2 = block2.getDefaultState();
+					blockState2 = block2.getDefaultState();
 				}
-				Thread t = new Thread(() -> replaceBlocks(world, blockstate1, blockstate2));
+				Thread t = new Thread(() -> replaceBlocks(world, selection, blockState1, blockState2));
 				t.start();
 			} else {
 				WorldEdit.sendMessage(getUsage(sender));

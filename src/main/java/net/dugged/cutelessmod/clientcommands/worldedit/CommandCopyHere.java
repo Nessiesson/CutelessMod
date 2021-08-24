@@ -27,19 +27,20 @@ public class CommandCopyHere extends ClientCommand {
 
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-		if (WorldEdit.hasSelection()) {
+		if (WorldEdit.hasCurrentSelection()) {
 			if (args.length == 0 || args.length == 1) {
+				WorldEditSelection selection = WorldEdit.getCurrentSelection();
 				boolean moveSelection = false;
 				if (args.length == 1) {
 					moveSelection = parseBoolean(args[0]);
 				}
-				HandlerClone cloneHandler = (HandlerClone) ClientCommandHandler.instance.createHandler(HandlerClone.class, sender.getEntityWorld());
+				HandlerClone cloneHandler = (HandlerClone) ClientCommandHandler.instance.createHandler(HandlerClone.class, sender.getEntityWorld(), selection);
 				cloneHandler.moveSelectionAfterwards = moveSelection;
-				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld());
+				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld(), selection);
 				undoHandler.setHandler(cloneHandler);
-				undoHandler.saveBox(WorldEdit.minPos(), WorldEdit.maxPos());
-				undoHandler.saveBox(WorldEdit.playerPos(), WorldEdit.playerPos().add(WorldEdit.widthX(), WorldEdit.widthY(), WorldEdit.widthZ()));
-				cloneHandler.clone(WorldEdit.minPos(), WorldEdit.maxPos(), WorldEdit.playerPos());
+				undoHandler.saveBox(selection.minPos(), selection.maxPos());
+				undoHandler.saveBox(WorldEdit.playerPos(), WorldEdit.playerPos().add(selection.widthX(), selection.widthY(), selection.widthZ()));
+				cloneHandler.clone(selection.minPos(), selection.maxPos(), WorldEdit.playerPos());
 			} else {
 				WorldEdit.sendMessage(getUsage(sender));
 			}

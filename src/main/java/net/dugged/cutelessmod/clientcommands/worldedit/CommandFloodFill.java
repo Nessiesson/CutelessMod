@@ -30,9 +30,9 @@ public class CommandFloodFill extends ClientCommand {
 	}
 
 	private void floodFill(World world, IBlockState blockState, BlockPos startPos, int radius) {
-		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
+		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world, null);
 		List<BlockPos> undoBlockPositions = new ArrayList<>();
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world, null);
 		undoHandler.setHandler(setBlockHandler);
 		undoHandler.running = false;
 		List<ChunkPos> chunkList = new ArrayList<>();

@@ -1,5 +1,6 @@
 package net.dugged.cutelessmod.clientcommands;
 
+import net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.client.CPacketTabComplete;
@@ -21,12 +22,14 @@ public class Handler {
 	protected int totalCount;
 	protected int currentCount;
 	protected World world;
+	protected WorldEditSelection selection;
 	protected long age = 0;
 	protected long last_execution = 0;
 	private boolean warned = false;
 
-	public Handler(World worldIn) {
+	public Handler(World worldIn, WorldEditSelection selectionIn) {
 		world = worldIn;
+		selection = selectionIn;
 		if (gamerulePermission) {
 			if (sendCommandfeedback) {
 				mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule sendCommandFeedback false"));

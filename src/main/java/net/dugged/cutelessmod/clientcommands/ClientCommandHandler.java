@@ -124,14 +124,14 @@ public class ClientCommandHandler extends CommandHandler {
 		return mc.getIntegratedServer();
 	}
 
-	synchronized public Handler createHandler(final Class<? extends Handler> type, World worldIn) {
+	synchronized public Handler createHandler(final Class<? extends Handler> type, World world, WorldEditSelection selection) {
 		try {
-			Class[] constructors = {World.class};
-			final Handler handler = type.getDeclaredConstructor(constructors).newInstance(worldIn);
+			Class[] constructors = {World.class, WorldEditSelection.class};
+			final Handler handler = type.getDeclaredConstructor(constructors).newInstance(world, selection);
 			instance.handlers.add(handler);
 			return handler;
 		} catch (Exception e) {
-			return new Handler(worldIn);
+			return new Handler(world, selection);
 		}
 	}
 

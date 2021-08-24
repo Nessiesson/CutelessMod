@@ -1,5 +1,6 @@
 package net.dugged.cutelessmod.clientcommands;
 
+import net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.inventory.IInventory;
@@ -21,8 +22,8 @@ public class HandlerReplaceItem extends Handler {
 	private final List<BlockPos> containerPositions = new ArrayList<>();
 	private final Map<BlockPos, SimpleContainer> containers = new LinkedHashMap<>();
 
-	public HandlerReplaceItem(World worldIn) {
-		super(worldIn);
+	public HandlerReplaceItem(World worldIn, WorldEditSelection selection) {
+		super(worldIn, selection);
 	}
 
 	public static void getCommandPermission() {

@@ -31,8 +31,8 @@ public class CommandOutlineFill extends ClientCommand {
 	}
 
 	private void outLineFill(World world, IBlockState blockState, BlockPos startPos, int height, int radius) {
-		HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, world);
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
+		HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, world, null);
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world, null);
 		undoHandler.setHandler(fillHandler);
 		undoHandler.running = false;
 		List<BlockPos> checkedBlocks = new ArrayList<>();

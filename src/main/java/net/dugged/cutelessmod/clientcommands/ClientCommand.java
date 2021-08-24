@@ -1,5 +1,6 @@
 package net.dugged.cutelessmod.clientcommands;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -7,6 +8,7 @@ import net.minecraft.server.MinecraftServer;
 
 public abstract class ClientCommand extends CommandBase {
 
+	protected static Minecraft mc = Minecraft.getMinecraft();
 	public boolean creativeOnly = true;
 
 	@Override

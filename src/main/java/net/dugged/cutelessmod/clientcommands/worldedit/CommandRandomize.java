@@ -35,24 +35,24 @@ public class CommandRandomize extends ClientCommand {
 			String[] arg = args.trim().split(" ");
 			if (arg.length <= 2) {
 				Block block = getBlockByText(sender, arg[0]);
-				IBlockState iblockstate = block.getDefaultState();
+				IBlockState blockState = block.getDefaultState();
 				if (arg.length == 2) {
-					iblockstate = convertArgToBlockState(block, arg[1]);
+					blockState = convertArgToBlockState(block, arg[1]);
 				}
-				blockList.add(iblockstate);
+				blockList.add(blockState);
 			}
 		}
 		return blockList;
 	}
 
-	private void placeRandomBlocks(World world, List<IBlockState> blockList, int percentage) {
-		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
+	private void placeRandomBlocks(World world, WorldEditSelection selection, List<IBlockState> blockList, int percentage) {
+		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world, selection);
 		List<BlockPos> undoBlockPositions = new ArrayList<>();
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world, selection);
 		undoHandler.setHandler(setBlockHandler);
 		undoHandler.running = false;
 		Random rand = new Random();
-		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(WorldEdit.minPos(), WorldEdit.maxPos())) {
+		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.minPos(), selection.maxPos())) {
 			if (rand.nextFloat() <= (float) percentage / 100F) {
 				IBlockState blockState = blockList.get(rand.nextInt(blockList.size()));
 				undoBlockPositions.add(pos);
@@ -66,12 +66,13 @@ public class CommandRandomize extends ClientCommand {
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (args.length >= 2) {
-			if (WorldEdit.hasSelection()) {
+			if (WorldEdit.hasCurrentSelection()) {
+				WorldEditSelection selection = WorldEdit.getCurrentSelection();
 				sender.setCommandStat(CommandResultStats.Type.AFFECTED_BLOCKS, 0);
 				int percentage = parseInt(args[0], 0, 100);
 				World world = sender.getEntityWorld();
 				List<IBlockState> blockList = parseBlockList(Arrays.copyOfRange(args, 1, args.length), sender);
-				Thread t = new Thread(() -> placeRandomBlocks(world, blockList, percentage));
+				Thread t = new Thread(() -> placeRandomBlocks(world, selection, blockList, percentage));
 				t.start();
 			} else {
 				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));

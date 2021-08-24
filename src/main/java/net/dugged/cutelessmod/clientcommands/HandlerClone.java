@@ -1,6 +1,7 @@
 package net.dugged.cutelessmod.clientcommands;
 
 import net.dugged.cutelessmod.clientcommands.worldedit.WorldEdit;
+import net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection;
 import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.client.CPacketTabComplete;
 import net.minecraft.util.EnumFacing;
@@ -13,6 +14,9 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
 
 public class HandlerClone extends Handler {
 	private static final int COMMANDS_EXECUTED_PER_TICK = 64; // Minimum 2
@@ -28,8 +32,8 @@ public class HandlerClone extends Handler {
 	public EnumFacing facing = WorldEdit.getLookingDirection();
 	public boolean moveSelectionAfterwards = true;
 
-	public HandlerClone(World worldIn) {
-		super(worldIn);
+	public HandlerClone(World worldIn, WorldEditSelection selection) {
+		super(worldIn, selection);
 	}
 
 	public static void getCommandPermission() {
@@ -166,8 +170,8 @@ public class HandlerClone extends Handler {
 						}
 				}
 				if (destinations.size() == 1 && moveSelectionAfterwards) {
-					WorldEdit.posA = destinationPosition;
-					WorldEdit.posB = destinationPosition.add(bb.maxX - bb.minX, bb.maxY - bb.minY, bb.maxZ - bb.minZ);
+					selection.setPos(A, destinationPosition);
+					selection.setPos(B, destinationPosition.add(bb.maxX - bb.minX, bb.maxY - bb.minY, bb.maxZ - bb.minZ));
 				}
 				sourceAreaMap.remove(bb);
 				if (!sourceAreaMap.containsKey(bb)) {

@@ -11,6 +11,9 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
+
 public class CommandSelection extends ClientCommand {
 
 	public CommandSelection() {
@@ -30,80 +33,80 @@ public class CommandSelection extends ClientCommand {
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (args.length == 1 && (args[0].toLowerCase().matches("clear") || args[0].toLowerCase().matches("c"))) {
-			WorldEdit.posA = null;
-			WorldEdit.posB = null;
+			WorldEdit.clearAllSelections();
 			WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.selection.cleared"));
 		} else if ((args.length == 2 | args.length == 3) && (args[0].toLowerCase().matches("expand") || args[0].toLowerCase().matches("move"))) {
-			if (WorldEdit.hasSelection()) {
+			if (WorldEdit.hasCurrentSelection()) {
+				WorldEditSelection selection = WorldEdit.getCurrentSelection();
 				int amount = 1;
 				if (args.length == 3) {
 					amount = parseInt(args[2]);
 				}
 				if (args[1].toLowerCase().matches("up") || args[1].toLowerCase().matches("u")) {
 					if (args[0].toLowerCase().matches("expand")) {
-						if (WorldEdit.posA.getY() > WorldEdit.posB.getY()) {
-							WorldEdit.posA = WorldEdit.posA.up(amount);
+						if (selection.getPos(A).getY() > selection.getPos(B).getY()) {
+							selection.setPos(A, selection.getPos(A).up(amount));
 						} else {
-							WorldEdit.posB = WorldEdit.posB.up(amount);
+							selection.setPos(B, selection.getPos(B).up(amount));
 						}
 					} else {
-						WorldEdit.posA = WorldEdit.posA.up(amount);
-						WorldEdit.posB = WorldEdit.posB.up(amount);
+						selection.setPos(A, selection.getPos(A).up(amount));
+						selection.setPos(B, selection.getPos(B).up(amount));
 					}
 				} else if (args[1].toLowerCase().matches("down") || args[1].toLowerCase().matches("d")) {
 					if (args[0].toLowerCase().matches("expand")) {
-						if (WorldEdit.posA.getY() < WorldEdit.posB.getY()) {
-							WorldEdit.posA = WorldEdit.posA.down(amount);
+						if (selection.getPos(A).getY() < selection.getPos(B).getY()) {
+							selection.setPos(A, selection.getPos(A).down(amount));
 						} else {
-							WorldEdit.posB = WorldEdit.posB.down(amount);
+							selection.setPos(B, selection.getPos(B).down(amount));
 						}
 					} else {
-						WorldEdit.posA = WorldEdit.posA.down(amount);
-						WorldEdit.posB = WorldEdit.posB.down(amount);
+						selection.setPos(A, selection.getPos(A).down(amount));
+						selection.setPos(B, selection.getPos(B).down(amount));
 					}
 				} else if (args[1].toLowerCase().matches("north") || args[1].toLowerCase().matches("n")) {
 					if (args[0].toLowerCase().matches("expand")) {
-						if (WorldEdit.posA.getZ() < WorldEdit.posB.getZ()) {
-							WorldEdit.posA = WorldEdit.posA.north(amount);
+						if (selection.getPos(A).getZ() < selection.getPos(B).getZ()) {
+							selection.setPos(A, selection.getPos(A).north(amount));
 						} else {
-							WorldEdit.posB = WorldEdit.posB.north(amount);
+							selection.setPos(B, selection.getPos(B).north(amount));
 						}
 					} else {
-						WorldEdit.posA = WorldEdit.posA.north(amount);
-						WorldEdit.posB = WorldEdit.posB.north(amount);
+						selection.setPos(A, selection.getPos(A).north(amount));
+						selection.setPos(B, selection.getPos(B).north(amount));
 					}
 				} else if (args[1].toLowerCase().matches("east") || args[1].toLowerCase().matches("e")) {
 					if (args[0].toLowerCase().matches("expand")) {
-						if (WorldEdit.posA.getX() > WorldEdit.posB.getX()) {
-							WorldEdit.posA = WorldEdit.posA.east(amount);
+						if (selection.getPos(A).getX() > selection.getPos(B).getX()) {
+							selection.setPos(A, selection.getPos(A).east(amount));
 						} else {
-							WorldEdit.posB = WorldEdit.posB.east(amount);
+							selection.setPos(B, selection.getPos(B).east(amount));
 						}
 					} else {
-						WorldEdit.posA = WorldEdit.posA.east(amount);
-						WorldEdit.posB = WorldEdit.posB.east(amount);
+						selection.setPos(A, selection.getPos(A).east(amount));
+						selection.setPos(B, selection.getPos(B).east(amount));
 					}
 				} else if (args[1].toLowerCase().matches("south") || args[1].toLowerCase().matches("s")) {
 					if (args[0].toLowerCase().matches("expand")) {
-						if (WorldEdit.posA.getZ() > WorldEdit.posB.getZ()) {
-							WorldEdit.posA = WorldEdit.posA.south(amount);
+						if (selection.getPos(A).getZ() > selection.getPos(B).getZ()) {
+							selection.setPos(A, selection.getPos(A).south(amount));
 						} else {
-							WorldEdit.posB = WorldEdit.posB.south(amount);
+							selection.setPos(B, selection.getPos(B).south(amount));
 						}
 					} else {
-						WorldEdit.posA = WorldEdit.posA.south(amount);
-						WorldEdit.posB = WorldEdit.posB.south(amount);
+						selection.setPos(A, selection.getPos(A).south(amount));
+						selection.setPos(B, selection.getPos(B).south(amount));
 					}
 				} else if (args[1].toLowerCase().matches("west") || args[1].toLowerCase().matches("w")) {
 					if (args[0].toLowerCase().matches("expand")) {
-						if (WorldEdit.posA.getX() < WorldEdit.posB.getX()) {
-							WorldEdit.posA = WorldEdit.posA.west(amount);
+						if (selection.getPos(A).getX() < selection.getPos(B).getX()) {
+							selection.setPos(A, selection.getPos(A).west(amount));
 						} else {
-							WorldEdit.posB = WorldEdit.posB.west(amount);
+							selection.setPos(B, selection.getPos(B).west(amount));
 						}
 					} else {
-						WorldEdit.posA = WorldEdit.posA.west(amount);
-						WorldEdit.posB = WorldEdit.posB.west(amount);
+						selection.setPos(A, selection.getPos(A).west(amount));
+						selection.setPos(B, selection.getPos(B).west(amount));
 					}
 				} else {
 					WorldEdit.sendMessage(getUsage(sender));

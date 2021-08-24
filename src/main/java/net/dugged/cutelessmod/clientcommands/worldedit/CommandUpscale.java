@@ -26,23 +26,23 @@ public class CommandUpscale extends ClientCommand {
 		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.upscale.usage").getUnformattedText();
 	}
 
-	private void upscaleSelection(World world, int factor) {
+	private void upscaleSelection(World world, WorldEditSelection selection, int factor) {
 		Map<BlockPos, IBlockState> blockList = new HashMap<>();
 		if (factor <= 0) {
 			factor = 1;
 		}
-		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(WorldEdit.minPos(), WorldEdit.maxPos())) {
+		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.minPos(), selection.maxPos())) {
 			blockList.put(pos, world.getBlockState(pos));
 		}
-		HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, world);
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
+		HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, world, selection);
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world, selection);
 		undoHandler.setHandler(fillHandler);
 		undoHandler.running = false;
-		for (int x = 0; x < WorldEdit.widthX(); x++) {
-			for (int y = 0; y < WorldEdit.widthY(); y++) {
-				for (int z = 0; z < WorldEdit.widthZ(); z++) {
-					IBlockState blockState = world.getBlockState(new BlockPos(WorldEdit.minPos().getX() + x, WorldEdit.minPos().getY() + y, WorldEdit.minPos().getZ() + z));
-					BlockPos minPos = new BlockPos(WorldEdit.minPos().getX() + (x * factor), WorldEdit.minPos().getY() + (y * factor), WorldEdit.minPos().getZ() + (z * factor));
+		for (int x = 0; x < selection.widthX(); x++) {
+			for (int y = 0; y < selection.widthY(); y++) {
+				for (int z = 0; z < selection.widthZ(); z++) {
+					IBlockState blockState = world.getBlockState(new BlockPos(selection.minPos().getX() + x, selection.minPos().getY() + y, selection.minPos().getZ() + z));
+					BlockPos minPos = new BlockPos(selection.minPos().getX() + (x * factor), selection.minPos().getY() + (y * factor), selection.minPos().getZ() + (z * factor));
 					BlockPos maxPos = new BlockPos(minPos.getX() + (factor - 1), minPos.getY() + (factor - 1), minPos.getZ() + (factor - 1));
 					boolean skip = true;
 					for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(minPos, maxPos)) {
@@ -63,11 +63,12 @@ public class CommandUpscale extends ClientCommand {
 
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-		if (WorldEdit.hasSelection()) {
+		if (WorldEdit.hasCurrentSelection()) {
+			WorldEditSelection selection = WorldEdit.getCurrentSelection();
 			if (args.length == 1) {
 				int factor = parseInt(args[0]);
 				World world = sender.getEntityWorld();
-				Thread t = new Thread(() -> upscaleSelection(world, factor));
+				Thread t = new Thread(() -> upscaleSelection(world, selection, factor));
 				t.start();
 			} else {
 				WorldEdit.sendMessage(getUsage(sender));

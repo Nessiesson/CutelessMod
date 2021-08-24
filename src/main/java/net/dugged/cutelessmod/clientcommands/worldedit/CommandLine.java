@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
+
 public class CommandLine extends ClientCommand {
 
 	@Override
@@ -31,24 +34,24 @@ public class CommandLine extends ClientCommand {
 		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.line.usage").getUnformattedText();
 	}
 
-	private void placeLine(World world, IBlockState blockstate) {
-		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
+	private void placeLine(World world, WorldEditSelection selection, IBlockState blockState) {
+		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world, selection);
 		List<BlockPos> undoBlockPositions = new ArrayList<>();
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world, selection);
 		undoHandler.setHandler(setBlockHandler);
 		undoHandler.running = false;
-		int x1 = WorldEdit.posA.getX();
-		int y1 = WorldEdit.posA.getY();
-		int z1 = WorldEdit.posA.getZ();
-		int x2 = WorldEdit.posB.getX();
-		int y2 = WorldEdit.posB.getY();
-		int z2 = WorldEdit.posB.getZ();
+		int x1 = selection.getPos(A).getX();
+		int y1 = selection.getPos(A).getY();
+		int z1 = selection.getPos(A).getZ();
+		int x2 = selection.getPos(B).getX();
+		int y2 = selection.getPos(B).getY();
+		int z2 = selection.getPos(B).getZ();
 		int dx = Math.abs(x2 - x1);
 		int dy = Math.abs(y2 - y1);
 		int dz = Math.abs(z2 - z1);
 		int xs, ys, zs, p1, p2;
 		undoBlockPositions.add(new BlockPos(x1, y1, z1));
-		setBlockHandler.setBlock(new BlockPos(x1, y1, z1), blockstate);
+		setBlockHandler.setBlock(new BlockPos(x1, y1, z1), blockState);
 		if (x2 > x1) {
 			xs = 1;
 		} else {
@@ -80,7 +83,7 @@ public class CommandLine extends ClientCommand {
 				p1 += 2 * dy;
 				p2 += 2 * dz;
 				undoBlockPositions.add(new BlockPos(x1, y1, z1));
-				setBlockHandler.setBlock(new BlockPos(x1, y1, z1), blockstate);
+				setBlockHandler.setBlock(new BlockPos(x1, y1, z1), blockState);
 			}
 		} else if (dy >= dx && dy >= dz) {
 			p1 = 2 * dx - dy;
@@ -98,7 +101,7 @@ public class CommandLine extends ClientCommand {
 				p1 += 2 * dx;
 				p2 += 2 * dz;
 				undoBlockPositions.add(new BlockPos(x1, y1, z1));
-				setBlockHandler.setBlock(new BlockPos(x1, y1, z1), blockstate);
+				setBlockHandler.setBlock(new BlockPos(x1, y1, z1), blockState);
 			}
 		} else {
 			p1 = 2 * dy - dz;
@@ -116,7 +119,7 @@ public class CommandLine extends ClientCommand {
 				p1 += 2 * dy;
 				p2 += 2 * dx;
 				undoBlockPositions.add(new BlockPos(x1, y1, z1));
-				setBlockHandler.setBlock(new BlockPos(x1, y1, z1), blockstate);
+				setBlockHandler.setBlock(new BlockPos(x1, y1, z1), blockState);
 			}
 		}
 		undoHandler.saveBlocks(undoBlockPositions);
@@ -126,19 +129,20 @@ public class CommandLine extends ClientCommand {
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (args.length >= 0 && args.length <= 2) {
-			if (WorldEdit.hasSelection()) {
+			if (WorldEdit.hasCurrentSelection()) {
+				WorldEditSelection selection = WorldEdit.getCurrentSelection();
 				Block block = Blocks.GLOWSTONE;
 				if (args.length > 0) {
 					block = getBlockByText(sender, args[0]);
 				}
-				IBlockState blockstate;
+				IBlockState blockState;
 				if (args.length >= 2) {
-					blockstate = convertArgToBlockState(block, args[1]);
+					blockState = convertArgToBlockState(block, args[1]);
 				} else {
-					blockstate = block.getDefaultState();
+					blockState = block.getDefaultState();
 				}
 				World world = sender.getEntityWorld();
-				Thread t = new Thread(() -> placeLine(world, blockstate));
+				Thread t = new Thread(() -> placeLine(world, selection, blockState));
 				t.start();
 			} else {
 				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));

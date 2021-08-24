@@ -1,6 +1,7 @@
 package net.dugged.cutelessmod.clientcommands;
 
 import net.dugged.cutelessmod.clientcommands.worldedit.WorldEdit;
+import net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.util.math.BlockPos;
@@ -18,8 +19,8 @@ public class HandlerUndo extends Handler {
 	private Handler handler = null;
 	private boolean started = false;
 
-	public HandlerUndo(World worldIn) {
-		super(worldIn);
+	public HandlerUndo(World worldIn, WorldEditSelection selection) {
+		super(worldIn, selection);
 	}
 
 	public void setHandler(Handler handlerExecutedAfterwards) {

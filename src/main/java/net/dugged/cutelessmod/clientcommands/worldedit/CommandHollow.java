@@ -29,13 +29,14 @@ public class CommandHollow extends ClientCommand {
 
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-		if (WorldEdit.hasSelection()) {
+		if (WorldEdit.hasCurrentSelection()) {
+			WorldEditSelection selection = WorldEdit.getCurrentSelection();
 			if (args.length > 0 && args.length <= 3) {
 				Block block = getBlockByText(sender, args[0]);
-				IBlockState blockstate = block.getDefaultState();
+				IBlockState blockState = block.getDefaultState();
 				int thickness = 0;
 				if (args.length >= 2) {
-					blockstate = convertArgToBlockState(block, args[1]);
+					blockState = convertArgToBlockState(block, args[1]);
 				}
 				if (args.length >= 3) {
 					thickness = parseInt(args[2]) - 1;
@@ -43,23 +44,23 @@ public class CommandHollow extends ClientCommand {
 						thickness = 0;
 					}
 				}
-				HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, sender.getEntityWorld());
-				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld());
+				HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, sender.getEntityWorld(), selection);
+				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld(), selection);
 				undoHandler.setHandler(fillHandler);
-				BlockPos posMin = WorldEdit.minPos();
-				BlockPos posMax = WorldEdit.maxPos();
-				undoHandler.saveBox(posMin, new BlockPos(posMax.getX(), posMax.getY(), posMin.getZ() + Math.min(thickness, WorldEdit.widthZ() - 1)));
-				fillHandler.fill(posMin, new BlockPos(posMax.getX(), posMax.getY(), posMin.getZ() + Math.min(thickness, WorldEdit.widthZ() - 1)), blockstate);
-				undoHandler.saveBox(posMin, new BlockPos(posMin.getX() + Math.min(thickness, WorldEdit.widthX() - 1), posMax.getY(), posMax.getZ()));
-				fillHandler.fill(posMin, new BlockPos(posMin.getX() + Math.min(thickness, WorldEdit.widthX() - 1), posMax.getY(), posMax.getZ()), blockstate);
-				undoHandler.saveBox(posMin, new BlockPos(posMax.getX(), posMin.getY() + Math.min(thickness, WorldEdit.widthY() - 1), posMax.getZ()));
-				fillHandler.fill(posMin, new BlockPos(posMax.getX(), posMin.getY() + Math.min(thickness, WorldEdit.widthY() - 1), posMax.getZ()), blockstate);
-				undoHandler.saveBox(posMax, new BlockPos(posMin.getX(), posMin.getY(), posMax.getZ() - Math.min(thickness, WorldEdit.widthZ() - 1)));
-				fillHandler.fill(posMax, new BlockPos(posMin.getX(), posMin.getY(), posMax.getZ() - Math.min(thickness, WorldEdit.widthZ() - 1)), blockstate);
-				undoHandler.saveBox(posMax, new BlockPos(posMax.getX() - Math.min(thickness, WorldEdit.widthX() - 1), posMin.getY(), posMin.getZ()));
-				fillHandler.fill(posMax, new BlockPos(posMax.getX() - Math.min(thickness, WorldEdit.widthX() - 1), posMin.getY(), posMin.getZ()), blockstate);
-				undoHandler.saveBox(posMax, new BlockPos(posMin.getX(), posMax.getY() - Math.min(thickness, WorldEdit.widthY() - 1), posMin.getZ()));
-				fillHandler.fill(posMax, new BlockPos(posMin.getX(), posMax.getY() - Math.min(thickness, WorldEdit.widthY() - 1), posMin.getZ()), blockstate);
+				BlockPos posMin = selection.minPos();
+				BlockPos posMax = selection.maxPos();
+				undoHandler.saveBox(posMin, new BlockPos(posMax.getX(), posMax.getY(), posMin.getZ() + Math.min(thickness, selection.widthZ() - 1)));
+				fillHandler.fill(posMin, new BlockPos(posMax.getX(), posMax.getY(), posMin.getZ() + Math.min(thickness, selection.widthZ() - 1)), blockState);
+				undoHandler.saveBox(posMin, new BlockPos(posMin.getX() + Math.min(thickness, selection.widthX() - 1), posMax.getY(), posMax.getZ()));
+				fillHandler.fill(posMin, new BlockPos(posMin.getX() + Math.min(thickness, selection.widthX() - 1), posMax.getY(), posMax.getZ()), blockState);
+				undoHandler.saveBox(posMin, new BlockPos(posMax.getX(), posMin.getY() + Math.min(thickness, selection.widthY() - 1), posMax.getZ()));
+				fillHandler.fill(posMin, new BlockPos(posMax.getX(), posMin.getY() + Math.min(thickness, selection.widthY() - 1), posMax.getZ()), blockState);
+				undoHandler.saveBox(posMax, new BlockPos(posMin.getX(), posMin.getY(), posMax.getZ() - Math.min(thickness, selection.widthZ() - 1)));
+				fillHandler.fill(posMax, new BlockPos(posMin.getX(), posMin.getY(), posMax.getZ() - Math.min(thickness, selection.widthZ() - 1)), blockState);
+				undoHandler.saveBox(posMax, new BlockPos(posMax.getX() - Math.min(thickness, selection.widthX() - 1), posMin.getY(), posMin.getZ()));
+				fillHandler.fill(posMax, new BlockPos(posMax.getX() - Math.min(thickness, selection.widthX() - 1), posMin.getY(), posMin.getZ()), blockState);
+				undoHandler.saveBox(posMax, new BlockPos(posMin.getX(), posMax.getY() - Math.min(thickness, selection.widthY() - 1), posMin.getZ()));
+				fillHandler.fill(posMax, new BlockPos(posMin.getX(), posMax.getY() - Math.min(thickness, selection.widthY() - 1), posMin.getZ()), blockState);
 			} else {
 				WorldEdit.sendMessage(getUsage(sender));
 			}

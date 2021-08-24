@@ -29,26 +29,26 @@ public class CommandFlip extends ClientCommand {
 		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.flip.usage").getUnformattedText();
 	}
 
-	private void flipSelection(World world) {
-		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world);
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world);
+	private void flipSelection(World world, WorldEditSelection selection) {
+		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world, selection);
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world, selection);
 		undoHandler.setHandler(setBlockHandler);
 		undoHandler.running = false;
 		EnumFacing direction = WorldEdit.getLookingDirection();
 		Map<BlockPos, IBlockState> blockList = new HashMap<>();
-		for (int x = 0; x < WorldEdit.widthX(); x++) {
-			for (int y = 0; y < WorldEdit.widthY(); y++) {
-				for (int z = 0; z < WorldEdit.widthZ(); z++) {
+		for (int x = 0; x < selection.widthX(); x++) {
+			for (int y = 0; y < selection.widthY(); y++) {
+				for (int z = 0; z < selection.widthZ(); z++) {
 					IBlockState blockState;
 					if (direction.getAxis() == EnumFacing.Axis.Y) {
-						blockState = world.getBlockState(WorldEdit.minPos().add(x, y, z));
-						blockList.put(WorldEdit.minPos().add(x, WorldEdit.widthY() - y - 1, z), WorldEdit.flipBlockstate(blockState, direction.getAxis()));
+						blockState = world.getBlockState(selection.minPos().add(x, y, z));
+						blockList.put(selection.minPos().add(x, selection.widthY() - y - 1, z), WorldEdit.flipBlockstate(blockState, direction.getAxis()));
 					} else if (direction.getAxis() == EnumFacing.Axis.Z) {
-						blockState = world.getBlockState(WorldEdit.minPos().add(x, y, z));
-						blockList.put(WorldEdit.minPos().add(x, y, WorldEdit.widthZ() - z - 1), WorldEdit.flipBlockstate(blockState, direction.getAxis()));
+						blockState = world.getBlockState(selection.minPos().add(x, y, z));
+						blockList.put(selection.minPos().add(x, y, selection.widthZ() - z - 1), WorldEdit.flipBlockstate(blockState, direction.getAxis()));
 					} else {
-						blockState = world.getBlockState(WorldEdit.minPos().add(x, y, z));
-						blockList.put(WorldEdit.minPos().add(WorldEdit.widthX() - x - 1, y, z), WorldEdit.flipBlockstate(blockState, direction.getAxis()));
+						blockState = world.getBlockState(selection.minPos().add(x, y, z));
+						blockList.put(selection.minPos().add(selection.widthX() - x - 1, y, z), WorldEdit.flipBlockstate(blockState, direction.getAxis()));
 					}
 				}
 			}
@@ -61,9 +61,10 @@ public class CommandFlip extends ClientCommand {
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (args.length == 0) {
-			if (WorldEdit.hasSelection()) {
+			if (WorldEdit.hasCurrentSelection()) {
+				WorldEditSelection selection = WorldEdit.getCurrentSelection();
 				World world = sender.getEntityWorld();
-				Thread t = new Thread(() -> flipSelection(world));
+				Thread t = new Thread(() -> flipSelection(world, selection));
 				t.start();
 			} else {
 				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));

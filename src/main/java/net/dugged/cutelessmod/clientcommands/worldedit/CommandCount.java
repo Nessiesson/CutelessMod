@@ -14,6 +14,9 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
+
 public class CommandCount extends ClientCommand {
 	@Override
 	public String getName() {
@@ -25,9 +28,9 @@ public class CommandCount extends ClientCommand {
 		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.count.usage").getUnformattedText();
 	}
 
-	private void countBlock(World world, IBlockState blockState, boolean exclusive, boolean compareStates) {
+	private void countBlock(World world, WorldEditSelection selection, IBlockState blockState, boolean exclusive, boolean compareStates) {
 		int count = 0;
-		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(WorldEdit.posA, WorldEdit.posB)) {
+		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.getPos(A), selection.getPos(B))) {
 			if (exclusive) {
 				if (!((compareStates && world.getBlockState(pos) == blockState) || (!compareStates && world.getBlockState(pos).getBlock() == blockState.getBlock()))) {
 					count++;
@@ -48,7 +51,8 @@ public class CommandCount extends ClientCommand {
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if (args.length == 2 || args.length == 3) {
-			if (WorldEdit.hasSelection()) {
+			if (WorldEdit.hasCurrentSelection()) {
+				WorldEditSelection selection = WorldEdit.getCurrentSelection();
 				boolean exclusive = parseBoolean(args[0]);
 				Block block = getBlockByText(sender, args[1]);
 				IBlockState blockState;
@@ -61,7 +65,7 @@ public class CommandCount extends ClientCommand {
 					compareStates = false;
 				}
 				World world = sender.getEntityWorld();
-				Thread t = new Thread(() -> countBlock(world, blockState, exclusive, compareStates));
+				Thread t = new Thread(() -> countBlock(world, selection, blockState, exclusive, compareStates));
 				t.start();
 			} else {
 				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));

@@ -1,5 +1,6 @@
 package net.dugged.cutelessmod.clientcommands;
 
+import net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection;
 import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.network.play.client.CPacketChatMessage;
@@ -21,8 +22,8 @@ public class HandlerSetBlock extends Handler {
 	private final List<BlockPos> skippedPositions = new ArrayList<>();
 	private final Map<BlockPos, IBlockState> blocksToPlace = new LinkedHashMap<>();
 
-	public HandlerSetBlock(World worldIn) {
-		super(worldIn);
+	public HandlerSetBlock(World worldIn, WorldEditSelection selection) {
+		super(worldIn, selection);
 	}
 
 	public static void getCommandPermission() {

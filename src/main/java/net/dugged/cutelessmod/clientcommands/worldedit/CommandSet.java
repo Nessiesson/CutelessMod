@@ -16,6 +16,10 @@ import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.List;
 
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
+
+
 public class CommandSet extends ClientCommand {
 	@Override
 	public String getName() {
@@ -29,18 +33,19 @@ public class CommandSet extends ClientCommand {
 
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-		if (WorldEdit.hasSelection()) {
+		if (WorldEdit.hasCurrentSelection()) {
+			WorldEditSelection selection = WorldEdit.getCurrentSelection();
 			if (args.length > 0 && args.length <= 2) {
 				Block block = getBlockByText(sender, args[0]);
-				IBlockState blockstate = block.getDefaultState();
+				IBlockState blockState = block.getDefaultState();
 				if (args.length == 2) {
-					blockstate = convertArgToBlockState(block, args[1]);
+					blockState = convertArgToBlockState(block, args[1]);
 				}
-				HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, sender.getEntityWorld());
-				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld());
+				HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, sender.getEntityWorld(), selection);
+				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld(), selection);
 				undoHandler.setHandler(fillHandler);
-				undoHandler.saveBox(WorldEdit.posA, WorldEdit.posB);
-				fillHandler.fill(WorldEdit.posA, WorldEdit.posB, blockstate);
+				undoHandler.saveBox(selection.getPos(A), selection.getPos(B));
+				fillHandler.fill(selection.getPos(A), selection.getPos(B), blockState);
 			} else {
 				WorldEdit.sendMessage(getUsage(sender));
 			}

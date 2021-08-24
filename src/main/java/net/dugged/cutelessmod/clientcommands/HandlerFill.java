@@ -1,5 +1,6 @@
 package net.dugged.cutelessmod.clientcommands;
 
+import net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.client.CPacketTabComplete;
@@ -23,8 +24,8 @@ public class HandlerFill extends Handler {
 	private final Map<AxisAlignedBB, IBlockState> blockStateMap = new LinkedHashMap<>();
 	private final Map<AxisAlignedBB, BlockPos> iteratorPositions = new LinkedHashMap<>();
 
-	public HandlerFill(World worldIn) {
-		super(worldIn);
+	public HandlerFill(World worldIn, WorldEditSelection selection) {
+		super(worldIn, selection);
 	}
 
 	public static void getCommandPermission() {
