@@ -37,7 +37,7 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       if: steps.checkTag.outputs.exists == 'false'
-      run: ./gradlew setupCiWorkspace build
+      run: ./gradlew build
     - name: Create tag for current version
       if: steps.checkTag.outputs.exists == 'false'
       uses: laputansoft/github-tag-action@v4.6

@@ -1,88 +1,98 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 buildscript {
 	repositories {
-		jcenter()
-		maven { url = "https://files.minecraftforge.net/maven" }
+		maven { url = "https://maven.minecraftforge.net" }
 		maven { url = "https://repo.spongepowered.org/repository/maven-public" }
-		maven { url = "https://plugins.gradle.org/m2" }
 	}
-
 	dependencies {
-		classpath "net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT"
-		classpath "org.spongepowered:mixingradle:0.6-SNAPSHOT"
-		classpath "com.github.jengelman.gradle.plugins:shadow:4.0.4"
+		classpath group: "net.minecraftforge.gradle", name: "ForgeGradle", version: "5.1.+", changing: true
+		classpath group: "org.spongepowered", name: "mixingradle", version: "0.7-SNAPSHOT"
 	}
 }
 
-apply plugin: "net.minecraftforge.gradle.forge"
+apply plugin: "net.minecraftforge.gradle"
 apply plugin: "org.spongepowered.mixin"
-apply plugin: "com.github.johnrengelman.shadow"
 
-version = "0.3.0"
-def modName = "CutelessMod".toString()
-def modId = modName.toLowerCase()
-group = "net.dugged.${modId}"
-def loadingPlugin = "${group}.${modName}LoadingPlugin"
-archivesBaseName = modName
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = "1.8"
+def modId = project.modName.toLowerCase()
+group = "${project.groupName}.${modId}"
+def loadingPlugin = "${group}.${project.modName}LoadingPlugin"
+archivesBaseName = project.modName
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+compileJava.options.encoding = "UTF-8"
+
+def copyDir = "$compileJava.temporaryDir/replaced"
+task tokenReplace(type: Copy) {
+	from(sourceSets.main.java.sourceDirectories)
+	into copyDir
+	filter(ReplaceTokens, tokens: [
+			VERSION: project.version,
+			MODNAME: project.modName,
+			MODID  : modId,
+	])
+}
+compileJava.setSource(copyDir)
+compileJava.dependsOn(tokenReplace)
 
 minecraft {
-	version = "1.12.2-14.23.5.2847"
-	mappings = "stable_39"
-	coreMod = loadingPlugin
-	runDir = "run"
-	makeObfSourceJar = false
+	mappings channel: "stable", version: "39-1.12"
 
-	replaceIn "Reference.java"
-	replace "@VERSION@", project.version
-	replace "@MODNAME@", modName
-	replace "@MODID@", modId
+	runs {
+		client {
+			workingDirectory project.file("run")
 
-	clientJvmArgs.add("-Dmixin.debug=true")
+			// Recommended logging level for the console
+			property "forge.logging.console.level", "debug"
+
+			property "fml.coreMods.load", loadingPlugin
+			property "mixin.debug", "true"
+		}
+	}
 }
 
-jar.manifest.attributes(
-		"FMLCorePluginContainsFMLMod": true,
-		"FMLCorePlugin": loadingPlugin,
-		"ForceLoadAsMod": true,
-		"TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
-)
+configurations {
+	jarLibs
+	implementation.extendsFrom jarLibs
+}
 
 repositories {
-	mavenCentral()
 	maven { url = "https://repo.spongepowered.org/repository/maven-public" }
 }
 
 dependencies {
-	compile "org.spongepowered:mixin:0.8.3"
+	minecraft "net.minecraftforge:forge:1.12.2-14.23.5.2855"
+
+	jarLibs "org.spongepowered:mixin:0.8.3"
+	annotationProcessor "org.spongepowered:mixin:0.8.3:processor"
+	implementation configurations.jarLibs
 }
 
 mixin {
 	add sourceSets.main, "mixins.${modId}.refmap.json"
 }
 
-shadowJar {
-	exclude "dummyThing"
-	exclude "LICENSE.txt"
-	classifier = ""
-}
-build.dependsOn(shadowJar)
+jar {
+	manifest.attributes(
+			"TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
+			"FMLCorePluginContainsFMLMod": true,
+			"FMLCorePlugin": loadingPlugin,
+			"ForceLoadAsMod": true,
+	)
 
-reobf {
-	shadowJar {
-		mappingType = "SEARGE"
+	from(configurations.jarLibs.collect { it.isDirectory() ? it : zipTree(it) }) {
+		exclude "META-INF/*.RSA", "META-INF/*.SF", "META-INF/*.DSA"
 	}
 }
 
 processResources {
-	inputs.property "modName", modName
+	duplicatesStrategy = DuplicatesStrategy.INCLUDE
+	inputs.property "modName", project.modName
 	inputs.property "modId", modId
 	inputs.property "version", project.version
-	inputs.property "mcversion", project.minecraft.version
 
 	from(sourceSets.main.resources.srcDirs) {
 		include "mcmod.info"
-		include "pack.mcmeta"
-
-		expand "version": project.version, "mcversion": project.minecraft.version, "modName": modName, "modId": modId
+		expand "modName": project.modName, "modId": modId, "version": project.version
 	}
 }
