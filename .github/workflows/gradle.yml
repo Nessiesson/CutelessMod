@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Get version from gradle.build
-      run: echo VERSION=$(grep -Po '(?<=^version = ").*(?=")' build.gradle) >> $GITHUB_ENV
+      run: echo VERSION=$(grep -Po '(?<=^version=).*$' build.properties) >> $GITHUB_ENV
     - name: Check if tag for version already exists
       uses: mukunku/tag-exists-action@v1.0.0
       id: checkTag
