@@ -65,7 +65,6 @@ dependencies {
 
 	jarLibs "org.spongepowered:mixin:0.8.3"
 	annotationProcessor "org.spongepowered:mixin:0.8.3:processor"
-	implementation configurations.jarLibs
 }
 
 mixin {
