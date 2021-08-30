@@ -24,7 +24,7 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 compileJava.options.encoding = "UTF-8"
 
 def copyDir = "$compileJava.temporaryDir/replaced"
-task tokenReplace(type: Copy) {
+task tokenReplace(type: Sync) {
 	from(sourceSets.main.java.sourceDirectories)
 	into copyDir
 	filter(ReplaceTokens, tokens: [
