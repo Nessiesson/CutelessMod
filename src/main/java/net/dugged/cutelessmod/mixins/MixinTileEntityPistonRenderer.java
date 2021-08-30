@@ -38,4 +38,9 @@ public abstract class MixinTileEntityPistonRenderer {
 	private float fixShortArm(final float value) {
 		return 0.5F;
 	}
+
+	@ModifyConstant(method = "render", constant = @Constant(floatValue = 1F))
+	private float fixPistonBlink(final float value) {
+		return Float.MAX_VALUE;
+	}
 }
