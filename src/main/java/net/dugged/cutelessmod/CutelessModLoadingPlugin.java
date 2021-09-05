@@ -15,32 +15,14 @@ public class CutelessModLoadingPlugin implements IFMLLoadingPlugin {
 		Mixins.addConfiguration("mixins.cutelessmod.json");
 		Mixins.addConfiguration("mixins.cutelessmod.clientcommands.json");
 		Mixins.addConfiguration("mixins.cutelessmod.chunk_display.json");
+		Mixins.addConfiguration("mixins.cutelessmod.optifine.json");
 	}
 
 	// @formatter:off
-	@Override
-	public String getAccessTransformerClass() {
-		return null;
-	}
-
-	@Override
-	public void injectData(final Map<String, Object> data) {
-	}
-
-	@Override
-	public String[] getASMTransformerClass() {
-		return null;
-	}
-
-	@Nullable
-	@Override
-	public String getSetupClass() {
-		return null;
-	}
-
-	@Override
-	public String getModContainerClass() {
-		return null;
-	}
+	@Override public String getAccessTransformerClass() { return null; }
+	@Override public String[] getASMTransformerClass() { return null; }
+	@Override public void injectData(final Map<String, Object> data) {}
+	@Nullable @Override public String getSetupClass() { return null; }
+	@Override public String getModContainerClass() { return null; }
 	// @formatter:on
 }
