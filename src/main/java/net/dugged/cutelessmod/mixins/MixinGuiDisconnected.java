@@ -46,19 +46,19 @@ public class MixinGuiDisconnected extends GuiScreen {
 
 	@Inject(method = "drawScreen", at = @At("HEAD"))
 	public void updateStrings(final int mouseX, final int mouseY, final float partialTicks, final CallbackInfo ci) {
-		if (CutelessMod.tickCounter > this.ticks && this.buttonList.get(1).enabled) {
-			this.ticks = CutelessMod.tickCounter + 20;
-			if (this.countdownSeconds <= 0 && this.buttonList.get(1).enabled) {
-				if (CutelessMod.currentServer != null) {
-					this.mc.displayGuiScreen(new GuiConnecting(this.parentScreen, this.mc, CutelessMod.currentServer));
+		try {
+			if (CutelessMod.tickCounter > this.ticks && this.buttonList.get(1).enabled) {
+				this.ticks = CutelessMod.tickCounter + 20;
+				if (this.countdownSeconds <= 0 && this.buttonList.get(1).enabled) {
+					if (CutelessMod.currentServer != null) {
+						this.mc.displayGuiScreen(new GuiConnecting(this.parentScreen, this.mc, CutelessMod.currentServer));
+					}
+					return;
 				}
-				return;
-			}
-			this.countdownSeconds--;
-			if (this.buttonList.size() > 1) {
+				this.countdownSeconds--;
 				this.buttonList.get(1).displayString = "Rejoin (" + this.countdownSeconds + ")";
 			}
-		}
+		} catch (final Exception ignored) {}
 	}
 
 	@Inject(method = "actionPerformed", at = @At("HEAD"))
