@@ -17,6 +17,8 @@
 		"IGuiListWorldSelectionEntry",
 		"IGuiMultiplayer",
 		"IGuiNewChat",
+		"IMapItemRenderer",
+		"IMapItemRendererInstance",
 		"INBTTagList",
 		"IRenderManager",
 		"IServerListEntryNormal",

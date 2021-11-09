@@ -37,7 +37,7 @@ compileJava.dependsOn(tokenReplace)
 
 minecraft {
 	mappings channel: "stable", version: "39-1.12"
-
+	accessTransformer = file('src/main/resources/at.conf')
 	runs {
 		client {
 			workingDirectory project.file("run")

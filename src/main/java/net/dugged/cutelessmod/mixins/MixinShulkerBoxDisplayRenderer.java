@@ -1,6 +1,7 @@
 package net.dugged.cutelessmod.mixins;
 
 import net.dugged.cutelessmod.Configuration;
+import net.dugged.cutelessmod.MapDisplay;
 import net.dugged.cutelessmod.ShulkerBoxDisplay;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiScreen;
@@ -17,6 +18,7 @@ public abstract class MixinShulkerBoxDisplayRenderer extends Gui {
 	private void postRenderToolTip(final ItemStack stack, final int x, final int y, final CallbackInfo ci) {
 		if (Configuration.showShulkerBoxDisplay) {
 			ShulkerBoxDisplay.handleShulkerBoxDisplayRenderer(stack, x, y, this);
+			MapDisplay.handleMapDisplayRenderer(stack, x, y, this);
 		}
 	}
 }
