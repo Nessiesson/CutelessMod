@@ -5,6 +5,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockSnow;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.Entity;
+import net.minecraft.util.BlockRenderLayer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
@@ -17,6 +19,15 @@ import java.util.Random;
 public abstract class MixinBlockSnow extends Block {
 	protected MixinBlockSnow(final Material material) {
 		super(material);
+	}
+
+	@Override
+	public BlockRenderLayer getRenderLayer() {
+		if (Configuration.showSnowDripParticles) {
+			return BlockRenderLayer.TRANSLUCENT;
+		} else  {
+			return BlockRenderLayer.SOLID;
+		}
 	}
 
 	@Override
