@@ -13,6 +13,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -26,6 +27,7 @@ public class ClientCommandHandler extends CommandHandler {
 	public static int PACKET_LIMIT = 5000;
 	private final Minecraft mc = Minecraft.getMinecraft();
 	public CopyOnWriteArrayList<Handler> handlers = new CopyOnWriteArrayList<>();
+	public List<Thread> threads = new ArrayList();
 	public Position lastPosition = new Position(null, 0);
 	public String[] latestAutoComplete = null;
 	private long tick = 0;
@@ -64,6 +66,7 @@ public class ClientCommandHandler extends CommandHandler {
 		instance.registerCommand(new CommandBack());
 		instance.registerCommand(new CommandCopyHere());
 		instance.registerCommand(new CommandFillInventories());
+		instance.registerCommand(new CommandPerimeterVolume());
 	}
 
 	@Override
@@ -153,6 +156,8 @@ public class ClientCommandHandler extends CommandHandler {
 			} else {
 				return -1;
 			}
+		} else if (threads.size() > 0) {
+			return -1;
 		} else return 0;
 	}
 
@@ -161,6 +166,7 @@ public class ClientCommandHandler extends CommandHandler {
 	}
 
 	public void tick() {
+		WorldEditRenderer.update();
 		if (handlers.size() > 0 && Arrays.stream(CutelessMod.receivedPackets).sum() <= PACKET_LIMIT && Arrays.stream(CutelessMod.sendPackets).sum() <= PACKET_LIMIT) {
 			if (mc.player == null) {
 				handlers.clear();
@@ -172,6 +178,7 @@ public class ClientCommandHandler extends CommandHandler {
 				}
 			}
 		}
+		threads.removeIf(thread -> thread.isInterrupted() || !thread.isAlive());
 		if (tick % 36000 == 0 && !mc.ingameGUI.getChatGUI().getChatOpen()) {
 			HandlerSetBlock.getCommandPermission();
 			HandlerFill.getCommandPermission();

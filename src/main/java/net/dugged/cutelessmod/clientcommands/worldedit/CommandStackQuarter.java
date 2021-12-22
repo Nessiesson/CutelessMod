@@ -41,8 +41,10 @@ public class CommandStackQuarter extends ClientCommand {
 		for (int x = 0; x < selection.widthX(); x++) {
 			for (int y = 0; y < selection.widthY(); y++) {
 				for (int z = 0; z < selection.widthZ(); z++) {
+					if (Thread.interrupted()) {
+						return;
+					}
 					IBlockState blockState = world.getBlockState(selection.minPos().add(x, y, z));
-
 					// Horizontal diagonals
 					// SW -X +Z
 					if (yaw >= 45 - tolerance && yaw <= 45 + tolerance && pitch >= -tolerance && pitch <= tolerance) {
@@ -144,6 +146,7 @@ public class CommandStackQuarter extends ClientCommand {
 				World world = sender.getEntityWorld();
 				Thread t = new Thread(() -> stackQuarter(world, selection, spacing));
 				t.start();
+				ClientCommandHandler.instance.threads.add(t);
 			} else {
 				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
 			}

@@ -43,6 +43,9 @@ public class CommandDrain extends ClientCommand {
 		chunkMap.put(world.getChunk(startPos).getPos(), startPos);
 		BlockPos pos1;
 		while (chunkList.size() > 0) {
+			if (Thread.interrupted()) {
+				return;
+			}
 			ChunkPos chunkPos = chunkList.get(0);
 			BlockPos chunkStartPos = chunkMap.get(chunkPos);
 			List<BlockPos> checkedBlocks = new ArrayList<>();
@@ -174,6 +177,7 @@ public class CommandDrain extends ClientCommand {
 				}
 				Thread t = new Thread(() -> drainBody(world, pos, radius));
 				t.start();
+				ClientCommandHandler.instance.threads.add(t);
 			} else {
 				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.drain.notInWater"));
 			}

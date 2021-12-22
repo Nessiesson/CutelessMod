@@ -9,6 +9,10 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentTranslation;
 
 public class CommandCancel extends ClientCommand {
+	public CommandCancel() {
+		creativeOnly = false;
+	}
+
 	@Override
 	public String getName() {
 		return "cancel";
@@ -24,6 +28,9 @@ public class CommandCancel extends ClientCommand {
 		if (args.length == 0) {
 			for (Handler handler : ClientCommandHandler.instance.handlers) {
 				handler.finished = true;
+			}
+			for (Thread thread : ClientCommandHandler.instance.threads) {
+				thread.interrupt();
 			}
 			WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.cancel.cancelledAll"));
 		} else {

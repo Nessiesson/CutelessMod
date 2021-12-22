@@ -53,6 +53,9 @@ public class CommandRandomize extends ClientCommand {
 		undoHandler.running = false;
 		Random rand = new Random();
 		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.minPos(), selection.maxPos())) {
+			if (Thread.interrupted()) {
+				return;
+			}
 			if (rand.nextFloat() <= (float) percentage / 100F) {
 				IBlockState blockState = blockList.get(rand.nextInt(blockList.size()));
 				undoBlockPositions.add(pos);
@@ -74,6 +77,7 @@ public class CommandRandomize extends ClientCommand {
 				List<IBlockState> blockList = parseBlockList(Arrays.copyOfRange(args, 1, args.length), sender);
 				Thread t = new Thread(() -> placeRandomBlocks(world, selection, blockList, percentage));
 				t.start();
+				ClientCommandHandler.instance.threads.add(t);
 			} else {
 				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
 			}

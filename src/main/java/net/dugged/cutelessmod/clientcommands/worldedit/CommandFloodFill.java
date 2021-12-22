@@ -48,6 +48,9 @@ public class CommandFloodFill extends ClientCommand {
 			blocksToCheck.add(chunkStartPos);
 			checkedBlocks.add(chunkStartPos);
 			while (blocksToCheck.size() > 0) {
+				if (Thread.interrupted()) {
+					return;
+				}
 				BlockPos pos = blocksToCheck.get(0);
 				if (pos.up().getY() <= startPos.getY()) {
 					pos1 = pos.up();
@@ -172,6 +175,7 @@ public class CommandFloodFill extends ClientCommand {
 				}
 				Thread t = new Thread(() -> floodFill(world, blockState, pos, radius));
 				t.start();
+				ClientCommandHandler.instance.threads.add(t);
 			} else {
 				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.floodfill.noSpaceToFlood"));
 			}

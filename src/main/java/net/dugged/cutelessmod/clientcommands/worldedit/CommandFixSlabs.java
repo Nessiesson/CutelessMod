@@ -39,6 +39,9 @@ public class CommandFixSlabs extends ClientCommand {
 		undoHandler.setHandler(setBlockHandler);
 		undoHandler.running = false;
 		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.getPos(A), selection.getPos(B))) {
+			if (Thread.interrupted()) {
+				return;
+			}
 			IBlockState blockState = world.getBlockState(pos);
 			if (blockState.getBlock() instanceof BlockDoubleStoneSlab && blockState.getProperties().containsKey(BlockDoubleStoneSlab.VARIANT)) {
 				switch (blockState.getValue(BlockDoubleStoneSlab.VARIANT)) {
@@ -148,6 +151,7 @@ public class CommandFixSlabs extends ClientCommand {
 				World world = sender.getEntityWorld();
 				Thread t = new Thread(() -> fixSlabs(world, selection));
 				t.start();
+				ClientCommandHandler.instance.threads.add(t);
 			} else {
 				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
 			}

@@ -43,6 +43,9 @@ public class CommandPolygon extends ClientCommand {
 			rotation = Math.PI / (points * 2);
 		}
 		for (int i = 1; i < points + 1; i++) {
+			if (Thread.interrupted()) {
+				return;
+			}
 			int x1 = (int) (radius * Math.cos(2 * (-(Math.PI + rotation) + (Math.PI / points) * i)) + center.getX());
 			int z1 = (int) (radius * Math.sin(2 * (-(Math.PI + rotation) + (Math.PI / points) * i)) + center.getZ());
 			int x2 = (int) (radius * Math.cos(2 * (-(Math.PI + rotation) + (Math.PI / points) * (i + 1))) + center.getX());
@@ -63,6 +66,9 @@ public class CommandPolygon extends ClientCommand {
 			if (dx > dz) {
 				err = dx / 2;
 				while (x1 != x2) {
+					if (Thread.interrupted()) {
+						return;
+					}
 					undoBlockPositions.add(new BlockPos(x1, center.getY(), z1));
 					setBlockHandler.setBlock(new BlockPos(x1, center.getY(), z1), blockState);
 					err -= dz;
@@ -75,6 +81,9 @@ public class CommandPolygon extends ClientCommand {
 			} else {
 				err = dz / 2;
 				while (z1 != z2) {
+					if (Thread.interrupted()) {
+						return;
+					}
 					undoBlockPositions.add(new BlockPos(x1, center.getY(), z1));
 					setBlockHandler.setBlock(new BlockPos(x1, center.getY(), z1), blockState);
 					err -= dx;
@@ -109,6 +118,7 @@ public class CommandPolygon extends ClientCommand {
 					}
 					Thread t = new Thread(() -> generatePolygon(world, selection, selection.getPos(A), blockState, radius, points, halfStep));
 					t.start();
+					ClientCommandHandler.instance.threads.add(t);
 				} else {
 					WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noOneByOneSelected"));
 				}

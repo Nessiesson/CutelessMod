@@ -37,6 +37,9 @@ public class CommandFillInventories extends ClientCommand {
 	private void fillInventories(World world, WorldEditSelection selection, ItemStack stack) {
 		HandlerReplaceItem handler = (HandlerReplaceItem) ClientCommandHandler.instance.createHandler(HandlerReplaceItem.class, world, selection);
 		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.getPos(A), selection.getPos(B))) {
+			if (Thread.interrupted()) {
+				return;
+			}
 			IBlockState blockState = world.getBlockState(pos);
 			if (blockState.getBlock() instanceof BlockDispenser || blockState.getBlock() instanceof BlockChest || blockState.getBlock() instanceof BlockHopper) {
 				handler.fillContainer(pos, stack);
@@ -59,6 +62,7 @@ public class CommandFillInventories extends ClientCommand {
 				World world = sender.getEntityWorld();
 				Thread t = new Thread(() -> fillInventories(world, selection, stack));
 				t.start();
+				ClientCommandHandler.instance.threads.add(t);
 			} else {
 				WorldEdit.sendMessage(getUsage(sender));
 			}

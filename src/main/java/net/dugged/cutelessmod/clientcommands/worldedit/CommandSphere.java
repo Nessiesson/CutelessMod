@@ -39,6 +39,9 @@ public class CommandSphere extends ClientCommand {
 		for (double x = 0; x <= radius; x++) {
 			for (double y = 0; y <= Math.min(radius, world.getHeight() - center.getY()); y++) {
 				for (double z = 0; z <= radius; z++) {
+					if (Thread.interrupted()) {
+						return;
+					}
 					if (WorldEdit.checkSphere(x, y, z, radius)) {
 						if (!WorldEdit.checkSphere(x + 1, y, z, radius) || !WorldEdit.checkSphere(x, y + 1, z, radius) || !WorldEdit.checkSphere(x, y, z + 1, radius)) {
 							undoHandler.saveBox(new BlockPos(center.getX() + x, center.getY() + y, center.getZ() + z), new BlockPos(center.getX() + x, Math.max(0, center.getY() - y), center.getZ() + z));
@@ -69,6 +72,7 @@ public class CommandSphere extends ClientCommand {
 					double radius = parseInt(args[2]) + 0.5;
 					Thread t = new Thread(() -> generateSphere(world, selection.getPos(A), blockState, radius));
 					t.start();
+					ClientCommandHandler.instance.threads.add(t);
 				} else {
 					WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noOneByOneSelected"));
 				}

@@ -41,6 +41,9 @@ public class CommandUpscale extends ClientCommand {
 		for (int x = 0; x < selection.widthX(); x++) {
 			for (int y = 0; y < selection.widthY(); y++) {
 				for (int z = 0; z < selection.widthZ(); z++) {
+					if (Thread.interrupted()) {
+						return;
+					}
 					IBlockState blockState = world.getBlockState(new BlockPos(selection.minPos().getX() + x, selection.minPos().getY() + y, selection.minPos().getZ() + z));
 					BlockPos minPos = new BlockPos(selection.minPos().getX() + (x * factor), selection.minPos().getY() + (y * factor), selection.minPos().getZ() + (z * factor));
 					BlockPos maxPos = new BlockPos(minPos.getX() + (factor - 1), minPos.getY() + (factor - 1), minPos.getZ() + (factor - 1));
@@ -70,6 +73,7 @@ public class CommandUpscale extends ClientCommand {
 				World world = sender.getEntityWorld();
 				Thread t = new Thread(() -> upscaleSelection(world, selection, factor));
 				t.start();
+				ClientCommandHandler.instance.threads.add(t);
 			} else {
 				WorldEdit.sendMessage(getUsage(sender));
 			}

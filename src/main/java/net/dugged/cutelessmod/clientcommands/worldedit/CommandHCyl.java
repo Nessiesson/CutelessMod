@@ -39,6 +39,9 @@ public class CommandHCyl extends ClientCommand {
 		}
 		for (double x = 0; x <= radius; x++) {
 			for (double z = 0; z <= radius; z++) {
+				if (Thread.interrupted()) {
+					return;
+				}
 				if (WorldEdit.checkCircle(x, z, radius)) {
 					if (!WorldEdit.checkCircle(x + 1, z, radius) || !WorldEdit.checkCircle(x, z + 1, radius)) {
 						undoHandler.saveBox(new BlockPos(center.getX() + x, center.getY(), center.getZ() + z), new BlockPos(center.getX() + x, center.getY() + height - 1, center.getZ() + z));
@@ -73,6 +76,7 @@ public class CommandHCyl extends ClientCommand {
 					}
 					Thread t = new Thread(() -> generateHCyl(world, selection, selection.getPos(A), blockState, radius, height));
 					t.start();
+					ClientCommandHandler.instance.threads.add(t);
 				} else {
 					WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noOneByOneSelected"));
 				}

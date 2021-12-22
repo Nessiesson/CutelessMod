@@ -39,6 +39,9 @@ public class CommandReplace extends ClientCommand {
 		undoHandler.setHandler(setBlockHandler);
 		undoHandler.running = false;
 		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.getPos(A), selection.getPos(B))) {
+			if (Thread.interrupted()) {
+				return;
+			}
 			if (world.getBlockState(pos) == stateToReplace) {
 				undoBlockPositions.add(pos);
 				setBlockHandler.setBlock(pos, replacementState);
@@ -65,6 +68,7 @@ public class CommandReplace extends ClientCommand {
 				}
 				Thread t = new Thread(() -> replaceBlocks(world, selection, blockState1, blockState2));
 				t.start();
+				ClientCommandHandler.instance.threads.add(t);
 			} else {
 				WorldEdit.sendMessage(getUsage(sender));
 			}

@@ -1,6 +1,7 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
+import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
@@ -31,6 +32,9 @@ public class CommandCount extends ClientCommand {
 	private void countBlock(World world, WorldEditSelection selection, IBlockState blockState, boolean exclusive, boolean compareStates) {
 		int count = 0;
 		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.getPos(A), selection.getPos(B))) {
+			if (Thread.interrupted()) {
+				return;
+			}
 			if (exclusive) {
 				if (!((compareStates && world.getBlockState(pos) == blockState) || (!compareStates && world.getBlockState(pos).getBlock() == blockState.getBlock()))) {
 					count++;
@@ -67,6 +71,7 @@ public class CommandCount extends ClientCommand {
 				World world = sender.getEntityWorld();
 				Thread t = new Thread(() -> countBlock(world, selection, blockState, exclusive, compareStates));
 				t.start();
+				ClientCommandHandler.instance.threads.add(t);
 			} else {
 				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
 			}

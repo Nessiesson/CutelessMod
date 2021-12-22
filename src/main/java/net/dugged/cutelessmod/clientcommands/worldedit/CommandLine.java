@@ -71,6 +71,9 @@ public class CommandLine extends ClientCommand {
 			p1 = 2 * dy - dx;
 			p2 = 2 * dz - dx;
 			while (x1 != x2) {
+				if (Thread.interrupted()) {
+					return;
+				}
 				x1 += xs;
 				if (p1 >= 0) {
 					y1 += ys;
@@ -89,6 +92,9 @@ public class CommandLine extends ClientCommand {
 			p1 = 2 * dx - dy;
 			p2 = 2 * dz - dy;
 			while (y1 != y2) {
+				if (Thread.interrupted()) {
+					return;
+				}
 				y1 += ys;
 				if (p1 >= 0) {
 					x1 += xs;
@@ -107,6 +113,9 @@ public class CommandLine extends ClientCommand {
 			p1 = 2 * dy - dz;
 			p2 = 2 * dx - dz;
 			while (z1 != z2) {
+				if (Thread.interrupted()) {
+					return;
+				}
 				z1 += zs;
 				if (p1 >= 0) {
 					y1 += ys;
@@ -144,6 +153,7 @@ public class CommandLine extends ClientCommand {
 				World world = sender.getEntityWorld();
 				Thread t = new Thread(() -> placeLine(world, selection, blockState));
 				t.start();
+				ClientCommandHandler.instance.threads.add(t);
 			} else {
 				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
 			}

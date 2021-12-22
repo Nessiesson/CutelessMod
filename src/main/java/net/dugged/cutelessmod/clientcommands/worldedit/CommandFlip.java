@@ -39,6 +39,9 @@ public class CommandFlip extends ClientCommand {
 		for (int x = 0; x < selection.widthX(); x++) {
 			for (int y = 0; y < selection.widthY(); y++) {
 				for (int z = 0; z < selection.widthZ(); z++) {
+					if (Thread.interrupted()) {
+						return;
+					}
 					IBlockState blockState;
 					if (direction.getAxis() == EnumFacing.Axis.Y) {
 						blockState = world.getBlockState(selection.minPos().add(x, y, z));
@@ -66,6 +69,7 @@ public class CommandFlip extends ClientCommand {
 				World world = sender.getEntityWorld();
 				Thread t = new Thread(() -> flipSelection(world, selection));
 				t.start();
+				ClientCommandHandler.instance.threads.add(t);
 			} else {
 				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
 			}

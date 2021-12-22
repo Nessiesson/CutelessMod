@@ -41,7 +41,8 @@ Ported the chunk display debug tool from carpet client used for carpet servers. 
 |/hsphere|\<block> \<dataValue:state> \<radius>|Generates a hollow sphere centered on 1x1 selection with given block|
 |/line|\[block] \[dataValue:state]|Generates a line with default block glowstone from position 0 to 1|
 |/move|\<amount>|Moves selection with blocks in currently facing direction by amount blocks|
-|/outlinefill|\<block> \<dataValue:state> \<height> \[radius]|Performs a 2 dimensional floodfill with given block at feet level with default radius 100, fills a pillar of height at each spot|
+|/outlinefill|\<block> \<dataValue:state> \<height> \[radius]|Performs a 2d flood fill with given block at feet level with default radius 100, fills a pillar of height at each spot|
+|/perimetervolume|\[radius] \[fast algorithm]| Counts isNormalCube() blocks in 2d flood fill columns down to y0, similar to /outlinefill|
 |/polygon|\<block> \<dataValue:state> \<radius> \<edges> \[halfstep:true, false]|Generates polygon with given block, radius, edges can be rotated by 360/edges degrees|
 |/pos|\<0, 1>|Sets position 0 or 1 at current location|
 |/randomize|\<percentage> \<block> \[dataValue:state],\<block> \[dataValue:state]...|Fills selected area with array of blocks by given percentage|
@@ -52,11 +53,11 @@ Ported the chunk display debug tool from carpet client used for carpet servers. 
 |/size|-|Outputs the current selection size and volume|
 |/sphere|\<block> \<dataValue:state> \<radius>|Generates a sphere centered on 1x1 selection with given block|
 |/stack|\<count> \[blocks in between] \[masked: true, false] \[move selection:true, false]|Repeats selection count times in currently facing direction with optional airgap|
-|/stackquarter|\[blocks in between]|Mirrors one quarter to either a horizonal or vertical diagonal|
+|/stackquarter|\[blocks in between]|Mirrors one quarter to either a horizontal or vertical diagonal|
 |/upscale|\<factor>|Upscales the selection by filling cubes of factor^2 size|
 |/walls|\<block> \<dataValue:state> \[wall thickness]|Generates walls around selection with a default thickness of 1 block|
 
-**Warning:** Some commands involving heavier calculations like sphere or floodfill are threaded and can take some time before progress shows up
+**Warning:** Some commands involving heavier calculations like sphere or flood fill are threaded and can take some time before progress shows up
 
 **Warning:** Only /move and /stack use the /clone command in the background and properly copy Tile Entitys, all other commands **including /undo** do not copy Tile Entity data
 

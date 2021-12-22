@@ -5,14 +5,17 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
 
 public class WorldEditRenderer {
+	public static CopyOnWriteArrayList<RenderedBB> bbToRender = new CopyOnWriteArrayList<>();
 	public static void render(float partialTicks) {
 		final EntityPlayerSP player = Minecraft.getMinecraft().player;
 		final double d1 = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
@@ -44,10 +47,37 @@ public class WorldEditRenderer {
 				}
 			}
 		}
+		// TODO: More visualizations
+		for (RenderedBB bb : bbToRender) {
+			RenderGlobal.drawSelectionBoundingBox(bb.offset(-d1, -d2, -d3), 1F, 0.0F, 0.0F, 1.0F);
+		}
 		GlStateManager.glLineWidth(1F);
 		GlStateManager.enableTexture2D();
 		GlStateManager.enableLighting();
 		GlStateManager.enableCull();
 		GlStateManager.enableBlend();
+	}
+
+	public static void update() {
+		bbToRender.removeIf(pos -> pos.getTimer() <= 0);
+		for (RenderedBB bb : bbToRender) {
+			bb.decreaseTimer();
+		}
+	}
+
+	static class RenderedBB extends AxisAlignedBB {
+		private int timer;
+		public RenderedBB(BlockPos pos1, BlockPos pos2, int timer) {
+			super(pos1, pos2);
+			this.timer = timer;
+		}
+
+		private int getTimer() {
+			return timer;
+		}
+
+		private void decreaseTimer() {
+			timer--;
+		}
 	}
 }

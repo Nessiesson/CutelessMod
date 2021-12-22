@@ -73,3 +73,5 @@ text.cutelessmod.clientcommands.worldEdit.cancel.usage=/cancel
 text.cutelessmod.clientcommands.worldEdit.cancel.cancelledAll=Cancelled all running operations!
 text.cutelessmod.clientcommands.worldEdit.copyhere.usage=/copyhere [move selection:true, false]
 text.cutelessmod.clientcommands.worldEdit.fillinventories.usage=/fillinventories <item> <count> [damage]
+text.cutelessmod.clientcommands.worldEdit.perimetervolume.usage=/perimetervolume [radius] [fast algorithm]
+text.cutelessmod.clientcommands.worldEdit.perimetervolume.response=The perimeter contains %s blocks
