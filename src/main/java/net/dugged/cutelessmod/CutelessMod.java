@@ -5,6 +5,7 @@ import net.dugged.cutelessmod.chunk_display.gui.Controller;
 import net.dugged.cutelessmod.chunk_display.gui.GuiChunkGrid;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.mixins.IItemSword;
+import net.dugged.cutelessmod.clientcommands.worldedit.BrushBase;
 import net.dugged.cutelessmod.clientcommands.worldedit.WorldEdit;
 import net.dugged.cutelessmod.mixins.ISoundHandler;
 import net.minecraft.client.Minecraft;
@@ -334,6 +335,13 @@ public class CutelessMod {
 				swordCooldown = tickCounter + 10;
 				event.setCanceled(true);
 			}
+		} else if (mc.player.isCreative() && WorldEdit.currentBrushes.containsKey(itemInHand)) {
+			BrushBase brush = WorldEdit.currentBrushes.get(itemInHand);
+			if (brush.getUseCooldown() <= tickCounter) {
+				brush.execute(mc.world, event.getPos());
+				brush.setUseCooldown(tickCounter + 2);
+			}
+			event.setCanceled(true);
 		}
 	}
 
@@ -398,11 +406,24 @@ public class CutelessMod {
 
 	@SubscribeEvent
 	public void onRightClickEmpty(final PlayerInteractEvent.RightClickEmpty event) {
-		if (Configuration.worldeditCompass && mc.world != null && mc.player.isCreative() && mc.player.getHeldItemMainhand().getItem() instanceof ItemCompass && guiCompass != null) {
+		Item itemInHand = mc.player.getHeldItemMainhand().getItem();
+		if (Configuration.worldeditCompass && mc.world != null && mc.player.isCreative() && itemInHand instanceof ItemCompass && guiCompass != null) {
 			if (guiCompass.isMenuActive()) {
 				guiCompass.exit();
 			} else {
 				guiCompass.onRightClick();
+			}
+		} else if (mc.player.isCreative() && WorldEdit.currentBrushes.containsKey(itemInHand)) {
+			BrushBase brush = WorldEdit.currentBrushes.get(itemInHand);
+			if (brush.getUseCooldown() <= tickCounter) {
+				Vec3d vec3d = mc.player.getPositionEyes(mc.getRenderPartialTicks());
+				Vec3d vec3d1 = mc.player.getLook(mc.getRenderPartialTicks());
+				Vec3d vec3d2 = vec3d.add(vec3d1.x * 500, vec3d1.y * 500, vec3d1.z * 500);
+				RayTraceResult rayTraceResult = CutelessModUtils.rayTrace(vec3d, vec3d2, 500, true, false);
+				if (rayTraceResult.typeOfHit == RayTraceResult.Type.BLOCK) {
+					brush.execute(mc.world, rayTraceResult.getBlockPos());
+					brush.setUseCooldown(tickCounter + 2);
+				}
 			}
 		}
 	}

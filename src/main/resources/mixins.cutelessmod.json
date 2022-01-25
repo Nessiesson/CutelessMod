@@ -41,6 +41,7 @@
     "MixinDebugRendererChunkBorder",
     "MixinEntity",
     "MixinEntityChicken",
+    "MixinEntityEnderman",
     "MixinEntityItem",
     "MixinEntityItemFrame",
     "MixinEntityLivingBase",

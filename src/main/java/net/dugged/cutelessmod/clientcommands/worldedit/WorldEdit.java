@@ -13,7 +13,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
@@ -21,6 +23,8 @@ import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection
 public class WorldEdit {
 	private static final Minecraft mc = Minecraft.getMinecraft();
 	public static boolean undo = true;
+	public static List<BrushBase> brushes = new ArrayList<>();
+	public static HashMap<Item, BrushBase> currentBrushes = new HashMap();
 	protected static HashMap<WorldEditSelection.SelectionType, WorldEditSelection> selections = new HashMap();
 
 	public static BlockPos getPos(WorldEditSelection.SelectionType type, WorldEditSelection.Position pos) {
@@ -157,5 +161,14 @@ public class WorldEdit {
 			}
 		}
 		return blockState;
+	}
+
+	public static BrushBase getBrush(String name) {
+		for (BrushBase brush : WorldEdit.brushes) {
+			if (brush.getName().equals(name)) {
+				return brush;
+			}
+		}
+		return null;
 	}
 }

@@ -16,6 +16,7 @@ import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection
 
 public class WorldEditRenderer {
 	public static CopyOnWriteArrayList<RenderedBB> bbToRender = new CopyOnWriteArrayList<>();
+
 	public static void render(float partialTicks) {
 		final EntityPlayerSP player = Minecraft.getMinecraft().player;
 		final double d1 = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
@@ -47,37 +48,62 @@ public class WorldEditRenderer {
 				}
 			}
 		}
+		GlStateManager.enableBlend();
 		// TODO: More visualizations
 		for (RenderedBB bb : bbToRender) {
-			RenderGlobal.drawSelectionBoundingBox(bb.offset(-d1, -d2, -d3), 1F, 0.0F, 0.0F, 1.0F);
+			System.out.println(bb.getA());
+			RenderGlobal.drawSelectionBoundingBox(bb.offset(-d1, -d2, -d3), bb.getR() / 255.0F, bb.getG() / 255.0F, bb.getB() / 255.0F, bb.getA());
 		}
 		GlStateManager.glLineWidth(1F);
 		GlStateManager.enableTexture2D();
 		GlStateManager.enableLighting();
 		GlStateManager.enableCull();
-		GlStateManager.enableBlend();
 	}
 
 	public static void update() {
-		bbToRender.removeIf(pos -> pos.getTimer() <= 0);
+		bbToRender.removeIf(pos -> pos.isDone());
 		for (RenderedBB bb : bbToRender) {
-			bb.decreaseTimer();
+			bb.update();
 		}
 	}
 
 	static class RenderedBB extends AxisAlignedBB {
-		private int timer;
-		public RenderedBB(BlockPos pos1, BlockPos pos2, int timer) {
+		private final int timer;
+		private final int r;
+		private final int g;
+		private final int b;
+		private int timeAlive = 0;
+
+		public RenderedBB(BlockPos pos1, BlockPos pos2, int timer, int r, int g, int b) {
 			super(pos1, pos2);
 			this.timer = timer;
+			this.r = r;
+			this.g = g;
+			this.b = b;
 		}
 
-		private int getTimer() {
-			return timer;
+		private float getA() {
+			return 1.0F - timeAlive / (float) timer;
 		}
 
-		private void decreaseTimer() {
-			timer--;
+		private int getR() {
+			return r;
+		}
+
+		private int getG() {
+			return g;
+		}
+
+		private int getB() {
+			return b;
+		}
+
+		private boolean isDone() {
+			return timeAlive >= timer;
+		}
+
+		private void update() {
+			timeAlive++;
 		}
 	}
 }

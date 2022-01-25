@@ -34,22 +34,18 @@ public class CommandPerimeterVolume extends ClientCommand {
 		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.perimetervolume.usage").getUnformattedText();
 	}
 
-	private void countBlocks(World world, BlockPos startPos, int radius, boolean speedy) {
+	private void countBlocks(World world, BlockPos startPos, int radius, int minY) {
 		List<BlockPos> checkedBlocks = new ArrayList<>();
 		List<BlockPos> blocksToCheck = new ArrayList<>();
 		BlockPos pos1;
 		blocksToCheck.add(startPos);
 		checkedBlocks.add(startPos);
 		int count = 0;
-		int i = 0;
 		while (blocksToCheck.size() > 0) {
 			if (Thread.interrupted()) {
 				return;
 			}
-			if (speedy) {
-				i = blocksToCheck.size() - 1;
-			}
-			BlockPos pos = blocksToCheck.get(i);
+			BlockPos pos = blocksToCheck.get(0);
 			pos1 = pos.north();
 			if (world.isBlockLoaded(pos) && world.getBlockState(pos1).getBlock() instanceof BlockAir && WorldEdit.checkCircle(pos1.getX() - startPos.getX(), pos1.getZ() - startPos.getZ(), radius)) {
 				if (!checkedBlocks.contains(pos1)) {
@@ -78,15 +74,15 @@ public class CommandPerimeterVolume extends ClientCommand {
 					checkedBlocks.add(pos1);
 				}
 			}
-			WorldEditRenderer.bbToRender.add(new WorldEditRenderer.RenderedBB(pos, new BlockPos(pos.getX(), 0, pos.getZ()), 4));
-			while (pos.getY() >= 0) {
+			WorldEditRenderer.bbToRender.add(new WorldEditRenderer.RenderedBB(pos, new BlockPos(pos.getX(), minY, pos.getZ()), 4, 255, 0, 0));
+			while (pos.getY() >= minY) {
 				final IBlockState block = world.getBlockState(pos);
 				if (block.isNormalCube() && !block.getBlock().equals(Blocks.BEDROCK)) {
 					count++;
 				}
 				pos = pos.down();
 			}
-			blocksToCheck.remove(i);
+			blocksToCheck.remove(0);
 		}
 		WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.perimetervolume.response", count));
 	}
@@ -98,18 +94,18 @@ public class CommandPerimeterVolume extends ClientCommand {
 			BlockPos pos = WorldEdit.playerPos();
 			if (world.getBlockState(pos).getBlock() instanceof BlockAir) {
 				int radius;
-				boolean speedy;
+				int minY;
 				if (args.length >= 1) {
 					radius = parseInt(args[0]);
 				} else {
 					radius = 100;
 				}
 				if (args.length == 2) {
-					speedy = parseBoolean(args[1]);
+					minY = parseInt(args[1]);
 				} else {
-					speedy = false;
+					minY = 0;
 				}
-				Thread t = new Thread(() -> countBlocks(world, pos, radius, speedy));
+				Thread t = new Thread(() -> countBlocks(world, pos, radius, minY));
 				t.start();
 				ClientCommandHandler.instance.threads.add(t);
 			} else {

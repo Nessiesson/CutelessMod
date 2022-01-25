@@ -73,6 +73,7 @@ public class CommandOutlineFill extends ClientCommand {
 					checkedBlocks.add(pos1);
 				}
 			}
+			WorldEditRenderer.bbToRender.add(new WorldEditRenderer.RenderedBB(pos, new BlockPos(pos.getX(), Math.max(pos.getY() + height, 0), pos.getZ()), 4, 255, 0, 0));
 			undoHandler.saveBox(pos, new BlockPos(pos.getX(), Math.max(pos.getY() + height, 0), pos.getZ()));
 			fillHandler.fill(pos, new BlockPos(pos.getX(), Math.max(pos.getY() + height, 0), pos.getZ()), blockState);
 			blocksToCheck.remove(0);
