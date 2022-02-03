@@ -28,7 +28,11 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.*;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
@@ -50,7 +54,11 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
@@ -207,6 +215,37 @@ public class CutelessMod {
 		if (resetItemCounterKey.isPressed()) {
 			mc.ingameGUI.setOverlayMessage("Reset Item Counter", false);
 			ItemCounter.reset();
+		}
+
+		/*
+		 Fixes the issue where Shift-2 and Shift-6 are not working on Linux.
+		 Stolen from https://github.com/Leo3418/mckeyboardfix
+
+		 In Minecraft on GNU/Linux, Shift-6 is interpreted as a press on the
+		 `^` key, and Shift-2 is interpreted as a press on the `@` key, and
+		 the numeric key is never detected as pressed in these cases. For
+		 most keyboards, this does not make sense since they do not have
+		 dedicated `^` or `@` key, but indeed, this is what happens.
+
+		 To fix this issue, we just need to emulate a press on the numeric
+		 key. But merely doing this is not enough because after we emulate a
+		 press on key `x`, every key combination from Shift-1 to Shift-`x-1`
+		 does not work until the user presses the combination again, so we
+		 also need to emulate those presses to mitigate this side effect of
+		 the fix.
+		*/
+		if (Configuration.weirdShift2Shift6LinuxBug) {
+			switch (Keyboard.getEventKey()) {
+				case Keyboard.KEY_CIRCUMFLEX: // Shift-6
+					KeyBinding.onTick(Keyboard.KEY_6);
+					KeyBinding.onTick(Keyboard.KEY_5);
+					KeyBinding.onTick(Keyboard.KEY_4);
+					KeyBinding.onTick(Keyboard.KEY_3);
+					// Fall through
+				case Keyboard.KEY_AT: // Shift-2
+					KeyBinding.onTick(Keyboard.KEY_2);
+					KeyBinding.onTick(Keyboard.KEY_1);
+			}
 		}
 	}
 
