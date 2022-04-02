@@ -68,6 +68,7 @@ public class Configuration {
 	public static boolean stackedEntities = false;
 	public static boolean stepAssist = false;
 	public static boolean waterModifiesFoV = true;
+	public static boolean weirdShift2Shift6LinuxBug = false;
 	public static boolean worldeditCompass = false;
 
 	// Ints
