@@ -19,7 +19,7 @@ public class HandlerSetBlock extends Handler {
 	private static final int BLOCKS_PROCESSED_PER_TICK = 32768;
 	public static boolean setblockPermission = false;
 	private final List<BlockPos> blockPositions = new ArrayList<>();
-	private final List<BlockPos> skippedPositions = new ArrayList<>();
+	private final Map<BlockPos, Integer> skippedPositions = new LinkedHashMap<>();
 	private final Map<BlockPos, IBlockState> blocksToPlace = new LinkedHashMap<>();
 
 	public HandlerSetBlock(World worldIn, WorldEditSelection selection) {
@@ -34,7 +34,8 @@ public class HandlerSetBlock extends Handler {
 	}
 
 	private static boolean placeLast(Block block) {
-		return (block instanceof BlockBush ||
+		return (block instanceof BlockBed ||
+				block instanceof BlockBush ||
 				block instanceof BlockFlowerPot ||
 				block instanceof BlockFire ||
 				block instanceof BlockButton ||
@@ -56,6 +57,7 @@ public class HandlerSetBlock extends Handler {
 				block instanceof BlockRedstoneDiode ||
 				block instanceof BlockBasePressurePlate ||
 				block instanceof BlockPistonMoving ||
+				block instanceof BlockPistonExtension ||
 				block instanceof BlockReed ||
 				block instanceof BlockTripWireHook);
 	}
@@ -87,17 +89,27 @@ public class HandlerSetBlock extends Handler {
 				counter++;
 				currentCount++;
 				if (blockState != null) {
-					if (placeLast(blockState.getBlock()) && !skippedPositions.contains(pos)) {
+					int j = skippedPositions.getOrDefault(pos, 0);
+					if (placeLast(blockState.getBlock()) && j <= 5) {
+						if (j > 0 && sendSetBlockCommand(pos, blockState)) {
+							commandsExecuted++;
+						}
+						blockPositions.remove(i);
 						blockPositions.add(0, pos);
-						skippedPositions.add(skippedPositions.size(), pos);
+						skippedPositions.put(pos, j + 1);
 					} else {
 						if (sendSetBlockCommand(pos, blockState)) {
 							commandsExecuted++;
 						}
 						blocksToPlace.remove(pos);
+						blockPositions.remove(i);
+						if (j > 0) {
+							skippedPositions.remove(pos);
+						}
 					}
+				} else {
+					blockPositions.remove(i);
 				}
-				blockPositions.remove(i);
 			}
 		} else if (age > 5) {
 			finish();

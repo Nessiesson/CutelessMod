@@ -2,7 +2,6 @@
 
 ### Forge Mod
 
-
 Result of the originally developed mod for LiteLoader called UselessMod with a later created Forge branch UsefulMod
 
 Adds various tweaks/fixes/improvements using Mixin and Forge
@@ -12,15 +11,15 @@ Features some dedicated hotkeys and auto-generates a seperate list of keybinds f
 Ported the chunk display debug tool from carpet client used for carpet servers. **Minimap currently not working**
 
 ### Client Commands:
-|Command|Parameters|Function|
-| ------------ | ------------ | ------------ |
-|/back|-|Teleports you back to the last location where /tp or spectator teleport was used|
-|/ping|-|Returns current ping, might take a while after login to normalize|
-|/repeatlast|-|Repeats the last send command, alias /; theres also an additional hotkey|
-|/stone|-|Places a stone at the current location|
-|/undo|\<index>|Undo for /fill /clone and WorldEdit operations, default index 0 is latest operation|
-|/undo|toggle|Toggle if operations are recorded for undo, defaults to true on startup|
 
+| Command     | Parameters | Function                                                                            |
+|-------------|------------|-------------------------------------------------------------------------------------|
+| /back       | -          | Teleports you back to the last location where /tp or spectator teleport was used    |
+| /ping       | -          | Returns current ping, might take a while after login to normalize                   |
+| /repeatlast | -          | Repeats the last send command, alias /; theres also an additional hotkey            |
+| /stone      | -          | Places a stone at the current location                                              |
+| /undo       | \<index>   | Undo for /fill /clone and WorldEdit operations, default index 0 is latest operation |
+| /undo       | toggle     | Toggle if operations are recorded for undo, defaults to true on startup             |
 
 ### WorldEdit Commands:
 
@@ -47,7 +46,7 @@ Ported the chunk display debug tool from carpet client used for carpet servers. 
 | /polygon         | \<block> \<dataValue:state> \<radius> \<edges> \[halfstep:true, false]             | Generates polygon with given block, radius, edges can be rotated by 360/edges degrees                                  |
 | /pos             | \<0, 1>                                                                            | Sets position 0 or 1 at current location                                                                               |
 | /randomize       | \<percentage> \<block> \[dataValue:state],\<block> \[dataValue:state]...           | Fills selected area with array of blocks by given percentage                                                           |
-| /replace         | \<block> \<dataValue:state> \<block> \<dataValue:state>                            | Replaces one block by another                                                                                          |
+| /replace         | \<block> \<dataValue:state> \<block> \[dataValue:state]                            | Replaces one block by another, * for replacing any state                                                               |
 | /runbrush        | \<mask block> \<dataValue:state> <brush name> \<block> \[dataValue:state]          | Runs brush on the specified mask block in selection                                                                    |
 | /selection       | \<move, expand> \<up, down, north, east, south, west> \[amount]                    | Expands or moves current selection in given direction by amount                                                        |
 | /selection       | \clear                                                                             | Clears current selection                                                                                               |
@@ -59,9 +58,11 @@ Ported the chunk display debug tool from carpet client used for carpet servers. 
 | /upscale         | \<factor>                                                                          | Upscales the selection by filling cubes of factor^2 size                                                               |
 | /walls           | \<block> \<dataValue:state> \[wall thickness]                                      | Generates walls around selection with a default thickness of 1 block                                                   |
 
-**Warning:** Some commands involving heavier calculations like sphere or flood fill are threaded and can take some time before progress shows up
+**Warning:** Some commands involving heavier calculations like sphere or flood fill are threaded and can take some time
+before progress shows up
 
-**Warning:** Only /move and /stack use the /clone command in the background and properly copy Tile Entitys, all other commands **including /undo** do not copy Tile Entity data
+**Warning:** Only /move and /stack use the /clone command in the background and properly copy Tile Entitys, all other
+commands **including /undo** do not copy Tile Entity data
 
 Undo also records the vanilla commands /fill and /clone
 

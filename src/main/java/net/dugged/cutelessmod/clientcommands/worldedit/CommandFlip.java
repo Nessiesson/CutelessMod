@@ -43,14 +43,12 @@ public class CommandFlip extends ClientCommand {
 						return;
 					}
 					IBlockState blockState;
+					blockState = world.getBlockState(selection.minPos().add(x, y, z));
 					if (direction.getAxis() == EnumFacing.Axis.Y) {
-						blockState = world.getBlockState(selection.minPos().add(x, y, z));
 						blockList.put(selection.minPos().add(x, selection.widthY() - y - 1, z), WorldEdit.flipBlockstate(blockState, direction.getAxis()));
 					} else if (direction.getAxis() == EnumFacing.Axis.Z) {
-						blockState = world.getBlockState(selection.minPos().add(x, y, z));
 						blockList.put(selection.minPos().add(x, y, selection.widthZ() - z - 1), WorldEdit.flipBlockstate(blockState, direction.getAxis()));
 					} else {
-						blockState = world.getBlockState(selection.minPos().add(x, y, z));
 						blockList.put(selection.minPos().add(selection.widthX() - x - 1, y, z), WorldEdit.flipBlockstate(blockState, direction.getAxis()));
 					}
 				}

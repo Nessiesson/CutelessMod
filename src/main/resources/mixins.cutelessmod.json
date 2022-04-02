@@ -53,6 +53,7 @@
     "MixinGlStateManager",
     "MixinGuiBossOverlay",
     "MixinGuiChat",
+    "MixinGuiContainerCreative",
     "MixinGuiControls",
     "MixinGuiDisconnected",
     "MixinGuiGameOver",
@@ -75,6 +76,7 @@
     "MixinItemStack",
     "MixinLayerArmorBase",
     "MixinLazyLoadBase",
+    "MixinMain",
     "MixinMinecraft",
     "MixinNetHandlerPlayClient",
     "MixinNetworkManager",
@@ -100,6 +102,7 @@
     "MixinTileEntityPiston",
     "MixinTileEntityPistonRenderer",
     "MixinTileEntityRendererDispatcher",
+    "MixinTileEntityStructure",
     "MixinWorld",
     "MixinWorldClient"
   ]

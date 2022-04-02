@@ -32,7 +32,7 @@ public class CommandReplace extends ClientCommand {
 		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.replace.usage").getUnformattedText();
 	}
 
-	public void replaceBlocks(World world, WorldEditSelection selection, IBlockState stateToReplace, IBlockState replacementState) {
+	public void replaceBlocks(World world, WorldEditSelection selection, IBlockState stateToReplace, IBlockState replacementState, boolean ignoreBlockState) {
 		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world, selection);
 		List<BlockPos> undoBlockPositions = new ArrayList<>();
 		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world, selection);
@@ -42,7 +42,8 @@ public class CommandReplace extends ClientCommand {
 			if (Thread.interrupted()) {
 				return;
 			}
-			if (world.getBlockState(pos) == stateToReplace) {
+			IBlockState blockState = world.getBlockState(pos);
+			if (blockState == stateToReplace || (ignoreBlockState && blockState.getBlock() == stateToReplace.getBlock())) {
 				undoBlockPositions.add(pos);
 				setBlockHandler.setBlock(pos, replacementState);
 			}
@@ -58,7 +59,15 @@ public class CommandReplace extends ClientCommand {
 			if (args.length == 3 || args.length == 4) {
 				final World world = sender.getEntityWorld();
 				Block block1 = getBlockByText(sender, args[0]);
-				IBlockState blockState1 = convertArgToBlockState(block1, args[1]);
+				boolean ignoreBlockState;
+				IBlockState blockState1;
+				if (args[1].equals("*")) {
+					ignoreBlockState = true;
+					blockState1 = block1.getDefaultState();
+				} else {
+					ignoreBlockState = false;
+					blockState1 = convertArgToBlockState(block1, args[1]);
+				}
 				Block block2 = getBlockByText(sender, args[2]);
 				IBlockState blockState2;
 				if (args.length == 4) {
@@ -66,7 +75,7 @@ public class CommandReplace extends ClientCommand {
 				} else {
 					blockState2 = block2.getDefaultState();
 				}
-				Thread t = new Thread(() -> replaceBlocks(world, selection, blockState1, blockState2));
+				Thread t = new Thread(() -> replaceBlocks(world, selection, blockState1, blockState2, ignoreBlockState));
 				t.start();
 				ClientCommandHandler.instance.threads.add(t);
 			} else {

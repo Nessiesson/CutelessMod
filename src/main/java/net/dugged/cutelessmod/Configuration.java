@@ -26,6 +26,7 @@ public class Configuration {
 	public static boolean fixBlock36Particles = false;
 	public static boolean flightInertiaCancellation = false;
 	public static boolean ignoreBlockEvents = false;
+	public static boolean ignoreAirHotbarSnapshots = false;
 	public static boolean improveObserverFire = false;
 	public static boolean instantDoubleRetraction = false;
 	public static boolean jumpBoostStepAssist = false;
