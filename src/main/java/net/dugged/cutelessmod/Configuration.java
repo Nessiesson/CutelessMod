@@ -23,6 +23,7 @@ public class Configuration {
 	public static boolean elytraFix = false;
 	public static boolean elytraCancellation = false;
 	public static boolean extendedChat = false;
+	public static boolean extendedCreativeHotbar = false;
 	public static boolean fixBlock36Particles = false;
 	public static boolean flightInertiaCancellation = false;
 	public static boolean ignoreBlockEvents = false;

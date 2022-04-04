@@ -25,7 +25,7 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Mixin(ChunkGeneratorOverworld.class)
-public class MixinChunkGeneratorOverworld {
+public abstract class MixinChunkGeneratorOverworld {
 	@Shadow
 	@Final
 	private Random rand;

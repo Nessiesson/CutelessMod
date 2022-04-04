@@ -16,7 +16,7 @@ import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(BlockSlime.class)
-public class MixinBlockSlime extends BlockBreakable {
+public abstract class MixinBlockSlime extends BlockBreakable {
 	protected MixinBlockSlime(Material materialIn, boolean ignoreSimilarityIn) {
 		super(materialIn, ignoreSimilarityIn);
 	}

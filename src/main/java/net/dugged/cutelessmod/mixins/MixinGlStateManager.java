@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 @Mixin(GlStateManager.class)
-public class MixinGlStateManager {
+public abstract class MixinGlStateManager {
 	@ModifyVariable(method = "setFogDensity", at = @At("HEAD"), argsOnly = true)
 	private static float adjustFogDensity(final float fogDensity) {
 		// In vanilla code, this method is only called with fog density = 2F when in lava.

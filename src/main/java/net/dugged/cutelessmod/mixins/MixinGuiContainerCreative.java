@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(GuiContainerCreative.class)
-public class MixinGuiContainerCreative {
+public abstract class MixinGuiContainerCreative {
 	@Redirect(method = "handleHotbarSnapshots", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/settings/HotbarSnapshot;get(I)Ljava/lang/Object;"))
 	private static Object ignoreAirInSnapshot(HotbarSnapshot snapshot, int i) {
 		if (Configuration.ignoreAirHotbarSnapshots && snapshot.get(i).getItem().equals(Items.AIR)) {

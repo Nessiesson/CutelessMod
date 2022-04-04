@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.io.IOException;
 
 @Mixin(GuiStats.class)
-public class MixinGuiStats extends GuiScreen {
+public abstract class MixinGuiStats extends GuiScreen {
 	private GuiTextField textField;
 	private long lastTick = 0;
 	private int cooldown = 0;

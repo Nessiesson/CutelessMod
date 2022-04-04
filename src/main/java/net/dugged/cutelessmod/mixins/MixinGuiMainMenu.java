@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GuiMainMenu.class)
-public class MixinGuiMainMenu extends GuiScreen {
+public abstract class MixinGuiMainMenu extends GuiScreen {
 	@Shadow(remap = false)
 	private GuiButton modButton;
 

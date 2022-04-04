@@ -94,6 +94,7 @@ public class CutelessMod {
 	public static int[] receivedPackets = new int[20];
 	public static ServerData currentServer;
 	public static long tickCounter = 0;
+	public static int hotbarSlot = 0;
 	public static String statPluginFilter = "stat.useItem.minecraft.diamond_pickaxe";
 	public static StatPlugin statPlugin = new StatPlugin();
 	public static String lastCommand = "";

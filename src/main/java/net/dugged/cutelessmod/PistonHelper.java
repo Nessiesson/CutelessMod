@@ -86,7 +86,7 @@ public class PistonHelper {
 				pos = tobreak[tobreak.length - i];
 				if (pos != null) {
 					count++;
-					drawString("\u00a7c" + count, (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.5f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
+					CutelessModUtils.drawString("\u00a7c" + count, (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.5f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
 				}
 			}
 			int moved = -count;
@@ -94,44 +94,27 @@ public class PistonHelper {
 				pos = tomove[tomove.length - i];
 				if (pos != null) {
 					count++;
-					drawString(Integer.toString(count), (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.5f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
+					CutelessModUtils.drawString(Integer.toString(count), (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.5f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
 				}
 			}
 			moved += count;
 			pos = pistonPos;
 			if (validState) {
 				if (extending) {
-					drawString(pushe, (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.8f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
+					CutelessModUtils.drawString(pushe, (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.8f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
 				} else {
-					drawString(pull, (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.8f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
+					CutelessModUtils.drawString(pull, (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.8f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
 				}
-				drawString(green, (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.2f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
+				CutelessModUtils.drawString(green, (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.2f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
 			} else {
 				if (extending) {
-					drawString(pushe, (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.8f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
+					CutelessModUtils.drawString(pushe, (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.8f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
 				} else {
-					drawString(pull, (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.8f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
+					CutelessModUtils.drawString(pull, (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.8f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
 				}
-				drawString(red, (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.2f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
+				CutelessModUtils.drawString(red, (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.2f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
 			}
-			drawString(gold + (Math.max(moved, 0)), (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.5f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
+			CutelessModUtils.drawString(gold + (Math.max(moved, 0)), (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.5f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
 		}
-	}
-
-	public static void drawString(String str, float x, float y, float z, int verticalShift, float viewerYaw, float viewerPitch, boolean isThirdPersonFrontal) {
-		final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
-		GlStateManager.pushMatrix();
-		GlStateManager.translate(x, y, z);
-		GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
-		GlStateManager.rotate(-viewerYaw, 0.0F, 1.0F, 0.0F);
-		GlStateManager.rotate((float) (isThirdPersonFrontal ? -1 : 1) * viewerPitch, 1.0F, 0.0F, 0.0F);
-		GlStateManager.scale(-0.025F, -0.025F, 0.025F);
-		GlStateManager.disableLighting();
-		GlStateManager.depthFunc(GL11.GL_ALWAYS);
-		fontRenderer.drawString(str, -fontRenderer.getStringWidth(str) / 2, verticalShift, -1);
-		GlStateManager.depthFunc(GL11.GL_LEQUAL);
-		GlStateManager.enableLighting();
-		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-		GlStateManager.popMatrix();
 	}
 }

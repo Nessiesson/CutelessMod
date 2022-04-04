@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.Random;
 
 @Mixin(Entity.class)
-public class MixinEntity {
+public abstract class MixinEntity {
 	@Shadow public World world;
 
 	@Shadow public double posX;

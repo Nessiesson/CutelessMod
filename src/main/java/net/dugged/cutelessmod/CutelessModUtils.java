@@ -4,6 +4,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
@@ -13,6 +15,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 
 public class CutelessModUtils {
 	private static final Minecraft mc = Minecraft.getMinecraft();
@@ -157,10 +160,7 @@ public class CutelessModUtils {
 					if (iblockstate1.getMaterial() == Material.PORTAL || iblockstate1.getCollisionBoundingBox(world, blockpos) != Block.NULL_AABB) {
 						if (block1.canCollideCheck(iblockstate1, false)) {
 							RayTraceResult raytraceresult1 = iblockstate1.collisionRayTrace(world, blockpos, vec31, vec32);
-
-							if (raytraceresult1 != null) {
-								return raytraceresult1;
-							}
+							return raytraceresult1;
 						} else {
 							raytraceresult2 = new RayTraceResult(RayTraceResult.Type.MISS, vec31, enumfacing, blockpos);
 						}
@@ -175,5 +175,22 @@ public class CutelessModUtils {
 		} else {
 			return null;
 		}
+	}
+
+	public static void drawString(String str, float x, float y, float z, int verticalShift, float viewerYaw, float viewerPitch, boolean isThirdPersonFrontal) {
+		final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
+		GlStateManager.pushMatrix();
+		GlStateManager.translate(x, y, z);
+		GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
+		GlStateManager.rotate(-viewerYaw, 0.0F, 1.0F, 0.0F);
+		GlStateManager.rotate((float) (isThirdPersonFrontal ? -1 : 1) * viewerPitch, 1.0F, 0.0F, 0.0F);
+		GlStateManager.scale(-0.025F, -0.025F, 0.025F);
+		GlStateManager.disableLighting();
+		GlStateManager.depthFunc(GL11.GL_ALWAYS);
+		fontRenderer.drawString(str, -fontRenderer.getStringWidth(str) / 2, verticalShift, -1);
+		GlStateManager.depthFunc(GL11.GL_LEQUAL);
+		GlStateManager.enableLighting();
+		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+		GlStateManager.popMatrix();
 	}
 }

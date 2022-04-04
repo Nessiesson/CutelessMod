@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(Main.class)
-public class MixinMain {
+public abstract class MixinMain {
 	// Just for testing to always receive game instance with Player0
 	private static final boolean DEBUG_MODE = false;
 

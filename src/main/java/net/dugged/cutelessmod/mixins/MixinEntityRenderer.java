@@ -1,9 +1,6 @@
 package net.dugged.cutelessmod.mixins;
 
-import net.dugged.cutelessmod.AreaSelectionRenderer;
-import net.dugged.cutelessmod.Configuration;
-import net.dugged.cutelessmod.ItemCounter;
-import net.dugged.cutelessmod.PistonHelper;
+import net.dugged.cutelessmod.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
