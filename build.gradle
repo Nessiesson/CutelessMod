@@ -35,6 +35,8 @@ task tokenReplace(type: Sync) {
 compileJava.setSource(copyDir)
 compileJava.dependsOn(tokenReplace)
 
+sourceSets.main.output.resourcesDir = sourceSets.main.java.outputDir
+
 minecraft {
 	mappings channel: "stable", version: "39-1.12"
 	accessTransformer = file('src/main/resources/at.conf')
