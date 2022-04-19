@@ -90,8 +90,8 @@ public abstract class MixinGuiIngame extends Gui {
 					x = x - 82 + (CutelessMod.hotbarSlot % 9) * 20;
 				}
 			}
-			this.drawTexturedModalRect(x, y, textureX, textureY, width, height);
 		}
+		this.drawTexturedModalRect(x, y, textureX, textureY, width, height);
 	}
 
 //	@Redirect(method = "renderAttackIndicator", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiIngame;drawTexturedModalRect(IIIIII)V"))

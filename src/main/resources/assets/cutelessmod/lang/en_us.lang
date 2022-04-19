@@ -8,6 +8,7 @@ key.cutelessmod.toggle_beacon_area=Toggle to show beacon area of effect
 key.cutelessmod.chunk_debug=Chunk Debug Tool
 key.cutelessmod.put_item_counter=Place Item Counter
 key.cutelessmod.reset_item_counter=Reset Item Counter
+key.cutelessmod.put_frequency_analyzer=Place Frequency Analyzer
 text.cutelessmod.relog=Relog
 text.cutelessmod.options.gamma.fullbright=Fullbright
 text.cutelessmod.reload_audio=Reloaded audio engine

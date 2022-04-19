@@ -25,6 +25,7 @@ public abstract class MixinEntityRenderer {
 	private void onPostRenderEntities(final int pass, final float partialTicks, final long finishTimeNano, final CallbackInfo ci) {
 		AreaSelectionRenderer.render(partialTicks);
 		ItemCounter.renderPos(partialTicks);
+		FrequencyAnalyzer.render(partialTicks);
 		PistonHelper.draw(partialTicks);
 	}
 

@@ -28,11 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.*;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
@@ -54,12 +50,10 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
@@ -76,6 +70,7 @@ public class CutelessMod {
 	private static final KeyBinding chunkDebug = new KeyBinding("key.cutelessmod.chunk_debug", KeyConflictContext.IN_GAME, Keyboard.KEY_F6, Reference.NAME);
 	private static final KeyBinding putItemCounterKey = new KeyBinding("key.cutelessmod.put_item_counter", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	private static final KeyBinding resetItemCounterKey = new KeyBinding("key.cutelessmod.reset_item_counter", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
+	private static final KeyBinding putFrequencyAnalyzerKey = new KeyBinding("key.cutelessmod.put_frequency_analyzer", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	private static final Minecraft mc = Minecraft.getMinecraft();
 	private static final StepAssistHelper stepAssistHelper = new StepAssistHelper();
 	private static final List<KeyBinding> keybinds = new ArrayList<>();
@@ -129,6 +124,7 @@ public class CutelessMod {
 		ClientRegistry.registerKeyBinding(chunkDebug);
 		ClientRegistry.registerKeyBinding(putItemCounterKey);
 		ClientRegistry.registerKeyBinding(resetItemCounterKey);
+		ClientRegistry.registerKeyBinding(putFrequencyAnalyzerKey);
 
 		spy = new ContainerSpy();
 		ClientCommandHandler.instance.init();
@@ -213,6 +209,15 @@ public class CutelessMod {
 			}
 		}
 
+		if (putFrequencyAnalyzerKey.isPressed()) {
+			if (FrequencyAnalyzer.position != null) {
+				FrequencyAnalyzer.reset();
+				FrequencyAnalyzer.position = null;
+			} else {
+				mc.ingameGUI.setOverlayMessage("Analyzer might be inaccurate depending on server TPS", false);
+				FrequencyAnalyzer.position = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
+			}
+		}
 		if (resetItemCounterKey.isPressed()) {
 			mc.ingameGUI.setOverlayMessage("Reset Item Counter", false);
 			ItemCounter.reset();
@@ -281,6 +286,11 @@ public class CutelessMod {
 				ITextComponent base = new TextComponentString("");
 				if (tabFooter != null && tabFooter.getUnformattedText().matches("(?s).*TPS: \\d*\\.\\d* MSPT: \\d*\\.\\d*.*")) {
 					mc.ingameGUI.getTabList().setFooter(tabFooter);
+					Pattern pattern = Pattern.compile("(?s)(?<=TPS: )\\d*\\.\\d*");
+					Matcher matcher = pattern.matcher(tabFooter.getUnformattedText());
+					if (matcher.find()) {
+						mspt = (int) (1000 / Float.parseFloat(matcher.group(0)));
+					}
 				} else {
 					if (tabFooter != null) {
 						base.appendSibling(tabFooter).appendText("\n");
@@ -320,6 +330,7 @@ public class CutelessMod {
 				GuiChunkGrid.instance = new GuiChunkGrid();
 			}
 			PistonHelper.updatePistonMovement(mc.world);
+			FrequencyAnalyzer.update();
 		}
 
 		final EntityPlayerSP player = mc.player;

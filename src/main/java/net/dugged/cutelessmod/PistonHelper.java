@@ -74,11 +74,7 @@ public class PistonHelper {
 
 	public static void draw(float partialTicks) {
 		if (Configuration.showPistonOrder && activated) {
-			final RenderManager rm = Minecraft.getMinecraft().getRenderManager();
-			final EntityPlayerSP player = Minecraft.getMinecraft().player;
-			final double d0 = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
-			final double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
-			final double d2 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks;
+
 			BlockPos pos;
 
 			int count = 0;
@@ -86,7 +82,7 @@ public class PistonHelper {
 				pos = tobreak[tobreak.length - i];
 				if (pos != null) {
 					count++;
-					CutelessModUtils.drawString("\u00a7c" + count, (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.5f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
+					CutelessModUtils.drawString(partialTicks, "\u00a7c" + count, pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 0);
 				}
 			}
 			int moved = -count;
@@ -94,27 +90,27 @@ public class PistonHelper {
 				pos = tomove[tomove.length - i];
 				if (pos != null) {
 					count++;
-					CutelessModUtils.drawString(Integer.toString(count), (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.5f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
+					CutelessModUtils.drawString(partialTicks, Integer.toString(count), pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 0);
 				}
 			}
 			moved += count;
 			pos = pistonPos;
 			if (validState) {
 				if (extending) {
-					CutelessModUtils.drawString(pushe, (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.8f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
+					CutelessModUtils.drawString(partialTicks, pushe, pos.getX() + 0.5f, pos.getY() + 0.8f, pos.getZ() + 0.5f, 0);
 				} else {
-					CutelessModUtils.drawString(pull, (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.8f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
+					CutelessModUtils.drawString(partialTicks, pull, pos.getX() + 0.5f, pos.getY() + 0.8f, pos.getZ() + 0.5f, 0);
 				}
-				CutelessModUtils.drawString(green, (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.2f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
+				CutelessModUtils.drawString(partialTicks, green, pos.getX() + 0.5f, pos.getY() + 0.2f, pos.getZ() + 0.5f, 0);
 			} else {
 				if (extending) {
-					CutelessModUtils.drawString(pushe, (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.8f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
+					CutelessModUtils.drawString(partialTicks, pushe, pos.getX() + 0.5f, pos.getY() + 0.8f, pos.getZ() + 0.5f, 0);
 				} else {
-					CutelessModUtils.drawString(pull, (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.8f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
+					CutelessModUtils.drawString(partialTicks, pull, pos.getX() + 0.5f, pos.getY() + 0.8f,pos.getZ() + 0.5f, 0);
 				}
-				CutelessModUtils.drawString(red, (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.2f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
+				CutelessModUtils.drawString(partialTicks, red, pos.getX() + 0.5f, pos.getY() + 0.2f, pos.getZ() + 0.5f, 0);
 			}
-			CutelessModUtils.drawString(gold + (Math.max(moved, 0)), (float) (pos.getX() + 0.5f - d0), (float) (pos.getY() + 0.5f - d1), (float) (pos.getZ() + 0.5f - d2), 0, rm.playerViewY, rm.playerViewX, rm.options.thirdPersonView == 2);
+			CutelessModUtils.drawString(partialTicks, gold + (Math.max(moved, 0)), pos.getX() + 0.5f, pos.getY() + 0.5f, pos.getZ() + 0.5f, 0);
 		}
 	}
 }

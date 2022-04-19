@@ -4,18 +4,20 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.RenderGlobal;
+import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.*;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
+
+import java.util.Arrays;
 
 public class CutelessModUtils {
 	private static final Minecraft mc = Minecraft.getMinecraft();
@@ -177,13 +179,18 @@ public class CutelessModUtils {
 		}
 	}
 
-	public static void drawString(String str, float x, float y, float z, int verticalShift, float viewerYaw, float viewerPitch, boolean isThirdPersonFrontal) {
+	public static void drawString(float partialTicks, String str, float x, float y, float z, int verticalShift) {
 		final FontRenderer fontRenderer = Minecraft.getMinecraft().fontRenderer;
+		final EntityPlayerSP player = Minecraft.getMinecraft().player;
+		final RenderManager rm = Minecraft.getMinecraft().getRenderManager();
+		final double d0 = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
+		final double d1 = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
+		final double d2 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks;
 		GlStateManager.pushMatrix();
-		GlStateManager.translate(x, y, z);
+		GlStateManager.translate(x - d0, y - d1, z - d2);
 		GlStateManager.glNormal3f(0.0F, 1.0F, 0.0F);
-		GlStateManager.rotate(-viewerYaw, 0.0F, 1.0F, 0.0F);
-		GlStateManager.rotate((float) (isThirdPersonFrontal ? -1 : 1) * viewerPitch, 1.0F, 0.0F, 0.0F);
+		GlStateManager.rotate(-rm.playerViewY, 0.0F, 1.0F, 0.0F);
+		GlStateManager.rotate((float) (rm.options.thirdPersonView == 2 ? -1 : 1) * rm.playerViewX, 1.0F, 0.0F, 0.0F);
 		GlStateManager.scale(-0.025F, -0.025F, 0.025F);
 		GlStateManager.disableLighting();
 		GlStateManager.depthFunc(GL11.GL_ALWAYS);
@@ -192,5 +199,53 @@ public class CutelessModUtils {
 		GlStateManager.enableLighting();
 		GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
 		GlStateManager.popMatrix();
+	}
+
+	public static void drawCube(float partialTicks, BlockPos pos, float r, float g, float b) {
+		if (pos != null) {
+			Minecraft mc = Minecraft.getMinecraft();
+			final EntityPlayerSP player = mc.player;
+			final double d1 = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
+			final double d2 = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
+			final double d3 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks;
+			GlStateManager.depthMask(false);
+			GlStateManager.disableFog();
+			GlStateManager.disableLighting();
+			GlStateManager.disableTexture2D();
+			GlStateManager.glLineWidth(4F);
+			AxisAlignedBB posBB = new AxisAlignedBB(pos).offset(-d1, -d2, -d3);
+			RenderGlobal.drawSelectionBoundingBox(posBB, r, g, b, 1.0F);
+			GlStateManager.glLineWidth(1F);
+			GlStateManager.enableTexture2D();
+			GlStateManager.enableLighting();
+			GlStateManager.enableFog();
+			GlStateManager.depthMask(true);
+		}
+	}
+
+	public static void drawCube(float partialTicks, BlockPos pos, int r, int g, int b) {
+		drawCube(partialTicks, pos, r / 255.0F, g / 255.0F, b / 255.0F);
+	}
+
+	// https://stackoverflow.com/a/8545681
+	public static int getMostCommon(int[] a) {
+		Arrays.sort(a);
+		int previous = a[0];
+		int popular = a[0];
+		int count = 1;
+		int maxCount = 1;
+		for (int i = 1; i < a.length; i++) {
+			if (a[i] == previous)
+				count++;
+			else {
+				if (count > maxCount) {
+					popular = a[i - 1];
+					maxCount = count;
+				}
+				previous = a[i];
+				count = 1;
+			}
+		}
+		return count > maxCount ? a[a.length - 1] : popular;
 	}
 }

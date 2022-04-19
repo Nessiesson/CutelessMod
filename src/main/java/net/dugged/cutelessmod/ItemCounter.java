@@ -20,26 +20,7 @@ public class ItemCounter {
 	public static BlockPos position = null;
 
 	public static void renderPos(float partialTicks) {
-		if (position == null) {
-			return;
-		}
-		Minecraft mc = Minecraft.getMinecraft();
-		final EntityPlayerSP player = mc.player;
-		final double d1 = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks;
-		final double d2 = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks;
-		final double d3 = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks;
-		GlStateManager.depthMask(false);
-		GlStateManager.disableFog();
-		GlStateManager.disableLighting();
-		GlStateManager.disableTexture2D();
-		GlStateManager.glLineWidth(4F);
-		AxisAlignedBB posBB = new AxisAlignedBB(position).offset(-d1, -d2, -d3);//.expand(1, 1, 1);
-		RenderGlobal.drawSelectionBoundingBox(posBB, 1F, 0.8F, 0.0F, 1.0F);
-		GlStateManager.glLineWidth(1F);
-		GlStateManager.enableTexture2D();
-		GlStateManager.enableLighting();
-		GlStateManager.enableFog();
-		GlStateManager.depthMask(true);
+		CutelessModUtils.drawCube(partialTicks, position, 1.0F, 0.8F, 0.0F);
 	}
 
 	public static void renderGui(float partialTicks) {
