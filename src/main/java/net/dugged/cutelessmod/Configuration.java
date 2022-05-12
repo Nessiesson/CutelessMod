@@ -25,8 +25,6 @@ public class Configuration {
 	public static boolean extendedChat = false;
 	public static boolean extendedCreativeHotbar = false;
 	public static boolean fixBlock36Particles = false;
-	public static boolean fixWeirdShift2Shift6LinuxBug = false;
-	public static boolean fixWeirdThinblockZFight = false;
 	public static boolean flightInertiaCancellation = false;
 	public static boolean ignoreBlockEvents = false;
 	public static boolean ignoreAirHotbarSnapshots = false;
@@ -71,6 +69,7 @@ public class Configuration {
 	public static boolean stackedEntities = false;
 	public static boolean stepAssist = false;
 	public static boolean waterModifiesFoV = true;
+	public static boolean weirdShift2Shift6LinuxBug = false;
 	public static boolean worldeditCompass = false;
 
 	// Ints

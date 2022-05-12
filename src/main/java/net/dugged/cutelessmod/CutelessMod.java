@@ -240,7 +240,7 @@ public class CutelessMod {
 		 also need to emulate those presses to mitigate this side effect of
 		 the fix.
 		*/
-		if (Configuration.fixWeirdShift2Shift6LinuxBug) {
+		if (Configuration.weirdShift2Shift6LinuxBug) {
 			switch (Keyboard.getEventKey()) {
 				case Keyboard.KEY_CIRCUMFLEX: // Shift-6
 					KeyBinding.onTick(Keyboard.KEY_6);
