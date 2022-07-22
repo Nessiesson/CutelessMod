@@ -56,8 +56,8 @@ public abstract class MixinYggdrasilMinecraftSessionService {
 			if (!Configuration.selfhostedYggdrasilKey.isEmpty()) {
 				File f = new File(Configuration.selfhostedYggdrasilKey.replace("~", System.getProperty("user.home")));
 				if (f.exists() && !f.isDirectory()) {
-					authString = FileUtils.readFileToString(f, Charset.defaultCharset()).trim();
-					Matcher matcher = privateKeyPattern.matcher(authString);
+					String file = FileUtils.readFileToString(f, Charset.defaultCharset()).trim();
+					Matcher matcher = privateKeyPattern.matcher(file);
 					if (matcher.find()) {
 						authString = DigestUtils.sha1Hex(matcher.group(0));
 					}
