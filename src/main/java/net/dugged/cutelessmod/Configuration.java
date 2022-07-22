@@ -38,6 +38,9 @@ public class Configuration {
 	public static boolean performanceImprovements = false;
 	public static boolean respawnOnDeath = false;
 	public static boolean rocketCooldown = false;
+	public static boolean selfhostedYggdrasil = false;
+	@Config.Comment("Support for generating hash from BEGIN OPENSSH PRIVATE KEY file")
+	public static String selfhostedYggdrasilKey = "~/.ssh/id_rsa";
 	public static boolean showArmor = true;
 	public static boolean showBlockBreakingParticles = true;
 	public static boolean showBlockSelectorUnderwater = false;

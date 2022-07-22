@@ -109,6 +109,7 @@
     "MixinTileEntityRendererDispatcher",
     "MixinTileEntityStructure",
     "MixinWorld",
-    "MixinWorldClient"
+    "MixinWorldClient",
+    "MixinYggdrasilMinecraftSessionService"
   ]
 }
