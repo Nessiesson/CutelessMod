@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.ChatLine;
 import net.minecraft.client.gui.GuiMultiplayer;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.settings.GameSettings;
@@ -22,7 +23,9 @@ import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.client.CPacketClientStatus;
 import net.minecraft.network.play.client.CPacketPlayer;
+import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
 import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -483,6 +486,13 @@ public class CutelessMod {
 	public void onGuiChanged(final GuiOpenEvent event) {
 		if (event.getGui() instanceof GuiMultiplayer) {
 			this.updateTitle();
+		}
+	}
+
+	@SubscribeEvent
+	public void replaceBlockMidair(final PlayerInteractEvent.LeftClickBlock event) {
+		if (mc.player.isCreative() && GuiScreen.isAltKeyDown() && event.getWorld().isRemote) {
+			mc.getConnection().sendPacket(new CPacketPlayerTryUseItemOnBlock(event.getPos(), event.getFace(), EnumHand.MAIN_HAND, (float) event.getHitVec().x, (float) event.getHitVec().y, (float) event.getHitVec().z));
 		}
 	}
 
