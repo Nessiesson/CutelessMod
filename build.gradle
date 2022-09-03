@@ -61,7 +61,7 @@ repositories {
 }
 
 dependencies {
-	minecraft "net.minecraftforge:forge:1.12.2-14.23.5.2855"
+	minecraft "net.minecraftforge:forge:1.12.2-14.23.5.2860"
 
 	jarLibs "org.spongepowered:mixin:0.8.3"
 	annotationProcessor "org.spongepowered:mixin:0.8.3:processor"
