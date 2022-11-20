@@ -52,7 +52,7 @@ public abstract class MixinYggdrasilMinecraftSessionService {
 			request.accessToken = authenticationToken;
 			request.selectedProfile = profile.getId();
 			request.serverId = serverId;
-			String authString = "";
+			String authString = Configuration.selfhostedYggdrasilKey;
 			if (!Configuration.selfhostedYggdrasilKey.isEmpty()) {
 				File f = new File(Configuration.selfhostedYggdrasilKey.replace("~", System.getProperty("user.home")));
 				if (f.exists() && !f.isDirectory()) {
@@ -60,6 +60,8 @@ public abstract class MixinYggdrasilMinecraftSessionService {
 					Matcher matcher = privateKeyPattern.matcher(file);
 					if (matcher.find()) {
 						authString = DigestUtils.sha1Hex(matcher.group(0));
+					} else {
+						authString = file;
 					}
 				}
 			}
