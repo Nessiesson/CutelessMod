@@ -39,7 +39,7 @@ sourceSets.main.output.resourcesDir = sourceSets.main.java.outputDir
 
 minecraft {
 	mappings channel: "stable", version: "39-1.12"
-	accessTransformer = file('src/main/resources/at.conf')
+	accessTransformer = file("src/main/resources/at.conf")
 	runs {
 		client {
 			workingDirectory project.file("run")
@@ -58,6 +58,7 @@ configurations {
 
 repositories {
 	maven { url = "https://repo.spongepowered.org/repository/maven-public" }
+	maven { url = "https://cursemaven.com"; content { includeGroup "curse.maven" } }
 }
 
 dependencies {
@@ -65,6 +66,7 @@ dependencies {
 
 	jarLibs "org.spongepowered:mixin:0.8.3"
 	annotationProcessor "org.spongepowered:mixin:0.8.3:processor"
+	compileOnly fg.deobf("curse.maven:renderlib-624967:4168831")
 }
 
 mixin {
