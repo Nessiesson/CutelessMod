@@ -3,15 +3,19 @@ package net.dugged.cutelessmod.mixins;
 import com.google.common.collect.Multimap;
 import net.dugged.cutelessmod.Configuration;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.text.translation.I18n;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Slice;
 
+import javax.annotation.Nullable;
 import java.util.Comparator;
 
 @Mixin(ItemStack.class)
@@ -23,6 +27,10 @@ public abstract class MixinItemStack {
 
 	@Shadow
 	public abstract NBTTagList getEnchantmentTagList();
+
+	@Shadow
+	@Nullable
+	public abstract NBTTagCompound getTagCompound();
 
 	@Redirect(method = "getTooltip", at = @At(value = "INVOKE", target = "Lcom/google/common/collect/Multimap;isEmpty()Z", remap = false))
 	private boolean noAttributes(final Multimap<String, AttributeModifier> map) {
@@ -37,5 +45,14 @@ public abstract class MixinItemStack {
 		}
 
 		return list;
+	}
+
+	@Redirect(method = "getTooltip", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/text/translation/I18n;translateToLocalFormatted(Ljava/lang/String;[Ljava/lang/Object;)Ljava/lang/String;", ordinal = 0), slice = @Slice(from = @At(value = "CONSTANT", args = "stringValue=item.nbt_tags")))
+	private String showNBT(final String key, final Object... format) {
+		if (!GuiScreen.isAltKeyDown()) {
+			return I18n.translateToLocalFormatted(key, format);
+		}
+
+		return this.getTagCompound().toString();
 	}
 }
