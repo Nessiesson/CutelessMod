@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 //TODO: redo to have proper textures show up everywhere.
+//TODO: see ItemMeshDefinition
 @Mixin(RenderItem.class)
 public abstract class MixinRenderItem {
 	private boolean isPerfectBasicToolBase(ItemStack stack) {

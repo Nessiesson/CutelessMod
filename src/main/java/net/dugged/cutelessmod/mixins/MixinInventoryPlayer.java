@@ -65,4 +65,11 @@ public class MixinInventoryPlayer {
 			}
 		}
 	}
+
+	@Inject(method = "changeCurrentItem", at = @At("HEAD"), cancellable = true)
+	private void onScrollInHotbar(final int direction, final CallbackInfo ci) {
+		if (CutelessMod.zoomerKey.isKeyDown()) {
+			ci.cancel();
+		}
+	}
 }

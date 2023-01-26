@@ -32,6 +32,7 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.*;
+import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
@@ -74,6 +75,7 @@ public class CutelessMod {
 	private static final KeyBinding putItemCounterKey = new KeyBinding("key.cutelessmod.put_item_counter", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	private static final KeyBinding resetItemCounterKey = new KeyBinding("key.cutelessmod.reset_item_counter", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	private static final KeyBinding putFrequencyAnalyzerKey = new KeyBinding("key.cutelessmod.put_frequency_analyzer", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
+	public static final KeyBinding zoomerKey = new KeyBinding("key.cutelessmod.zoomer", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	private static final Minecraft mc = Minecraft.getMinecraft();
 	private static final StepAssistHelper stepAssistHelper = new StepAssistHelper();
 	private static final List<KeyBinding> keybinds = new ArrayList<>();
@@ -128,6 +130,7 @@ public class CutelessMod {
 		ClientRegistry.registerKeyBinding(putItemCounterKey);
 		ClientRegistry.registerKeyBinding(resetItemCounterKey);
 		ClientRegistry.registerKeyBinding(putFrequencyAnalyzerKey);
+		ClientRegistry.registerKeyBinding(zoomerKey);
 
 		spy = new ContainerSpy();
 		ClientCommandHandler.instance.init();
@@ -256,6 +259,16 @@ public class CutelessMod {
 					KeyBinding.onTick(Keyboard.KEY_1);
 			}
 		}
+	}
+
+	@SubscribeEvent
+	public void onMouseEvent(final InputEvent.MouseInputEvent event) {
+		Zoomer.INSTANCE.onMouseScroll();
+	}
+
+	@SubscribeEvent
+	public void onModifyFOV(final EntityViewRenderEvent.FOVModifier event) {
+		event.setFOV(Zoomer.INSTANCE.changeFovBasedOnZoom(event.getFOV()));
 	}
 
 	@SubscribeEvent
