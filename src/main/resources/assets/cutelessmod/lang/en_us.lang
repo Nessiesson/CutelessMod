@@ -82,3 +82,4 @@ text.cutelessmod.clientcommands.worldEdit.brush.cleared=Cleared brush!
 text.cutelessmod.clientcommands.worldEdit.brush.bound=Bound brush %s to item!
 text.cutelessmod.clientcommands.worldEdit.brush.notFound=No brush with name %s found!
 text.cutelessmod.clientcommands.worldEdit.runbrush.usage=/runbrush <block> <dataValue:state> <brush name> [options]
+text.cutelessmod.clientcommands.worldEdit.cone.usage=/cone <block> <dataValue:state> <startRadius> <endRadius> <height> <bezierA> <bezierB>
