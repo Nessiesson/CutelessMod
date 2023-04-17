@@ -6,7 +6,8 @@ buildscript {
 		maven { url = "https://repo.spongepowered.org/repository/maven-public" }
 	}
 	dependencies {
-		classpath group: "net.minecraftforge.gradle", name: "ForgeGradle", version: "5.1.+", changing: true
+		//TODO: Proper dependency fix somehow that does not depend FG versions prior to 5.1.70..
+		classpath group: "net.minecraftforge.gradle", name: "ForgeGradle", version: "5.1.69"//, changing: true
 		classpath group: "org.spongepowered", name: "mixingradle", version: "0.7-SNAPSHOT"
 	}
 }
