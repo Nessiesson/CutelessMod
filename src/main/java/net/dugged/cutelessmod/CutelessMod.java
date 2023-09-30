@@ -13,8 +13,10 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.ChatLine;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiScreenOptionsSounds;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
+import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.Item;
@@ -27,11 +29,16 @@ import net.minecraft.network.play.client.CPacketPlayerTryUseItemOnBlock;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.*;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.Style;
+import net.minecraft.util.text.TextComponentString;
+import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
@@ -54,7 +61,11 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -99,10 +110,16 @@ public class CutelessMod {
 	public static StatPlugin statPlugin = new StatPlugin();
 	public static String lastCommand = "";
 	public static GuiCompass guiCompass = new GuiCompass(mc);
+	public static boolean enableSounds = CutelessMod.shouldHaveSounds();
 	private final CarpetPluginChannel carpetPluginChannel = new CarpetPluginChannel();
 	private String originalTitle;
 	private long swordCooldown = 0;
 	private boolean loggedOut;
+
+	public static boolean shouldHaveSounds() {
+		final GameSettings settings = mc.gameSettings;
+		return settings.showSubtitles || settings.getSoundLevel(SoundCategory.MASTER) > 0F;
+	}
 
 	@Mod.EventHandler
 	public void preInit(final FMLPreInitializationEvent event) {
@@ -499,6 +516,11 @@ public class CutelessMod {
 	public void onGuiChanged(final GuiOpenEvent event) {
 		if (event.getGui() instanceof GuiMultiplayer) {
 			this.updateTitle();
+		} else if (mc.currentScreen instanceof GuiScreenOptionsSounds) {
+			if (!CutelessMod.enableSounds && CutelessMod.shouldHaveSounds()) {
+				CutelessMod.enableSounds = true;
+				((IReloadableResourceManager) mc.getResourceManager()).registerReloadListener(mc.getSoundHandler());
+			}
 		}
 	}
 

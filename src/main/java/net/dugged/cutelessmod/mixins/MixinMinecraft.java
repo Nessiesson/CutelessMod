@@ -5,6 +5,8 @@ import net.dugged.cutelessmod.CutelessMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
+import net.minecraft.client.resources.IReloadableResourceManager;
+import net.minecraft.client.resources.IResourceManagerReloadListener;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
@@ -19,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Minecraft.class)
@@ -31,6 +34,13 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo {
 	public RayTraceResult objectMouseOver;
 	@Shadow
 	private int rightClickDelayTimer;
+
+	@Redirect(method = "init", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/resources/IReloadableResourceManager;registerReloadListener(Lnet/minecraft/client/resources/IResourceManagerReloadListener;)V", ordinal = 0), slice = @Slice(from = @At(value = "NEW", args = "class=net/minecraft/client/audio/SoundHandler")))
+	private void cuteless$conditionallyRegisterSounds(final IReloadableResourceManager instance, final IResourceManagerReloadListener listener) {
+		if (CutelessMod.enableSounds) {
+			instance.registerReloadListener(listener);
+		}
+	}
 
 	@Inject(method = "dispatchKeypresses()V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/settings/GameSettings;setOptionValue(Lnet/minecraft/client/settings/GameSettings$Options;I)V"), cancellable = true)
 	private void onNarratorKeypress(CallbackInfo ci) {
