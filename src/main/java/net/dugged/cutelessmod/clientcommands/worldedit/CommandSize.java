@@ -1,15 +1,20 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
+
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentTranslation;
 
-import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
-import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
-
 public class CommandSize extends ClientCommand {
+
+	public CommandSize() {
+		creativeOnly = false;
+	}
+
 	@Override
 	public String getName() {
 		return "size";

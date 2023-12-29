@@ -1,5 +1,11 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
+
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nullable;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.minecraft.block.Block;
@@ -11,14 +17,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
-
-import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
-import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
-
 public class CommandCount extends ClientCommand {
+
+	public CommandCount() {
+		creativeOnly = false;
+	}
+
 	@Override
 	public String getName() {
 		return "count";

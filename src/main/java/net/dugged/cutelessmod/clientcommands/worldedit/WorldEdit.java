@@ -1,6 +1,7 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
 import net.dugged.cutelessmod.clientcommands.mixins.IItemSword;
+import net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.SelectionType;
 import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -60,9 +61,10 @@ public class WorldEdit {
 		Item itemInHand = mc.player.getHeldItemMainhand().getItem();
 		if (mc.player.isCreative() && itemInHand instanceof ItemSword) {
 			return selections.get(WorldEditSelection.getTypeForMaterial(((IItemSword) itemInHand).getMaterial()));
-		} else {
-			return null;
+		} if (!mc.player.isCreative() && selections.containsKey(SelectionType.GOLD)) {
+			return selections.get(SelectionType.GOLD);
 		}
+		return null;
 	}
 
 	public static boolean hasCurrentSelection() {
