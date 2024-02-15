@@ -28,7 +28,6 @@
     "MixinBlock",
     "MixinBlockChest",
     "MixinBlockConcretePowder",
-	  "CMixinRelaxedBlockPlacement",
     "MixinBlockHugeMushroom",
     "MixinBlockLiquid",
     "MixinBlockMobSpawner",
