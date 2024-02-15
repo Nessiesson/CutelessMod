@@ -39,6 +39,7 @@ import net.minecraft.util.text.Style;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
@@ -180,6 +181,11 @@ public class CutelessMod {
 					field.setBoolean(Configuration.class, state);
 					ConfigManager.sync(Reference.MODID, Config.Type.INSTANCE);
 					mc.ingameGUI.setOverlayMessage(String.format("%s %s.", field.getName(), state ? "enabled" : "disabled"), false);
+
+					// Super ugly place to put this code, but It Works:tm:.
+					if ("showScoreboards".equals(field.getName())) {
+						GuiIngameForge.renderObjective = state;
+					}
 				} catch (NoSuchFieldException | IllegalAccessException ignored) {
 					// noop
 				}
