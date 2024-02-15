@@ -76,6 +76,8 @@ import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection
 @Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION, clientSideOnly = true)
 public class CutelessMod {
 	public static final Logger LOGGER = LogManager.getLogger(Reference.NAME);
+	public static final KeyBinding carpetFaceIntoKey = new KeyBinding("key.cutelessmod.face_into", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
+	public static final KeyBinding carpetFlipFaceKey = new KeyBinding("key.cutelessmod.flip_face", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	public static final KeyBinding highlightEntities = new KeyBinding("key.cutelessmod.highlight_entities", KeyConflictContext.IN_GAME, Keyboard.KEY_C, Reference.NAME);
 	private static final KeyBinding emptyScreenKey = new KeyBinding("key.cutelessmod.emptyscreen", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	private static final KeyBinding gammaHaxKey = new KeyBinding("key.cutelessmod.gammahax", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
@@ -138,6 +140,8 @@ public class CutelessMod {
 				.peek(keybinds::add)
 				.forEach(ClientRegistry::registerKeyBinding);
 
+		ClientRegistry.registerKeyBinding(carpetFaceIntoKey);
+		ClientRegistry.registerKeyBinding(carpetFlipFaceKey);
 		ClientRegistry.registerKeyBinding(highlightEntities);
 		ClientRegistry.registerKeyBinding(emptyScreenKey);
 		ClientRegistry.registerKeyBinding(gammaHaxKey);

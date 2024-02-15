@@ -8,6 +8,7 @@
     "maxShiftBy": 3
   },
   "mixins": [
+    "CMixinAccurateBlockPlacement$MixinPlayerControllerMP",
     "CMixinNoClip$MixinEntityPlayer",
     "CMixinNoClip$MixinEntityRenderer",
     "CMixinRelaxedBlockPlacement",
