@@ -78,6 +78,7 @@ public class CutelessMod {
 	public static final Logger LOGGER = LogManager.getLogger(Reference.NAME);
 	public static final KeyBinding highlightEntities = new KeyBinding("key.cutelessmod.highlight_entities", KeyConflictContext.IN_GAME, Keyboard.KEY_C, Reference.NAME);
 	private static final KeyBinding emptyScreenKey = new KeyBinding("key.cutelessmod.emptyscreen", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
+	private static final KeyBinding gammaHaxKey = new KeyBinding("key.cutelessmod.gammahax", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	private static final KeyBinding reloadAudioEngineKey = new KeyBinding("key.cutelessmod.reload_audio", KeyConflictContext.IN_GAME, Keyboard.KEY_B, Reference.NAME);
 	private static final KeyBinding repeatLastCommandKey = new KeyBinding("key.cutelessmod.repeat_last_command", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	private static final KeyBinding spyKey = new KeyBinding("key.cutelessmod.spy", KeyConflictContext.IN_GAME, Keyboard.KEY_Y, Reference.NAME);
@@ -139,6 +140,7 @@ public class CutelessMod {
 
 		ClientRegistry.registerKeyBinding(highlightEntities);
 		ClientRegistry.registerKeyBinding(emptyScreenKey);
+		ClientRegistry.registerKeyBinding(gammaHaxKey);
 		ClientRegistry.registerKeyBinding(reloadAudioEngineKey);
 		ClientRegistry.registerKeyBinding(repeatLastCommandKey);
 		ClientRegistry.registerKeyBinding(spyKey);
@@ -275,6 +277,12 @@ public class CutelessMod {
 					KeyBinding.onTick(Keyboard.KEY_2);
 					KeyBinding.onTick(Keyboard.KEY_1);
 			}
+		}
+
+		if (gammaHaxKey.isPressed()) {
+			mc.gameSettings.gammaSetting = 1000;
+			mc.gameSettings.saveOptions();
+			mc.ingameGUI.setOverlayMessage("Enabled fullbright gammahax.", false);
 		}
 	}
 
