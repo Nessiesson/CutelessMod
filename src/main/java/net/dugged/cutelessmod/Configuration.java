@@ -68,6 +68,7 @@ public class Configuration {
 	public static boolean showSneakEyeHeight = false;
 	public static boolean showSnowDripParticles = false;
 	public static boolean showSpectatorTeamMenu = true;
+	public static boolean showWorldBobbing = true;
 	public static boolean showWorldFog = true;
 	public static boolean smootherPistons = false;
 	public static boolean smoothItemMovement = false;
