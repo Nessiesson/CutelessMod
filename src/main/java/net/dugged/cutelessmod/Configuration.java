@@ -61,6 +61,7 @@ public class Configuration {
 	public static boolean showPotionShift = true;
 	public static boolean showRain = true;
 	public static boolean showRainbowLeaves = false;
+	@SuppressWarnings("unused")
 	public static boolean showScoreboards = true;
 	public static boolean showServerNames = true;
 	public static boolean showShulkerBoxDisplay = false;
