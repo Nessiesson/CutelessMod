@@ -11,6 +11,7 @@
     "CMixinAccurateBlockPlacement$MixinPlayerControllerMP",
     "CMixinNoClip$MixinEntityPlayer",
     "CMixinNoClip$MixinEntityRenderer",
+    "CMixinNoClip$MixinWorld",
     "CMixinRelaxedBlockPlacement",
     "IBlockRedstoneDiode",
     "IEntityBeacon",
