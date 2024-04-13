@@ -3,7 +3,7 @@
 	"elements": [
 		{
 			"__comment": "knob",
-			"from": [ 0, 8, 0 ], "to": [ 1, 12, 1 ],
+			"from": [ 0, 7, 0 ], "to": [ 1, 11, 1 ],
 			"faces": {
 				"down":  { "uv": [ 0.375, 0,     0.5,  0.125 ], "texture": "#all" },
 				"up":    { "uv": [ 0.125, 0,     0.25, 0.125 ], "texture": "#all" },
@@ -24,17 +24,17 @@
 		{
 			"__comment": "front_lid",
 			"from": [ 0, 10, 1 ], "to": [ 15, 14, 1 ],
-			"faces": { "north": { "uv": [ 1.75, 1.75, 3.625, 2.375 ], "texture": "#all" } }
+			"faces": { "north": { "uv": [ 1.75, 1.75, 3.625, 2.25 ], "texture": "#all" } }
 		},
 		{
 			"__comment": "back_lid",
 			"from": [ 0, 10, 15 ], "to": [ 15, 14, 15 ],
-			"faces": { "south": { "uv": [ 9.25, 1.75, 11, 2.375 ], "texture": "#all" } }
+			"faces": { "south": { "uv": [ 9.25, 1.75, 11, 2.25 ], "texture": "#all" } }
 		},
 		{
 			"__comment": "left_lid",
 			"from": [ 15, 10, 1 ], "to": [ 15, 14, 15 ],
-			"faces": { "east": { "uv": [ 0, 1.75, 1.75, 2.375 ], "texture": "#all" } }
+			"faces": { "east": { "uv": [ 0, 1.75, 1.75, 2.25 ], "texture": "#all" } }
 		},
 		{
 			"__comment": "front_below",
