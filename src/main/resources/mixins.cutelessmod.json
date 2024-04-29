@@ -66,6 +66,7 @@
 		"MixinGuiInventory",
 		"MixinGuiLanguage_List",
 		"MixinGuiMainMenu",
+		"MixinGuiModList",
 		"MixinGuiMultiplayer",
 		"MixinGuiNewChat",
 		"MixinGuiOverlayDebug",
