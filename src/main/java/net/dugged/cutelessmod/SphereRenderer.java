@@ -28,8 +28,8 @@ public class SphereRenderer {
 	private final ArrayList<AxisAlignedBB> points = new ArrayList<>(1681);
 
 	public void init(File configPath) {
-		LiteLoader.getInput().registerKeyBinding(this.sphereKey);
-		LiteLoader.getInput().registerKeyBinding(this.disableKey);
+		//LiteLoader.getInput().registerKeyBinding(this.sphereKey);
+		//LiteLoader.getInput().registerKeyBinding(this.disableKey);
 	}
 
 	private void renderSphere(ArrayList<AxisAlignedBB> pointsInSphere) {

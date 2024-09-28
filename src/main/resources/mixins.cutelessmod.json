@@ -57,6 +57,7 @@
 		"MixinGlStateManager",
 		"MixinGuiBossOverlay",
 		"MixinGuiChat",
+		"MixinGuiContainer",
 		"MixinGuiContainerCreative",
 		"MixinGuiControls",
 		"MixinGuiDisconnected",
