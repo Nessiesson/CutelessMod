@@ -9,6 +9,7 @@ key.cutelessmod.chunk_debug=Chunk Debug Tool
 key.cutelessmod.put_item_counter=Place Item Counter
 key.cutelessmod.reset_item_counter=Reset Item Counter
 key.cutelessmod.put_frequency_analyzer=Place Frequency Analyzer
+key.cutelessmod.put_random_tick_area=Place Random Tick Renderer
 key.cutelessmod.zoomer=Zoom key
 text.cutelessmod.relog=Relog
 text.cutelessmod.options.gamma.fullbright=Fullbright

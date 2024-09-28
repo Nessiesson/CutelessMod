@@ -5,6 +5,7 @@ import net.dugged.cutelessmod.Configuration;
 import net.dugged.cutelessmod.FrequencyAnalyzer;
 import net.dugged.cutelessmod.ItemCounter;
 import net.dugged.cutelessmod.PistonHelper;
+import net.dugged.cutelessmod.RandomTickHelper;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -37,6 +38,7 @@ public abstract class MixinEntityRenderer {
 		AreaSelectionRenderer.render(partialTicks);
 		ItemCounter.renderPos(partialTicks);
 		FrequencyAnalyzer.render(partialTicks);
+		RandomTickHelper.render(partialTicks);
 		PistonHelper.draw(partialTicks);
 	}
 

@@ -90,6 +90,7 @@ public class CutelessMod {
 	private static final KeyBinding putItemCounterKey = new KeyBinding("key.cutelessmod.put_item_counter", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	private static final KeyBinding resetItemCounterKey = new KeyBinding("key.cutelessmod.reset_item_counter", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	private static final KeyBinding putFrequencyAnalyzerKey = new KeyBinding("key.cutelessmod.put_frequency_analyzer", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
+	private static final KeyBinding putRandomTickAreaKey = new KeyBinding("key.cutelessmod.put_random_tick_area", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	public static final KeyBinding zoomerKey = new KeyBinding("key.cutelessmod.zoomer", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	private static final Minecraft mc = Minecraft.getMinecraft();
 	private static final StepAssistHelper stepAssistHelper = new StepAssistHelper();
@@ -154,6 +155,7 @@ public class CutelessMod {
 		ClientRegistry.registerKeyBinding(putItemCounterKey);
 		ClientRegistry.registerKeyBinding(resetItemCounterKey);
 		ClientRegistry.registerKeyBinding(putFrequencyAnalyzerKey);
+		ClientRegistry.registerKeyBinding(putRandomTickAreaKey);
 		ClientRegistry.registerKeyBinding(zoomerKey);
 
 		spy = new ContainerSpy();
@@ -253,6 +255,11 @@ public class CutelessMod {
 				FrequencyAnalyzer.position = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
 			}
 		}
+
+		if(putRandomTickAreaKey.isPressed()) {
+			RandomTickHelper.updatePosition(mc.player);
+		}
+
 		if (resetItemCounterKey.isPressed()) {
 			mc.ingameGUI.setOverlayMessage("Reset Item Counter", false);
 			ItemCounter.reset();
