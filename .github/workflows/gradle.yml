@@ -46,7 +46,7 @@ jobs:
         tag: ${{ env.VERSION }}
     - name: Upload jar as artifact
       if: steps.checkTag.outputs.exists == 'false'
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: Jar file
         path: build/libs/*.jar
