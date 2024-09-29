@@ -74,6 +74,7 @@
 		"MixinGuiRecipeBook",
 		"MixinGuiScreen",
 		"MixinGuiStats",
+		"MixinGuiUtilRenderComponents",
 		"MixinGuiWorldSelection",
 		"MixinIntegratedServer",
 		"MixinInventoryEffectRenderer",
