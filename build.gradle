@@ -98,3 +98,24 @@ processResources {
 		expand "modName": project.modName, "modId": modId, "version": project.version
 	}
 }
+
+def extraModsDir = "libs"
+
+repositories {
+	flatDir {
+		dir file(extraModsDir)
+		content(s -> s.includeGroup "extra-mods")
+	}
+}
+
+dependencies {
+	// runtime remapping at home - stolen from embeddedt
+	for (extraModJar in fileTree(dir: extraModsDir, include: '*.jar')) {
+		def basename = extraModJar.name.substring(0, extraModJar.name.length() - ".jar".length())
+		def versionSep = basename.lastIndexOf('-')
+		assert versionSep != -1
+		def artifactId = basename.substring(0, versionSep)
+		def version = basename.substring(versionSep + 1)
+		implementation fg.deobf("extra-mods:$artifactId:$version")
+	}
+}
