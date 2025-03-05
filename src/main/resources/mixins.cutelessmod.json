@@ -28,6 +28,7 @@
 		"IServerListEntryNormal",
 		"ISoundHandler",
 		"MixinBlock",
+		"MixinBlockBarrier",
 		"MixinBlockChest",
 		"MixinBlockConcretePowder",
 		"MixinBlockHugeMushroom",

@@ -43,6 +43,8 @@ public class Configuration {
 	@Config.Comment("File or direct string, make long enough so you cant leak entire string on stream. Support for generating hash from BEGIN OPENSSH PRIVATE KEY file")
 	public static String selfhostedYggdrasilKey = "~/.ssh/id_rsa";
 	public static boolean showArmor = true;
+	@Config.RequiresMcRestart
+	public static boolean showBarrierBlocks = false;
 	public static boolean showBlockBreakingParticles = true;
 	public static boolean showBlockSelectorUnderwater = false;
 	public static boolean showCenteredPlants = false;

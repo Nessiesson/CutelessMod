@@ -18,6 +18,10 @@ public abstract class MixinBlockModelShapes {
 			IntStream.range(0, blocks.length).filter(i -> blocks[i] == Blocks.CHEST || blocks[i] == Blocks.TRAPPED_CHEST).forEach(i -> blocks[i] = Blocks.AIR);
 		}
 
+		if (Configuration.showBarrierBlocks) {
+			IntStream.range(0, blocks.length).filter(i -> blocks[i] == Blocks.BARRIER).forEach(i -> blocks[i] = Blocks.AIR);
+		}
+
 		return blocks;
 	}
 }
