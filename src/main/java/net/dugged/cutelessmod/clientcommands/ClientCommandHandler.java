@@ -69,6 +69,8 @@ public class ClientCommandHandler extends CommandHandler {
 		instance.registerCommand(new CommandBrush());
 		instance.registerCommand(new CommandRunBrush());
 		instance.registerCommand(new CommandCone());
+		instance.registerCommand(new CommandWoolify());
+		instance.registerCommand(new CommandErode());
 
 		WorldEdit.brushes.add(new BrushIceSpike());
 		WorldEdit.brushes.add(new BrushRemoveColumn());

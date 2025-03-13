@@ -8,11 +8,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class HandlerUndo extends Handler {
 	private static final int BLOCKS_PROCESSED_PER_TICK = 32768;
-	private final List<Iterator> iterators = new ArrayList<>();
+	private final List<Iterator<BlockPos>> iterators = new ArrayList<>();
 	private final Map<BlockPos, IBlockState> blockList = new LinkedHashMap<>();
 	public String command;
 	public boolean message = true;
@@ -55,24 +59,28 @@ public class HandlerUndo extends Handler {
 				mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.undo.startedSaving"));
 			}
 		}
-		if (iterators.size() > 0) {
-			int iterCount = 0;
-			iterloop:
-			while (iterators.size() > 0) {
-				Iterator iterator = iterators.get(0);
-				while (iterator.hasNext()) {
-					iterCount++;
-					final BlockPos pos = (BlockPos) iterator.next();
-					last_execution = age;
-					currentCount++;
-					blockList.put(pos, world.getBlockState(pos));
-					if (iterCount > BLOCKS_PROCESSED_PER_TICK / ClientCommandHandler.instance.countHandlerType(HandlerUndo.class)) {
-						break iterloop;
-					}
+		int threshold = BLOCKS_PROCESSED_PER_TICK / ClientCommandHandler.instance.countHandlerType(HandlerUndo.class);
+		int iterCount = 0;
+		while (!iterators.isEmpty() && iterCount <= threshold) {
+			Iterator<BlockPos> it = iterators.get(0);
+			while (it.hasNext()) {
+				BlockPos pos = it.next();
+				last_execution = age;
+				currentCount++;
+				blockList.put(pos, world.getBlockState(pos));
+				iterCount++;
+				if (iterCount > threshold) {
+					break;
 				}
-				iterators.removeIf(it -> !it.hasNext());
 			}
-		} else {
+			if (!it.hasNext()) {
+				iterators.remove(0);
+			}
+			if (iterCount > threshold) {
+				break;
+			}
+		}
+		if (iterators.isEmpty()) {
 			CommandUndo.undoHistory.add(0, blockList);
 			if (command != null && !command.isEmpty()) {
 				mc.player.connection.sendPacket(new CPacketChatMessage(command));

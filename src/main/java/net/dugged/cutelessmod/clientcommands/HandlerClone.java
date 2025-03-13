@@ -19,10 +19,9 @@ import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
 
 public class HandlerClone extends Handler {
-	private static final int COMMANDS_EXECUTED_PER_TICK = 64; // Minimum 2
+	private static final int COMMANDS_EXECUTED_PER_TICK = 64;
 	private static final int FILL_LIMIT = 32768;
 	private static final int CUBE_LENGTH = (int) Math.cbrt(FILL_LIMIT);
-
 	public static boolean clonePermission = false;
 	private final List<BlockPos> destinations = new ArrayList<>();
 	private final Map<BlockPos, AxisAlignedBB> sourceAreaMap = new LinkedHashMap<>();
@@ -45,7 +44,7 @@ public class HandlerClone extends Handler {
 
 	synchronized public void clone(BlockPos pos1, BlockPos pos2, BlockPos pos3) {
 		AxisAlignedBB bb = new AxisAlignedBB(pos1.getX(), Math.max(0, pos1.getY()), pos1.getZ(), pos2.getX(), Math.min(pos2.getY(), 255), pos2.getZ());
-		totalCount += (bb.maxX - bb.minX + 1) * (bb.maxY - bb.minY + 1) * (bb.maxZ - bb.minZ + 1);
+		totalCount += (int) ((bb.maxX - bb.minX + 1) * (bb.maxY - bb.minY + 1) * (bb.maxZ - bb.minZ + 1));
 		destinations.add(pos3);
 		sourceAreaMap.put(pos3, bb);
 		iteratorPositions.put(pos3, getDefaultIteratorPos(bb));
@@ -53,35 +52,38 @@ public class HandlerClone extends Handler {
 
 	synchronized public void tick() {
 		super.tick();
-		if (destinations.size() > 0) {
-			final int handlerCount = ClientCommandHandler.instance.countHandlerType(HandlerClone.class);
+		if (!destinations.isEmpty()) {
+			int handlerCount = ClientCommandHandler.instance.countHandlerType(HandlerClone.class);
+			int threshold = COMMANDS_EXECUTED_PER_TICK / handlerCount;
 			int commandsExecuted = 0;
-			while (destinations.size() > 0 && commandsExecuted < (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
+			while (!destinations.isEmpty() && commandsExecuted < threshold) {
 				BlockPos destinationPosition = destinations.get(destinations.size() - 1);
 				BlockPos iteratorPosition = iteratorPositions.get(destinationPosition);
 				AxisAlignedBB bb = sourceAreaMap.get(destinationPosition);
+				int minX = (int) bb.minX, minY = (int) bb.minY, minZ = (int) bb.minZ;
+				int maxX = (int) bb.maxX, maxY = (int) bb.maxY, maxZ = (int) bb.maxZ;
 				switch (facing) {
 					case SOUTH:
-						for (int x = (int) bb.minX; x <= bb.maxX; x += CUBE_LENGTH) {
-							for (int y = (int) bb.minY; y <= bb.maxY; y += CUBE_LENGTH) {
-								for (int z = (int) bb.maxZ; z >= bb.minZ; z -= CUBE_LENGTH) {
+						for (int x = minX; x <= maxX; x += CUBE_LENGTH) {
+							for (int y = minY; y <= maxY; y += CUBE_LENGTH) {
+								for (int z = maxZ; z >= minZ; z -= CUBE_LENGTH) {
 									if (iteratorPosition == null) {
 										destinations.remove(destinations.size() - 1);
 										return;
 									}
-									if (x == (int) bb.minX && y == (int) bb.minY && z == (int) bb.maxZ) {
+									if (x == minX && y == minY && z == maxZ) {
 										x = iteratorPosition.getX();
 										y = iteratorPosition.getY();
 										z = iteratorPosition.getZ();
 									}
 									BlockPos pos1 = new BlockPos(x, y, z);
-									BlockPos pos2 = new BlockPos(Math.min(x + CUBE_LENGTH - 1, bb.maxX), Math.min(y + CUBE_LENGTH - 1, bb.maxY), Math.max(z - CUBE_LENGTH + 1, bb.minZ));
-									if (commandsExecuted >= (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
+									BlockPos pos2 = new BlockPos(Math.min(x + CUBE_LENGTH - 1, maxX), Math.min(y + CUBE_LENGTH - 1, maxY), Math.max(z - CUBE_LENGTH + 1, minZ));
+									if (commandsExecuted >= threshold) {
 										iteratorPositions.put(destinationPosition, pos1);
 										return;
 									}
-									currentCount += (Math.max(pos1.getX(), pos2.getX()) - Math.min(pos1.getX(), pos2.getX()) + 1) * (Math.max(pos1.getY(), pos2.getY()) - Math.min(pos1.getY(), pos2.getY()) + 1) * (Math.max(pos1.getZ(), pos2.getZ()) - Math.min(pos1.getZ(), pos2.getZ()) + 1);
-									if (sendCloneCommand(pos1, pos2, destinationPosition.add(pos1.getX() - bb.minX, pos1.getY() - bb.minY, bb.maxZ - bb.minZ - (bb.maxZ - pos2.getZ())))) {
+									currentCount += (pos2.getX() - pos1.getX() + 1) * (pos2.getY() - pos1.getY() + 1) * (pos2.getZ() - pos1.getZ() + 1);
+									if (sendCloneCommand(pos1, pos2, destinationPosition.add(pos1.getX() - minX, pos1.getY() - minY, maxZ - minZ - (maxZ - pos2.getZ())))) {
 										commandsExecuted++;
 									}
 								}
@@ -89,26 +91,26 @@ public class HandlerClone extends Handler {
 						}
 						break;
 					case UP:
-						for (int z = (int) bb.minZ; z <= bb.maxZ; z += CUBE_LENGTH) {
-							for (int x = (int) bb.minX; x <= bb.maxX; x += CUBE_LENGTH) {
-								for (int y = (int) bb.maxY; y >= bb.minY; y -= CUBE_LENGTH) {
+						for (int z = minZ; z <= maxZ; z += CUBE_LENGTH) {
+							for (int x = minX; x <= maxX; x += CUBE_LENGTH) {
+								for (int y = maxY; y >= minY; y -= CUBE_LENGTH) {
 									if (iteratorPosition == null) {
 										destinations.remove(destinations.size() - 1);
 										return;
 									}
-									if (x == (int) bb.minX && y == (int) bb.maxY && z == (int) bb.minZ) {
+									if (x == minX && y == maxY && z == minZ) {
 										x = iteratorPosition.getX();
 										y = iteratorPosition.getY();
 										z = iteratorPosition.getZ();
 									}
 									BlockPos pos1 = new BlockPos(x, y, z);
-									BlockPos pos2 = new BlockPos(Math.min(x + CUBE_LENGTH - 1, bb.maxX), Math.max(y - CUBE_LENGTH + 1, bb.minY), Math.min(z + CUBE_LENGTH - 1, bb.maxZ));
-									if (commandsExecuted >= (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
+									BlockPos pos2 = new BlockPos(Math.min(x + CUBE_LENGTH - 1, maxX), Math.max(y - CUBE_LENGTH + 1, minY), Math.min(z + CUBE_LENGTH - 1, maxZ));
+									if (commandsExecuted >= threshold) {
 										iteratorPositions.put(destinationPosition, pos1);
 										return;
 									}
-									currentCount += (Math.max(pos1.getX(), pos2.getX()) - Math.min(pos1.getX(), pos2.getX()) + 1) * (Math.max(pos1.getY(), pos2.getY()) - Math.min(pos1.getY(), pos2.getY()) + 1) * (Math.max(pos1.getZ(), pos2.getZ()) - Math.min(pos1.getZ(), pos2.getZ()) + 1);
-									if (sendCloneCommand(pos1, pos2, destinationPosition.add(pos1.getX() - bb.minX, bb.maxY - bb.minY - (bb.maxY - pos2.getY()), pos1.getZ() - bb.minZ))) {
+									currentCount += (pos2.getX() - pos1.getX() + 1) * (pos2.getY() - pos1.getY() + 1) * (pos2.getZ() - pos1.getZ() + 1);
+									if (sendCloneCommand(pos1, pos2, destinationPosition.add(pos1.getX() - minX, maxY - minY - (maxY - pos2.getY()), pos1.getZ() - minZ))) {
 										commandsExecuted++;
 									}
 								}
@@ -116,26 +118,26 @@ public class HandlerClone extends Handler {
 						}
 						break;
 					case EAST:
-						for (int z = (int) bb.minZ; z <= bb.maxZ; z += CUBE_LENGTH) {
-							for (int y = (int) bb.minY; y <= bb.maxY; y += CUBE_LENGTH) {
-								for (int x = (int) bb.maxX; x >= bb.minX; x -= CUBE_LENGTH) {
+						for (int z = minZ; z <= maxZ; z += CUBE_LENGTH) {
+							for (int y = minY; y <= maxY; y += CUBE_LENGTH) {
+								for (int x = maxX; x >= minX; x -= CUBE_LENGTH) {
 									if (iteratorPosition == null) {
 										destinations.remove(destinations.size() - 1);
 										return;
 									}
-									if (x == (int) bb.maxX && y == (int) bb.minY && z == (int) bb.minZ) {
+									if (x == maxX && y == minY && z == minZ) {
 										x = iteratorPosition.getX();
 										y = iteratorPosition.getY();
 										z = iteratorPosition.getZ();
 									}
 									BlockPos pos1 = new BlockPos(x, y, z);
-									BlockPos pos2 = new BlockPos(Math.max(x - CUBE_LENGTH + 1, bb.minX), Math.min(y + CUBE_LENGTH - 1, bb.maxY), Math.min(z + CUBE_LENGTH - 1, bb.maxZ));
-									if (commandsExecuted >= (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
+									BlockPos pos2 = new BlockPos(Math.max(x - CUBE_LENGTH + 1, minX), Math.min(y + CUBE_LENGTH - 1, maxY), Math.min(z + CUBE_LENGTH - 1, maxZ));
+									if (commandsExecuted >= threshold) {
 										iteratorPositions.put(destinationPosition, pos1);
 										return;
 									}
-									currentCount += (Math.max(pos1.getX(), pos2.getX()) - Math.min(pos1.getX(), pos2.getX()) + 1) * (Math.max(pos1.getY(), pos2.getY()) - Math.min(pos1.getY(), pos2.getY()) + 1) * (Math.max(pos1.getZ(), pos2.getZ()) - Math.min(pos1.getZ(), pos2.getZ()) + 1);
-									if (sendCloneCommand(pos1, pos2, destinationPosition.add(bb.maxX - bb.minX - (bb.maxX - pos2.getX()), pos1.getY() - bb.minY, pos1.getZ() - bb.minZ))) {
+									currentCount += (pos2.getX() - pos1.getX() + 1) * (pos2.getY() - pos1.getY() + 1) * (pos2.getZ() - pos1.getZ() + 1);
+									if (sendCloneCommand(pos1, pos2, destinationPosition.add(maxX - minX - (maxX - pos2.getX()), pos1.getY() - minY, pos1.getZ() - minZ))) {
 										commandsExecuted++;
 									}
 								}
@@ -143,26 +145,26 @@ public class HandlerClone extends Handler {
 						}
 						break;
 					default:
-						for (int x = (int) bb.minX; x <= bb.maxX; x += CUBE_LENGTH) {
-							for (int y = (int) bb.minY; y <= bb.maxY; y += CUBE_LENGTH) {
-								for (int z = (int) bb.minZ; z <= bb.maxZ; z += CUBE_LENGTH) {
+						for (int x = minX; x <= maxX; x += CUBE_LENGTH) {
+							for (int y = minY; y <= maxY; y += CUBE_LENGTH) {
+								for (int z = minZ; z <= maxZ; z += CUBE_LENGTH) {
 									if (iteratorPosition == null) {
 										destinations.remove(destinations.size() - 1);
 										return;
 									}
-									if (x == (int) bb.minX && y == (int) bb.minY && z == (int) bb.minZ) {
+									if (x == minX && y == minY && z == minZ) {
 										x = iteratorPosition.getX();
 										y = iteratorPosition.getY();
 										z = iteratorPosition.getZ();
 									}
 									BlockPos pos1 = new BlockPos(x, y, z);
-									BlockPos pos2 = new BlockPos(Math.min(x + CUBE_LENGTH - 1, bb.maxX), Math.min(y + CUBE_LENGTH - 1, bb.maxY), Math.min(z + CUBE_LENGTH - 1, bb.maxZ));
-									if (commandsExecuted >= (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
+									BlockPos pos2 = new BlockPos(Math.min(x + CUBE_LENGTH - 1, maxX), Math.min(y + CUBE_LENGTH - 1, maxY), Math.min(z + CUBE_LENGTH - 1, maxZ));
+									if (commandsExecuted >= threshold) {
 										iteratorPositions.put(destinationPosition, pos1);
 										return;
 									}
-									currentCount += (Math.max(pos1.getX(), pos2.getX()) - Math.min(pos1.getX(), pos2.getX()) + 1) * (Math.max(pos1.getY(), pos2.getY()) - Math.min(pos1.getY(), pos2.getY()) + 1) * (Math.max(pos1.getZ(), pos2.getZ()) - Math.min(pos1.getZ(), pos2.getZ()) + 1);
-									if (sendCloneCommand(pos1, pos2, destinationPosition.add(pos1.getX() - bb.minX, pos1.getY() - bb.minY, pos1.getZ() - bb.minZ))) {
+									currentCount += (pos2.getX() - pos1.getX() + 1) * (pos2.getY() - pos1.getY() + 1) * (pos2.getZ() - pos1.getZ() + 1);
+									if (sendCloneCommand(pos1, pos2, destinationPosition.add(pos1.getX() - minX, pos1.getY() - minY, pos1.getZ() - minZ))) {
 										commandsExecuted++;
 									}
 								}
@@ -171,13 +173,11 @@ public class HandlerClone extends Handler {
 				}
 				if (destinations.size() == 1 && moveSelectionAfterwards) {
 					selection.setPos(A, destinationPosition);
-					selection.setPos(B, destinationPosition.add(bb.maxX - bb.minX, bb.maxY - bb.minY, bb.maxZ - bb.minZ));
+					selection.setPos(B, destinationPosition.add(maxX - minX, maxY - minY, maxZ - minZ));
 				}
-				sourceAreaMap.remove(bb);
-				if (!sourceAreaMap.containsKey(bb)) {
-					iteratorPositions.remove(bb);
-					destinations.remove(destinations.size() - 1);
-				}
+				sourceAreaMap.remove(destinationPosition);
+				iteratorPositions.remove(destinationPosition);
+				destinations.remove(destinations.size() - 1);
 			}
 		} else if (age > 5) {
 			finish();

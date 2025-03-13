@@ -18,7 +18,6 @@ public class HandlerFill extends Handler {
 	private static final int COMMANDS_EXECUTED_PER_TICK = 64; // Minimum 2
 	private static final int FILL_LIMIT = 32768;
 	private static final int CUBE_LENGTH = (int) Math.pow(FILL_LIMIT, 1.0 / 3.0);
-
 	public static boolean fillPermission = false;
 	private final List<AxisAlignedBB> areas = new ArrayList<>();
 	private final Map<AxisAlignedBB, IBlockState> blockStateMap = new LinkedHashMap<>();
@@ -37,40 +36,43 @@ public class HandlerFill extends Handler {
 
 	public void fill(BlockPos pos1, BlockPos pos2, IBlockState blockStateToPlace) {
 		AxisAlignedBB bb = new AxisAlignedBB(pos1, pos2);
-		totalCount += (bb.maxX - bb.minX + 1) * (bb.maxY - bb.minY + 1) * (bb.maxZ - bb.minZ + 1);
+		totalCount += (int) ((bb.maxX - bb.minX + 1) * (bb.maxY - bb.minY + 1) * (bb.maxZ - bb.minZ + 1));
 		areas.add(bb);
 		blockStateMap.put(bb, blockStateToPlace);
-		iteratorPositions.put(bb, new BlockPos(bb.minX, bb.minY, bb.minZ));
+		iteratorPositions.put(bb, new BlockPos((int) bb.minX, (int) bb.minY, (int) bb.minZ));
 	}
 
 	synchronized public void tick() {
 		super.tick();
-		if (areas.size() > 0) {
-			final int handlerCount = ClientCommandHandler.instance.countHandlerType(HandlerFill.class);
+		if (!areas.isEmpty()) {
+			int handlerCount = ClientCommandHandler.instance.countHandlerType(HandlerFill.class);
+			int threshold = COMMANDS_EXECUTED_PER_TICK / handlerCount;
 			int commandsExecuted = 0;
-			while (areas.size() > 0 && commandsExecuted < (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
+			while (!areas.isEmpty() && commandsExecuted < threshold) {
 				AxisAlignedBB bb = areas.get(areas.size() - 1);
 				BlockPos iteratorPosition = iteratorPositions.get(bb);
 				IBlockState blockState = blockStateMap.get(bb);
-				for (int x = (int) bb.minX; x < bb.maxX + 1; x += CUBE_LENGTH) {
-					for (int y = (int) bb.minY; y < bb.maxY + 1; y += CUBE_LENGTH) {
-						for (int z = (int) bb.minZ; z < bb.maxZ + 1; z += CUBE_LENGTH) {
+				int minX = (int) bb.minX, minY = (int) bb.minY, minZ = (int) bb.minZ;
+				int maxX = (int) bb.maxX, maxY = (int) bb.maxY, maxZ = (int) bb.maxZ;
+				for (int x = minX; x <= maxX; x += CUBE_LENGTH) {
+					for (int y = minY; y <= maxY; y += CUBE_LENGTH) {
+						for (int z = minZ; z <= maxZ; z += CUBE_LENGTH) {
 							if (iteratorPosition == null) {
 								areas.remove(areas.size() - 1);
 								return;
 							}
-							if (x == (int) bb.minX && y == (int) bb.minY && z == (int) bb.minZ) {
+							if (x == minX && y == minY && z == minZ) {
 								x = iteratorPosition.getX();
 								y = iteratorPosition.getY();
 								z = iteratorPosition.getZ();
 							}
 							BlockPos pos1 = new BlockPos(x, y, z);
-							BlockPos pos2 = new BlockPos(Math.min(x + CUBE_LENGTH - 1, bb.maxX), Math.min(y + CUBE_LENGTH - 1, bb.maxY), Math.min(z + CUBE_LENGTH - 1, bb.maxZ));
-							if (commandsExecuted >= (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
+							BlockPos pos2 = new BlockPos(Math.min(x + CUBE_LENGTH - 1, maxX), Math.min(y + CUBE_LENGTH - 1, maxY), Math.min(z + CUBE_LENGTH - 1, maxZ));
+							if (commandsExecuted >= threshold) {
 								iteratorPositions.put(bb, pos1);
 								return;
 							}
-							currentCount += (Math.max(pos1.getX(), pos2.getX()) - Math.min(pos1.getX(), pos2.getX()) + 1) * (Math.max(pos1.getY(), pos2.getY()) - Math.min(pos1.getY(), pos2.getY()) + 1) * (Math.max(pos1.getZ(), pos2.getZ()) - Math.min(pos1.getZ(), pos2.getZ()) + 1);
+							currentCount += (pos2.getX() - pos1.getX() + 1) * (pos2.getY() - pos1.getY() + 1) * (pos2.getZ() - pos1.getZ() + 1);
 							if (sendFillCommand(pos1, pos2, blockState)) {
 								commandsExecuted++;
 							}
@@ -94,12 +96,13 @@ public class HandlerFill extends Handler {
 	}
 
 	private boolean sendFillCommand(BlockPos pos1, BlockPos pos2, IBlockState blockState) {
-		final String name = blockState.getBlock().getRegistryName().toString();
-		final String metadata = Integer.toString(blockState.getBlock().getMetaFromState(blockState));
+		String name = blockState.getBlock().getRegistryName().toString();
+		String metadata = Integer.toString(blockState.getBlock().getMetaFromState(blockState));
 		if (fillPermission && world.isBlockLoaded(pos1) && world.isBlockLoaded(pos2) && Math.min(pos1.getY(), pos2.getY()) >= 0 && Math.max(pos1.getY(), pos2.getY()) < 256) {
 			last_execution = age;
 			world.sendPacketToServer(new CPacketChatMessage("/fill " + pos1.getX() + " " + pos1.getY() + " " + pos1.getZ() + " " + pos2.getX() + " " + pos2.getY() + " " + pos2.getZ() + " " + name + " " + metadata));
-			affectedBlocks += (Math.max(pos1.getX(), pos2.getX()) - Math.min(pos1.getX(), pos2.getX()) + 1) * (Math.max(pos1.getY(), pos2.getY()) - Math.min(pos1.getY(), pos2.getY()) + 1) * (Math.max(pos1.getZ(), pos2.getZ()) - Math.min(pos1.getZ(), pos2.getZ()) + 1);
+			affectedBlocks +=
+				(long) (pos2.getX() - pos1.getX() + 1) * (pos2.getY() - pos1.getY() + 1) * (pos2.getZ() - pos1.getZ() + 1);
 			return true;
 		} else {
 			return false;

@@ -34,24 +34,25 @@ public class HandlerReplaceItem extends Handler {
 	}
 
 	synchronized public void fillContainer(BlockPos pos, ItemStack stack) {
-		final int slotCount = ((IInventory) world.getTileEntity(pos)).getSizeInventory();
+		int slotCount = ((IInventory) world.getTileEntity(pos)).getSizeInventory();
 		containers.put(pos, new SimpleContainer(world.getBlockState(pos), stack, slotCount));
-		containerPositions.add(containerPositions.size(), pos);
+		containerPositions.add(pos);
 		totalCount += slotCount;
 		affectedBlocks++;
 	}
 
 	synchronized public void tick() {
 		super.tick();
-		if (containerPositions.size() > 0) {
+		if (!containerPositions.isEmpty()) {
 			final int handlerCount = ClientCommandHandler.instance.countHandlerType(HandlerReplaceItem.class);
+			final int threshold = COMMANDS_EXECUTED_PER_TICK / handlerCount;
 			int commandsExecuted = 0;
-			while (containerPositions.size() > 0 && commandsExecuted < (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
+			while (!containerPositions.isEmpty() && commandsExecuted < threshold) {
 				int i = containerPositions.size() - 1;
-				final BlockPos pos = containerPositions.get(i);
+				BlockPos pos = containerPositions.get(i);
 				SimpleContainer container = containers.get(pos);
-				for (int slot = 0; slot < container.slotCount; slot++) {
-					if (commandsExecuted >= (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
+				for (int slot = container.slot; slot < container.slotCount; slot++) {
+					if (commandsExecuted >= threshold) {
 						container.slot = slot;
 						containers.put(pos, container);
 						return;
@@ -79,13 +80,8 @@ public class HandlerReplaceItem extends Handler {
 	private boolean sendReplaceItemCommand(BlockPos pos, ItemStack stack, int slot) {
 		final String name = stack.getItem().getRegistryName().toString();
 		final int damage = stack.getItemDamage();
-		int count;
-		if (stack.getItem().getRegistryName().equals(Blocks.AIR.getRegistryName())) {
-			count = 1;
-		} else {
-			count = stack.getCount();
-		}
-		if (replaceitemPermission && world.isBlockLoaded(pos) && Math.min(pos.getY(), pos.getY()) >= 0 && Math.max(pos.getY(), pos.getY()) < 256) {
+		int count = stack.getItem().getRegistryName().equals(Blocks.AIR.getRegistryName()) ? 1 : stack.getCount();
+		if (replaceitemPermission && world.isBlockLoaded(pos) && pos.getY() >= 0 && pos.getY() < 256) {
 			last_execution = age;
 			world.sendPacketToServer(new CPacketChatMessage("/replaceitem block " + pos.getX() + " " + pos.getY() + " " + pos.getZ() + " slot.container." + slot + " " + name + " " + count + " " + damage));
 			return true;

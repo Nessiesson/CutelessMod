@@ -9,16 +9,21 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
+import java.util.Deque;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.ArrayDeque;
+import java.util.Set;
 
 public class HandlerSetBlock extends Handler {
 	private static final int COMMANDS_EXECUTED_PER_TICK = 512;
 	private static final int BLOCKS_PROCESSED_PER_TICK = 32768;
 	public static boolean setblockPermission = false;
-	private final List<BlockPos> blockPositions = new ArrayList<>();
+
+	private final Deque<BlockPos> blockPositions = new ArrayDeque<>();
+	private final Set<BlockPos> blockPositionSet = new HashSet<>();
+
 	private final Map<BlockPos, Integer> skippedPositions = new LinkedHashMap<>();
 	private final Map<BlockPos, IBlockState> blocksToPlace = new LinkedHashMap<>();
 
@@ -35,56 +40,61 @@ public class HandlerSetBlock extends Handler {
 
 	private static boolean placeLast(Block block) {
 		return (block instanceof BlockBed ||
-				block instanceof BlockBush ||
-				block instanceof BlockFlowerPot ||
-				block instanceof BlockFire ||
-				block instanceof BlockButton ||
-				block instanceof BlockSign ||
-				block instanceof BlockChorusFlower ||
-				block instanceof BlockCake ||
-				block instanceof BlockCarpet ||
-				block instanceof BlockRailBase ||
-				block instanceof BlockEndRod ||
-				block instanceof BlockLever ||
-				block instanceof BlockRedstoneWire ||
-				block instanceof BlockCactus ||
-				block instanceof BlockVine ||
-				block instanceof BlockSnow ||
-				block instanceof BlockTorch ||
-				block instanceof BlockLadder ||
-				block instanceof BlockBanner ||
-				block instanceof BlockDoor ||
-				block instanceof BlockRedstoneDiode ||
-				block instanceof BlockBasePressurePlate ||
-				block instanceof BlockPistonMoving ||
-				block instanceof BlockPistonExtension ||
-				block instanceof BlockReed ||
-				block instanceof BlockTripWireHook);
+			block instanceof BlockBush ||
+			block instanceof BlockFlowerPot ||
+			block instanceof BlockFire ||
+			block instanceof BlockButton ||
+			block instanceof BlockSign ||
+			block instanceof BlockChorusFlower ||
+			block instanceof BlockCake ||
+			block instanceof BlockCarpet ||
+			block instanceof BlockRailBase ||
+			block instanceof BlockEndRod ||
+			block instanceof BlockLever ||
+			block instanceof BlockRedstoneWire ||
+			block instanceof BlockCactus ||
+			block instanceof BlockVine ||
+			block instanceof BlockSnow ||
+			block instanceof BlockTorch ||
+			block instanceof BlockLadder ||
+			block instanceof BlockBanner ||
+			block instanceof BlockDoor ||
+			block instanceof BlockRedstoneDiode ||
+			block instanceof BlockBasePressurePlate ||
+			block instanceof BlockPistonMoving ||
+			block instanceof BlockPistonExtension ||
+			block instanceof BlockReed ||
+			block instanceof BlockTripWireHook);
 	}
 
 	synchronized public void setBlock(final BlockPos pos, final IBlockState blockState) {
-		if (!blockPositions.contains(pos)) {
+		if (blockPositionSet.add(pos)) {
 			totalCount++;
 			blocksToPlace.put(pos, blockState);
-			blockPositions.add(blockPositions.size(), pos);
+			blockPositions.addLast(pos);
 		}
 	}
 
 	synchronized public void setBlocks(Map<BlockPos, IBlockState> blockList) {
-		totalCount += blockList.size();
-		blocksToPlace.putAll(blockList);
-		blockPositions.addAll(blockPositions.size(), blockList.keySet());
+		for (Map.Entry<BlockPos, IBlockState> entry : blockList.entrySet()) {
+			BlockPos pos = entry.getKey();
+			if (blockPositionSet.add(pos)) {
+				totalCount++;
+				blocksToPlace.put(pos, entry.getValue());
+				blockPositions.addLast(pos);
+			}
+		}
 	}
 
 	synchronized public void tick() {
 		super.tick();
-		if (blockPositions.size() > 0) {
+		if (!blockPositions.isEmpty()) {
 			final int handlerCount = ClientCommandHandler.instance.countHandlerType(HandlerSetBlock.class);
 			int commandsExecuted = 0;
 			int counter = 0;
-			while (counter <= BLOCKS_PROCESSED_PER_TICK && blockPositions.size() > 0 && commandsExecuted < (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
-				final int i = blockPositions.size() - 1;
-				final BlockPos pos = blockPositions.get(i);
+			while (counter <= BLOCKS_PROCESSED_PER_TICK && !blockPositions.isEmpty() && commandsExecuted < (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
+				BlockPos pos = blockPositions.pollLast();
+				blockPositionSet.remove(pos);
 				IBlockState blockState = blocksToPlace.get(pos);
 				counter++;
 				currentCount++;
@@ -94,21 +104,18 @@ public class HandlerSetBlock extends Handler {
 						if (j > 0 && sendSetBlockCommand(pos, blockState)) {
 							commandsExecuted++;
 						}
-						blockPositions.remove(i);
-						blockPositions.add(0, pos);
+						blockPositions.addFirst(pos);
+						blockPositionSet.add(pos);
 						skippedPositions.put(pos, j + 1);
 					} else {
 						if (sendSetBlockCommand(pos, blockState)) {
 							commandsExecuted++;
 						}
 						blocksToPlace.remove(pos);
-						blockPositions.remove(i);
 						if (j > 0) {
 							skippedPositions.remove(pos);
 						}
 					}
-				} else {
-					blockPositions.remove(i);
 				}
 			}
 		} else if (age > 5) {
