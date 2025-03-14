@@ -9,6 +9,7 @@ import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
 import net.dugged.cutelessmod.clientcommands.HandlerUndo;
+import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
@@ -72,7 +73,8 @@ public class CommandWoolify  extends ClientCommand {
 				return;
 			}
 			IBlockState blockState = world.getBlockState(pos);
-			if (!blockState.isFullBlock()) {
+			if ((!blockState.isFullBlock() && !(blockState.getBlock() instanceof BlockLiquid))
+				|| blockState.getBlock().equals(Blocks.WOOL)) {
 				continue;
 			}
 			int metadata = getClosestDyeMetadata(blockState, world, pos);

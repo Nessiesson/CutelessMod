@@ -19,6 +19,15 @@ import net.minecraft.world.World;
 
 public class CommandErode extends ClientCommand {
 
+	private static final int[][] OFFSETS = new int[][]{
+		{1, 0, 0},
+		{-1, 0, 0},
+		{0, 1, 0},
+		{0, -1, 0},
+		{0, 0, 1},
+		{0, 0, -1}
+	};
+
 	@Override
 	public String getName() {
 		return "erode";
@@ -30,27 +39,19 @@ public class CommandErode extends ClientCommand {
 	}
 
 	public boolean isSurrounded(BlockPos pos, World world, WorldEditSelection selection) {
-		for (int x = -1; x <= 1; x++) {
-			for (int y = -1; y <= 1; y++) {
-				for (int z = -1; z <= 1; z++) {
-					if (x == 0 && y == 0 && z == 0) {
-						continue;
-					}
-					BlockPos pos1 = pos.add(x, y, z);
-					if (selection.minPos().getX() == pos1.getX() ||
-						selection.minPos().getY() == pos1.getY() ||
-						selection.minPos().getZ() == pos1.getZ() ||
-						selection.maxPos().getX() == pos1.getX() ||
-						selection.maxPos().getY() == pos1.getY() ||
-						selection.maxPos().getZ() == pos1.getZ()) {
-						continue;
-					}
-					if (!world.getBlockState(pos1).isFullBlock()) {
-						return false;
-					}
-				}
+		for (int[] offset : OFFSETS) {
+			BlockPos neighborPos = pos.add(offset[0], offset[1], offset[2]);
+			if (neighborPos.getX() < selection.minPos().getX()
+				|| neighborPos.getX() > selection.maxPos().getX() ||
+				neighborPos.getY() < selection.minPos().getY()
+				|| neighborPos.getY() > selection.maxPos().getY() ||
+				neighborPos.getZ() < selection.minPos().getZ()
+				|| neighborPos.getZ() > selection.maxPos().getZ()) {
+				continue;
 			}
-
+			if (!world.getBlockState(neighborPos).isFullBlock()) {
+				return false;
+			}
 		}
 		return true;
 	}

@@ -1,5 +1,12 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nullable;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
@@ -13,14 +20,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
-import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
-
 public class CommandReplace extends ClientCommand {
 	@Override
 	public String getName() {
@@ -32,7 +31,8 @@ public class CommandReplace extends ClientCommand {
 		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.replace.usage").getUnformattedText();
 	}
 
-	public void replaceBlocks(World world, WorldEditSelection selection, IBlockState stateToReplace, IBlockState replacementState, boolean ignoreBlockState) {
+	public void replaceBlocks(World world, WorldEditSelection selection, IBlockState stateToReplace,
+		IBlockState replacementState, boolean ignoreBlockState, boolean preserveMeta) {
 		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world, selection);
 		List<BlockPos> undoBlockPositions = new ArrayList<>();
 		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world, selection);
@@ -45,7 +45,14 @@ public class CommandReplace extends ClientCommand {
 			IBlockState blockState = world.getBlockState(pos);
 			if (blockState == stateToReplace || (ignoreBlockState && blockState.getBlock() == stateToReplace.getBlock())) {
 				undoBlockPositions.add(pos);
-				setBlockHandler.setBlock(pos, replacementState);
+				if (preserveMeta) {
+					int meta = blockState.getBlock().getMetaFromState(blockState);
+					IBlockState newReplacementState = replacementState.getBlock()
+						.getStateFromMeta(meta);
+					setBlockHandler.setBlock(pos, newReplacementState);
+				} else {
+					setBlockHandler.setBlock(pos, replacementState);
+				}
 			}
 		}
 		undoHandler.saveBlocks(undoBlockPositions);
@@ -60,11 +67,18 @@ public class CommandReplace extends ClientCommand {
 				final World world = sender.getEntityWorld();
 				Block block1 = getBlockByText(sender, args[0]);
 				boolean ignoreBlockState;
+				boolean preserveMeta;
 				IBlockState blockState1;
 				if (args[1].equals("*")) {
+					preserveMeta = false;
 					ignoreBlockState = true;
 					blockState1 = block1.getDefaultState();
+				} else if (args[1].equals("#")) {
+					ignoreBlockState = true;
+					preserveMeta = true;
+					blockState1 = block1.getDefaultState();
 				} else {
+					preserveMeta = false;
 					ignoreBlockState = false;
 					blockState1 = convertArgToBlockState(block1, args[1]);
 				}
@@ -75,7 +89,9 @@ public class CommandReplace extends ClientCommand {
 				} else {
 					blockState2 = block2.getDefaultState();
 				}
-				Thread t = new Thread(() -> replaceBlocks(world, selection, blockState1, blockState2, ignoreBlockState));
+				Thread t = new Thread(
+					() -> replaceBlocks(world, selection, blockState1, blockState2,
+						ignoreBlockState, preserveMeta));
 				t.start();
 				ClientCommandHandler.instance.threads.add(t);
 			} else {
