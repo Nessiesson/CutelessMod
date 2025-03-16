@@ -44,7 +44,7 @@ public abstract class MixinRenderGlobal {
 
 	@Inject(method = "isOutlineActive", at = @At("HEAD"), cancellable = true)
 	private void highlightAllEntitites(Entity entityIn, Entity viewer, ICamera camera, CallbackInfoReturnable<Boolean> cir) {
-		if (this.mc.player.isSpectator() && CutelessMod.highlightEntities.isKeyDown()) {
+		if (CutelessMod.highlightEntities) {
 			cir.setReturnValue((entityIn instanceof EntityLivingBase || entityIn instanceof EntityMinecart) && (entityIn.ignoreFrustumCheck || camera.isBoundingBoxInFrustum(entityIn.getEntityBoundingBox()) || entityIn.isRidingOrBeingRiddenBy(this.mc.player)));
 		}
 	}

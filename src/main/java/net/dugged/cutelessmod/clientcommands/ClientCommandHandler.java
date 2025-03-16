@@ -71,6 +71,8 @@ public class ClientCommandHandler extends CommandHandler {
 		instance.registerCommand(new CommandCone());
 		instance.registerCommand(new CommandWoolify());
 		instance.registerCommand(new CommandErode());
+		instance.registerCommand(new CommandStackDiagonal());
+		instance.registerCommand(new CommandSwap());
 
 		WorldEdit.brushes.add(new BrushIceSpike());
 		WorldEdit.brushes.add(new BrushRemoveColumn());
@@ -153,7 +155,7 @@ public class ClientCommandHandler extends CommandHandler {
 
 	public float getProgress() {
 		float progress = 0;
-		if (handlers.size() > 0) {
+		if (!handlers.isEmpty()) {
 			for (Handler handler : handlers) {
 				if (handler.isWorldEditHandler && handler.running) {
 					progress += handler.getProgress();
@@ -165,7 +167,7 @@ public class ClientCommandHandler extends CommandHandler {
 			} else {
 				return -1;
 			}
-		} else if (threads.size() > 0) {
+		} else if (!threads.isEmpty()) {
 			return -1;
 		} else return 0;
 	}
@@ -176,7 +178,7 @@ public class ClientCommandHandler extends CommandHandler {
 
 	public void tick() {
 		WorldEditRenderer.update();
-		if (handlers.size() > 0 && Arrays.stream(CutelessMod.receivedPackets).sum() <= PACKET_LIMIT && Arrays.stream(CutelessMod.sendPackets).sum() <= PACKET_LIMIT) {
+		if (!handlers.isEmpty() && Arrays.stream(CutelessMod.receivedPackets).sum() <= PACKET_LIMIT && Arrays.stream(CutelessMod.sendPackets).sum() <= PACKET_LIMIT) {
 			if (mc.player == null) {
 				handlers.clear();
 			}

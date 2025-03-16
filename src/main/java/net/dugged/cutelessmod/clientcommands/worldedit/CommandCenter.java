@@ -1,5 +1,9 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nullable;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
@@ -13,12 +17,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 public class CommandCenter extends ClientCommand {
+
 	@Override
 	public String getName() {
 		return "center";
@@ -26,13 +26,15 @@ public class CommandCenter extends ClientCommand {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.center.usage").getUnformattedText();
+		return new TextComponentTranslation(
+			"text.cutelessmod.clientcommands.worldEdit.center.usage").getUnformattedText();
 	}
 
 	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args)
+		throws CommandException {
 		if (WorldEdit.hasCurrentSelection()) {
-			if (args.length >= 0 && args.length <= 2) {
+			if (args.length <= 2) {
 				WorldEditSelection selection = WorldEdit.getCurrentSelection();
 				Block block = Blocks.GLOWSTONE;
 				if (args.length > 0) {
@@ -42,11 +44,15 @@ public class CommandCenter extends ClientCommand {
 				if (args.length >= 2) {
 					blockState = convertArgToBlockState(block, args[1]);
 				}
-				HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, sender.getEntityWorld(), selection);
+				HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(
+					HandlerSetBlock.class, sender.getEntityWorld(), selection);
 				List<BlockPos> undoBlockPositions = new ArrayList<>();
-				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, sender.getEntityWorld(), selection);
+				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
+					HandlerUndo.class, sender.getEntityWorld(), selection);
 				undoHandler.setHandler(setBlockHandler);
-				BlockPos center = new BlockPos(selection.minPos().getX() + selection.widthX() / 2, selection.minPos().getY() + selection.widthY() / 2, selection.minPos().getZ() + selection.widthZ() / 2);
+				BlockPos center = new BlockPos(selection.minPos().getX() + selection.widthX() / 2,
+					selection.minPos().getY() + selection.widthY() / 2,
+					selection.minPos().getZ() + selection.widthZ() / 2);
 				setBlockHandler.setBlock(center, blockState);
 				undoBlockPositions.add(center);
 				boolean x = selection.widthX() % 2 == 0;
@@ -85,11 +91,13 @@ public class CommandCenter extends ClientCommand {
 				WorldEdit.sendMessage(getUsage(sender));
 			}
 		} else {
-			WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
+			WorldEdit.sendMessage(new TextComponentTranslation(
+				"text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
 		}
 	}
 
-	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
+	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
+		String[] args, @Nullable BlockPos pos) {
 		if (args.length == 1) {
 			return getListOfStringsMatchingLastWord(args, Block.REGISTRY.getKeys());
 		} else {

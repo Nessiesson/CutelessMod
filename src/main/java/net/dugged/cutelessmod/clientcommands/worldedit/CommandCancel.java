@@ -9,6 +9,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentTranslation;
 
 public class CommandCancel extends ClientCommand {
+
 	public CommandCancel() {
 		creativeOnly = false;
 	}
@@ -20,11 +21,13 @@ public class CommandCancel extends ClientCommand {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.cancel.usage").getUnformattedText();
+		return new TextComponentTranslation(
+			"text.cutelessmod.clientcommands.worldEdit.cancel.usage").getUnformattedText();
 	}
 
 	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args)
+		throws CommandException {
 		if (args.length == 0) {
 			for (Handler handler : ClientCommandHandler.instance.handlers) {
 				handler.finished = true;
@@ -32,7 +35,8 @@ public class CommandCancel extends ClientCommand {
 			for (Thread thread : ClientCommandHandler.instance.threads) {
 				thread.interrupt();
 			}
-			WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.cancel.cancelledAll"));
+			WorldEdit.sendMessage(new TextComponentTranslation(
+				"text.cutelessmod.clientcommands.worldEdit.cancel.cancelledAll"));
 		} else {
 			WorldEdit.sendMessage(getUsage(sender));
 		}

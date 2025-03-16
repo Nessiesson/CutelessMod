@@ -1,16 +1,16 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
+
+import java.awt.Color;
+import java.util.HashMap;
 import net.minecraft.item.Item;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
-import java.awt.*;
-import java.util.HashMap;
-
-import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
-import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
-
 public class WorldEditSelection {
+
 	private final HashMap<Position, BlockPos> positions = new HashMap<>();
 	private final SelectionType type;
 
@@ -39,12 +39,18 @@ public class WorldEditSelection {
 	}
 
 	public void setPos(Position pos, BlockPos blockPos) {
+		if (blockPos != null) {
+			int cappedY = Math.max(0, Math.min(blockPos.getY(), 255));
+			blockPos = new BlockPos(blockPos.getX(), cappedY, blockPos.getZ());
+		}
 		positions.put(pos, blockPos);
-		WorldEdit.selections.put(type, this); // Update position
+		WorldEdit.selections.put(type, this);
 	}
 
+
 	public boolean isCompleted() {
-		return positions.containsKey(A) && positions.get(A) != null && positions.containsKey(B) && positions.get(B) != null;
+		return positions.containsKey(A) && positions.get(A) != null && positions.containsKey(B)
+			&& positions.get(B) != null;
 	}
 
 	public AxisAlignedBB getBB() {
@@ -72,7 +78,7 @@ public class WorldEditSelection {
 	}
 
 	public long volume() {
-		return widthX() * widthY() * widthZ();
+		return (long) widthX() * widthY() * widthZ();
 	}
 
 	public boolean isOneByOne() {

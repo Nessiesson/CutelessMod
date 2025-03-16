@@ -1,12 +1,12 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
+import java.util.ArrayList;
 import net.minecraft.block.material.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-
 public class BrushRemoveColumn extends BrushBase {
+
 	@Override
 	public String getName() {
 		return "removeColumn";

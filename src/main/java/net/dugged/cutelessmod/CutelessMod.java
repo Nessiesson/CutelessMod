@@ -79,7 +79,7 @@ public class CutelessMod {
 	public static final Logger LOGGER = LogManager.getLogger(Reference.NAME);
 	public static final KeyBinding carpetFaceIntoKey = new KeyBinding("key.cutelessmod.face_into", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	public static final KeyBinding carpetFlipFaceKey = new KeyBinding("key.cutelessmod.flip_face", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
-	public static final KeyBinding highlightEntities = new KeyBinding("key.cutelessmod.highlight_entities", KeyConflictContext.IN_GAME, Keyboard.KEY_C, Reference.NAME);
+	public static final KeyBinding highlightEntitiesKey = new KeyBinding("key.cutelessmod.highlight_entities", KeyConflictContext.IN_GAME, Keyboard.KEY_C, Reference.NAME);
 	private static final KeyBinding emptyScreenKey = new KeyBinding("key.cutelessmod.emptyscreen", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	private static final KeyBinding gammaHaxKey = new KeyBinding("key.cutelessmod.gammahax", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	private static final KeyBinding reloadAudioEngineKey = new KeyBinding("key.cutelessmod.reload_audio", KeyConflictContext.IN_GAME, Keyboard.KEY_B, Reference.NAME);
@@ -116,6 +116,7 @@ public class CutelessMod {
 	public static String lastCommand = "";
 	public static GuiCompass guiCompass = new GuiCompass(mc);
 	public static boolean enableSounds = CutelessMod.shouldHaveSounds();
+	public static boolean highlightEntities = false;
 	private final CarpetPluginChannel carpetPluginChannel = new CarpetPluginChannel();
 	private String originalTitle;
 	private long swordCooldown = 0;
@@ -144,7 +145,7 @@ public class CutelessMod {
 
 		ClientRegistry.registerKeyBinding(carpetFaceIntoKey);
 		ClientRegistry.registerKeyBinding(carpetFlipFaceKey);
-		ClientRegistry.registerKeyBinding(highlightEntities);
+		ClientRegistry.registerKeyBinding(highlightEntitiesKey);
 		ClientRegistry.registerKeyBinding(emptyScreenKey);
 		ClientRegistry.registerKeyBinding(gammaHaxKey);
 		ClientRegistry.registerKeyBinding(reloadAudioEngineKey);
@@ -258,6 +259,10 @@ public class CutelessMod {
 
 		if(putRandomTickAreaKey.isPressed()) {
 			RandomTickHelper.updatePosition(mc.player);
+		}
+
+		if(highlightEntitiesKey.isPressed()) {
+			highlightEntities = !highlightEntities;
 		}
 
 		if (resetItemCounterKey.isPressed()) {

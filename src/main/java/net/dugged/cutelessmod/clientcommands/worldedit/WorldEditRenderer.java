@@ -1,5 +1,10 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
+
+import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
@@ -8,13 +13,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.opengl.GL11;
 
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
-import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
-
 public class WorldEditRenderer {
+
 	public static CopyOnWriteArrayList<RenderedBB> bbToRender = new CopyOnWriteArrayList<>();
 
 	public static void render(float partialTicks) {
@@ -34,17 +34,24 @@ public class WorldEditRenderer {
 			if (selection.getPos(A) != null | selection.getPos(B) != null) {
 				GlStateManager.depthFunc(GL11.GL_ALWAYS);
 				if (selection.getPos(A) != null) {
-					AxisAlignedBB posBB = new AxisAlignedBB(selection.getPos(A)).offset(-d1, -d2, -d3);
-					RenderGlobal.drawSelectionBoundingBox(posBB, A.getColor().getRed() / 255.0F, A.getColor().getGreen() / 255.0F, A.getColor().getBlue() / 255.0F, 0.6F);
+					AxisAlignedBB posBB = new AxisAlignedBB(selection.getPos(A)).offset(-d1, -d2,
+						-d3);
+					RenderGlobal.drawSelectionBoundingBox(posBB, A.getColor().getRed() / 255.0F,
+						A.getColor().getGreen() / 255.0F, A.getColor().getBlue() / 255.0F, 0.6F);
 				}
 				if (selection.getPos(B) != null) {
-					AxisAlignedBB posBB = new AxisAlignedBB(selection.getPos(B)).offset(-d1, -d2, -d3);
-					RenderGlobal.drawSelectionBoundingBox(posBB, B.getColor().getRed() / 255.0F, B.getColor().getGreen() / 255.0F, B.getColor().getBlue() / 255.0F, 0.6F);
+					AxisAlignedBB posBB = new AxisAlignedBB(selection.getPos(B)).offset(-d1, -d2,
+						-d3);
+					RenderGlobal.drawSelectionBoundingBox(posBB, B.getColor().getRed() / 255.0F,
+						B.getColor().getGreen() / 255.0F, B.getColor().getBlue() / 255.0F, 0.6F);
 				}
 				GlStateManager.depthFunc(GL11.GL_LEQUAL);
 				if (selection.isCompleted()) {
-					AxisAlignedBB posBB = selection.getBB().offset(-d1, -d2, -d3).expand(1, 1, 1).grow(0.0075F);
-					RenderGlobal.drawSelectionBoundingBox(posBB, type.getColor().getRed() / 255.0F, type.getColor().getGreen() / 255.0F, type.getColor().getBlue() / 255.0F, 0.6F);
+					AxisAlignedBB posBB = selection.getBB().offset(-d1, -d2, -d3).expand(1, 1, 1)
+						.grow(0.0075F);
+					RenderGlobal.drawSelectionBoundingBox(posBB, type.getColor().getRed() / 255.0F,
+						type.getColor().getGreen() / 255.0F, type.getColor().getBlue() / 255.0F,
+						0.6F);
 				}
 			}
 		}
@@ -52,7 +59,8 @@ public class WorldEditRenderer {
 		// TODO: More visualizations
 		for (RenderedBB bb : bbToRender) {
 			System.out.println(bb.getA());
-			RenderGlobal.drawSelectionBoundingBox(bb.offset(-d1, -d2, -d3), bb.getR() / 255.0F, bb.getG() / 255.0F, bb.getB() / 255.0F, bb.getA());
+			RenderGlobal.drawSelectionBoundingBox(bb.offset(-d1, -d2, -d3), bb.getR() / 255.0F,
+				bb.getG() / 255.0F, bb.getB() / 255.0F, bb.getA());
 		}
 		GlStateManager.glLineWidth(1F);
 		GlStateManager.enableTexture2D();
@@ -61,13 +69,14 @@ public class WorldEditRenderer {
 	}
 
 	public static void update() {
-		bbToRender.removeIf(pos -> pos.isDone());
+		bbToRender.removeIf(RenderedBB::isDone);
 		for (RenderedBB bb : bbToRender) {
 			bb.update();
 		}
 	}
 
 	static class RenderedBB extends AxisAlignedBB {
+
 		private final int timer;
 		private final int r;
 		private final int g;

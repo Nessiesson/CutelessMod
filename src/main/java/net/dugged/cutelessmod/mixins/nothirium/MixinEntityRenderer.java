@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinEntityRenderer {
 	@Inject(method = "shouldRenderOutlines(Lnet/minecraft/entity/Entity;)Z", remap = false, at = @At("HEAD"), cancellable = true)
 	private void highlightAllEntitites(final Entity entity, final CallbackInfoReturnable<Boolean> cir) {
-		if (Minecraft.getMinecraft().player.isSpectator() && CutelessMod.highlightEntities.isKeyDown()) {
+		if (CutelessMod.highlightEntities) {
 			cir.setReturnValue(entity instanceof EntityLivingBase || entity instanceof EntityMinecart);
 		}
 	}

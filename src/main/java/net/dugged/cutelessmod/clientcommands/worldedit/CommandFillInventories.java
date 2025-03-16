@@ -1,5 +1,11 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
+
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nullable;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerReplaceItem;
@@ -16,14 +22,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
-
-import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
-import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
-
 public class CommandFillInventories extends ClientCommand {
+
 	@Override
 	public String getName() {
 		return "fillinventories";
@@ -31,24 +31,30 @@ public class CommandFillInventories extends ClientCommand {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.fillinventories.usage").getUnformattedText();
+		return new TextComponentTranslation(
+			"text.cutelessmod.clientcommands.worldEdit.fillinventories.usage").getUnformattedText();
 	}
 
 	private void fillInventories(World world, WorldEditSelection selection, ItemStack stack) {
-		HandlerReplaceItem handler = (HandlerReplaceItem) ClientCommandHandler.instance.createHandler(HandlerReplaceItem.class, world, selection);
-		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.getPos(A), selection.getPos(B))) {
+		HandlerReplaceItem handler = (HandlerReplaceItem) ClientCommandHandler.instance.createHandler(
+			HandlerReplaceItem.class, world, selection);
+		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.getPos(A),
+			selection.getPos(B))) {
 			if (Thread.interrupted()) {
 				return;
 			}
 			IBlockState blockState = world.getBlockState(pos);
-			if (blockState.getBlock() instanceof BlockDispenser || blockState.getBlock() instanceof BlockChest || blockState.getBlock() instanceof BlockHopper) {
+			if (blockState.getBlock() instanceof BlockDispenser
+				|| blockState.getBlock() instanceof BlockChest
+				|| blockState.getBlock() instanceof BlockHopper) {
 				handler.fillContainer(pos, stack);
 			}
 		}
 	}
 
 	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args)
+		throws CommandException {
 		if (WorldEdit.hasCurrentSelection()) {
 			if (args.length == 2 || args.length == 3) {
 				WorldEditSelection selection = WorldEdit.getCurrentSelection();
@@ -67,12 +73,13 @@ public class CommandFillInventories extends ClientCommand {
 				WorldEdit.sendMessage(getUsage(sender));
 			}
 		} else {
-			WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
+			WorldEdit.sendMessage(new TextComponentTranslation(
+				"text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
 		}
 	}
 
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[]
-			args, @Nullable BlockPos pos) {
+		args, @Nullable BlockPos pos) {
 		if (args.length == 1) {
 			return getListOfStringsMatchingLastWord(args, Item.REGISTRY.getKeys());
 		} else {

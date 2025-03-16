@@ -35,7 +35,8 @@ public class CommandErode extends ClientCommand {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.erode.usage").getUnformattedText();
+		return new TextComponentTranslation(
+			"text.cutelessmod.clientcommands.worldEdit.erode.usage").getUnformattedText();
 	}
 
 	public boolean isSurrounded(BlockPos pos, World world, WorldEditSelection selection) {
@@ -57,13 +58,16 @@ public class CommandErode extends ClientCommand {
 	}
 
 	public void erode(World world, WorldEditSelection selection) {
-		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world, selection);
+		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(
+			HandlerSetBlock.class, world, selection);
 		setBlockHandler.running = false;
 		List<BlockPos> undoBlockPositions = new ArrayList<>();
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world, selection);
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
+			HandlerUndo.class, world, selection);
 		undoHandler.setHandler(setBlockHandler);
 		undoHandler.running = false;
-		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.getPos(A), selection.getPos(B))) {
+		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.getPos(A),
+			selection.getPos(B))) {
 			if (Thread.interrupted()) {
 				return;
 			}
@@ -88,7 +92,8 @@ public class CommandErode extends ClientCommand {
 				t.start();
 				ClientCommandHandler.instance.threads.add(t);
 			} else {
-				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
+				WorldEdit.sendMessage(new TextComponentTranslation(
+					"text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
 			}
 		} else {
 			WorldEdit.sendMessage(getUsage(sender));

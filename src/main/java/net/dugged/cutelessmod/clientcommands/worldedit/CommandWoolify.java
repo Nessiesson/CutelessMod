@@ -22,7 +22,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class CommandWoolify  extends ClientCommand {
+public class CommandWoolify extends ClientCommand {
 
 	@Override
 	public String getName() {
@@ -31,7 +31,8 @@ public class CommandWoolify  extends ClientCommand {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.size.usage").getUnformattedText();
+		return new TextComponentTranslation(
+			"text.cutelessmod.clientcommands.worldEdit.size.usage").getUnformattedText();
 	}
 
 	public static int getClosestDyeMetadata(IBlockState state, IBlockAccess world, BlockPos pos) {
@@ -63,12 +64,15 @@ public class CommandWoolify  extends ClientCommand {
 
 
 	public void woolify(World world, WorldEditSelection selection) {
-		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world, selection);
+		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(
+			HandlerSetBlock.class, world, selection);
 		List<BlockPos> undoBlockPositions = new ArrayList<>();
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world, selection);
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
+			HandlerUndo.class, world, selection);
 		undoHandler.setHandler(setBlockHandler);
 		undoHandler.running = false;
-		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.getPos(A), selection.getPos(B))) {
+		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.getPos(A),
+			selection.getPos(B))) {
 			if (Thread.interrupted()) {
 				return;
 			}
@@ -96,7 +100,8 @@ public class CommandWoolify  extends ClientCommand {
 				t.start();
 				ClientCommandHandler.instance.threads.add(t);
 			} else {
-				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
+				WorldEdit.sendMessage(new TextComponentTranslation(
+					"text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
 			}
 		} else {
 			WorldEdit.sendMessage(getUsage(sender));

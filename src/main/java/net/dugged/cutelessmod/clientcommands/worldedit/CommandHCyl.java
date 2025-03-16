@@ -1,5 +1,10 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
+
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nullable;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerFill;
@@ -13,13 +18,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
-import java.util.Collections;
-import java.util.List;
-
-import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
-
 public class CommandHCyl extends ClientCommand {
+
 	@Override
 	public String getName() {
 		return "hcyl";
@@ -27,12 +27,16 @@ public class CommandHCyl extends ClientCommand {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.hcyl.usage").getUnformattedText();
+		return new TextComponentTranslation(
+			"text.cutelessmod.clientcommands.worldEdit.hcyl.usage").getUnformattedText();
 	}
 
-	private void generateHCyl(World world, WorldEditSelection selection, BlockPos center, IBlockState blockState, double radius, int height) {
-		HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(HandlerFill.class, world, selection);
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world, selection);
+	private void generateHCyl(World world, WorldEditSelection selection, BlockPos center,
+		IBlockState blockState, double radius, int height) {
+		HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(
+			HandlerFill.class, world, selection);
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
+			HandlerUndo.class, world, selection);
 		undoHandler.setHandler(fillHandler);
 		if (height > world.getHeight() - center.getY()) {
 			height = world.getHeight() - center.getY();
@@ -43,15 +47,40 @@ public class CommandHCyl extends ClientCommand {
 					return;
 				}
 				if (WorldEdit.checkCircle(x, z, radius)) {
-					if (!WorldEdit.checkCircle(x + 1, z, radius) || !WorldEdit.checkCircle(x, z + 1, radius)) {
-						undoHandler.saveBox(new BlockPos(center.getX() + x, center.getY(), center.getZ() + z), new BlockPos(center.getX() + x, center.getY() + height - 1, center.getZ() + z));
-						fillHandler.fill(new BlockPos(center.getX() + x, center.getY(), center.getZ() + z), new BlockPos(center.getX() + x, center.getY() + height - 1, center.getZ() + z), blockState);
-						undoHandler.saveBox(new BlockPos(center.getX() + x, center.getY(), center.getZ() - z), new BlockPos(center.getX() + x, center.getY() + height - 1, center.getZ() - z));
-						fillHandler.fill(new BlockPos(center.getX() + x, center.getY(), center.getZ() - z), new BlockPos(center.getX() + x, center.getY() + height - 1, center.getZ() - z), blockState);
-						undoHandler.saveBox(new BlockPos(center.getX() - x, center.getY(), center.getZ() + z), new BlockPos(center.getX() - x, center.getY() + height - 1, center.getZ() + z));
-						fillHandler.fill(new BlockPos(center.getX() - x, center.getY(), center.getZ() + z), new BlockPos(center.getX() - x, center.getY() + height - 1, center.getZ() + z), blockState);
-						undoHandler.saveBox(new BlockPos(center.getX() - x, center.getY(), center.getZ() - z), new BlockPos(center.getX() - x, center.getY() + height - 1, center.getZ() - z));
-						fillHandler.fill(new BlockPos(center.getX() - x, center.getY(), center.getZ() - z), new BlockPos(center.getX() - x, center.getY() + height - 1, center.getZ() - z), blockState);
+					if (!WorldEdit.checkCircle(x + 1, z, radius) || !WorldEdit.checkCircle(x, z + 1,
+						radius)) {
+						undoHandler.saveBox(
+							new BlockPos(center.getX() + x, center.getY(), center.getZ() + z),
+							new BlockPos(center.getX() + x, center.getY() + height - 1,
+								center.getZ() + z));
+						fillHandler.fill(
+							new BlockPos(center.getX() + x, center.getY(), center.getZ() + z),
+							new BlockPos(center.getX() + x, center.getY() + height - 1,
+								center.getZ() + z), blockState);
+						undoHandler.saveBox(
+							new BlockPos(center.getX() + x, center.getY(), center.getZ() - z),
+							new BlockPos(center.getX() + x, center.getY() + height - 1,
+								center.getZ() - z));
+						fillHandler.fill(
+							new BlockPos(center.getX() + x, center.getY(), center.getZ() - z),
+							new BlockPos(center.getX() + x, center.getY() + height - 1,
+								center.getZ() - z), blockState);
+						undoHandler.saveBox(
+							new BlockPos(center.getX() - x, center.getY(), center.getZ() + z),
+							new BlockPos(center.getX() - x, center.getY() + height - 1,
+								center.getZ() + z));
+						fillHandler.fill(
+							new BlockPos(center.getX() - x, center.getY(), center.getZ() + z),
+							new BlockPos(center.getX() - x, center.getY() + height - 1,
+								center.getZ() + z), blockState);
+						undoHandler.saveBox(
+							new BlockPos(center.getX() - x, center.getY(), center.getZ() - z),
+							new BlockPos(center.getX() - x, center.getY() + height - 1,
+								center.getZ() - z));
+						fillHandler.fill(
+							new BlockPos(center.getX() - x, center.getY(), center.getZ() - z),
+							new BlockPos(center.getX() - x, center.getY() + height - 1,
+								center.getZ() - z), blockState);
 					}
 				}
 			}
@@ -59,7 +88,8 @@ public class CommandHCyl extends ClientCommand {
 	}
 
 	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args)
+		throws CommandException {
 		if (args.length >= 3 && args.length <= 4) {
 			if (WorldEdit.hasCurrentSelection()) {
 				WorldEditSelection selection = WorldEdit.getCurrentSelection();
@@ -74,21 +104,26 @@ public class CommandHCyl extends ClientCommand {
 					} else {
 						height = 1;
 					}
-					Thread t = new Thread(() -> generateHCyl(world, selection, selection.getPos(A), blockState, radius, height));
+					Thread t = new Thread(
+						() -> generateHCyl(world, selection, selection.getPos(A), blockState,
+							radius, height));
 					t.start();
 					ClientCommandHandler.instance.threads.add(t);
 				} else {
-					WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noOneByOneSelected"));
+					WorldEdit.sendMessage(new TextComponentTranslation(
+						"text.cutelessmod.clientcommands.worldEdit.noOneByOneSelected"));
 				}
 			} else {
-				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
+				WorldEdit.sendMessage(new TextComponentTranslation(
+					"text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
 			}
 		} else {
 			WorldEdit.sendMessage(getUsage(sender));
 		}
 	}
 
-	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
+	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
+		String[] args, @Nullable BlockPos pos) {
 		if (args.length == 1) {
 			return getListOfStringsMatchingLastWord(args, Block.REGISTRY.getKeys());
 		} else {

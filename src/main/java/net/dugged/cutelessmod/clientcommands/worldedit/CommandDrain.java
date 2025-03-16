@@ -1,5 +1,9 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
@@ -14,12 +18,8 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 public class CommandDrain extends ClientCommand {
+
 	@Override
 	public String getName() {
 		return "drain";
@@ -27,22 +27,24 @@ public class CommandDrain extends ClientCommand {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.drain.usage").getUnformattedText();
+		return new TextComponentTranslation(
+			"text.cutelessmod.clientcommands.worldEdit.drain.usage").getUnformattedText();
 	}
 
 	private void drainBody(World world, BlockPos startPos, int radius) {
-		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world, null);
+		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(
+			HandlerSetBlock.class, world, null);
 		List<BlockPos> undoBlockPositions = new ArrayList<>();
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world, null);
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
+			HandlerUndo.class, world, null);
 		undoHandler.setHandler(setBlockHandler);
 		undoHandler.running = false;
 		Map<ChunkPos, BlockPos> chunkMap = new HashMap<>();
 		List<ChunkPos> chunkList = new ArrayList<>();
-		List<BlockPos> blockList = new ArrayList<>();
 		chunkList.add(world.getChunk(startPos).getPos());
 		chunkMap.put(world.getChunk(startPos).getPos(), startPos);
 		BlockPos pos1;
-		while (chunkList.size() > 0) {
+		while (!chunkList.isEmpty()) {
 			if (Thread.interrupted()) {
 				return;
 			}
@@ -52,10 +54,12 @@ public class CommandDrain extends ClientCommand {
 			List<BlockPos> blocksToCheck = new ArrayList<>();
 			blocksToCheck.add(chunkStartPos);
 			checkedBlocks.add(chunkStartPos);
-			while (blocksToCheck.size() > 0) {
+			while (!blocksToCheck.isEmpty()) {
 				BlockPos pos = blocksToCheck.get(0);
 				pos1 = pos.up();
-				if (world.getBlockState(pos1).getBlock() instanceof BlockLiquid && WorldEdit.checkCircle(pos1.getX() - startPos.getX(), pos1.getZ() - startPos.getZ(), radius)) {
+				if (world.getBlockState(pos1).getBlock() instanceof BlockLiquid
+					&& WorldEdit.checkCircle(pos1.getX() - startPos.getX(),
+					pos1.getZ() - startPos.getZ(), radius)) {
 					ChunkPos chunkPos1 = world.getChunk(pos1).getPos();
 					if (chunkPos1.equals(chunkPos)) {
 						if (!checkedBlocks.contains(pos1)) {
@@ -70,7 +74,9 @@ public class CommandDrain extends ClientCommand {
 					}
 				}
 				pos1 = pos.down();
-				if (world.getBlockState(pos1).getBlock() instanceof BlockLiquid && WorldEdit.checkCircle(pos1.getX() - startPos.getX(), pos1.getZ() - startPos.getZ(), radius)) {
+				if (world.getBlockState(pos1).getBlock() instanceof BlockLiquid
+					&& WorldEdit.checkCircle(pos1.getX() - startPos.getX(),
+					pos1.getZ() - startPos.getZ(), radius)) {
 					ChunkPos chunkPos1 = world.getChunk(pos1).getPos();
 					if (chunkPos1.equals(chunkPos)) {
 						if (!checkedBlocks.contains(pos1)) {
@@ -85,7 +91,9 @@ public class CommandDrain extends ClientCommand {
 					}
 				}
 				pos1 = pos.north();
-				if (world.getBlockState(pos1).getBlock() instanceof BlockLiquid && WorldEdit.checkCircle(pos1.getX() - startPos.getX(), pos1.getZ() - startPos.getZ(), radius)) {
+				if (world.getBlockState(pos1).getBlock() instanceof BlockLiquid
+					&& WorldEdit.checkCircle(pos1.getX() - startPos.getX(),
+					pos1.getZ() - startPos.getZ(), radius)) {
 					ChunkPos chunkPos1 = world.getChunk(pos1).getPos();
 					if (chunkPos1.equals(chunkPos)) {
 						if (!checkedBlocks.contains(pos1)) {
@@ -102,7 +110,9 @@ public class CommandDrain extends ClientCommand {
 					}
 				}
 				pos1 = pos.east();
-				if (world.getBlockState(pos1).getBlock() instanceof BlockLiquid && WorldEdit.checkCircle(pos1.getX() - startPos.getX(), pos1.getZ() - startPos.getZ(), radius)) {
+				if (world.getBlockState(pos1).getBlock() instanceof BlockLiquid
+					&& WorldEdit.checkCircle(pos1.getX() - startPos.getX(),
+					pos1.getZ() - startPos.getZ(), radius)) {
 					ChunkPos chunkPos1 = world.getChunk(pos1).getPos();
 					if (chunkPos1.equals(chunkPos)) {
 						if (!checkedBlocks.contains(pos1)) {
@@ -119,7 +129,9 @@ public class CommandDrain extends ClientCommand {
 					}
 				}
 				pos1 = pos.south();
-				if (world.getBlockState(pos1).getBlock() instanceof BlockLiquid && WorldEdit.checkCircle(pos1.getX() - startPos.getX(), pos1.getZ() - startPos.getZ(), radius)) {
+				if (world.getBlockState(pos1).getBlock() instanceof BlockLiquid
+					&& WorldEdit.checkCircle(pos1.getX() - startPos.getX(),
+					pos1.getZ() - startPos.getZ(), radius)) {
 					ChunkPos chunkPos1 = world.getChunk(pos1).getPos();
 					if (chunkPos1.equals(chunkPos)) {
 						if (!checkedBlocks.contains(pos1)) {
@@ -136,7 +148,9 @@ public class CommandDrain extends ClientCommand {
 					}
 				}
 				pos1 = pos.west();
-				if (world.getBlockState(pos1).getBlock() instanceof BlockLiquid && WorldEdit.checkCircle(pos1.getX() - startPos.getX(), pos1.getZ() - startPos.getZ(), radius)) {
+				if (world.getBlockState(pos1).getBlock() instanceof BlockLiquid
+					&& WorldEdit.checkCircle(pos1.getX() - startPos.getX(),
+					pos1.getZ() - startPos.getZ(), radius)) {
 					ChunkPos chunkPos1 = world.getChunk(pos1).getPos();
 					if (chunkPos1.equals(chunkPos)) {
 						if (!checkedBlocks.contains(pos1)) {
@@ -155,7 +169,6 @@ public class CommandDrain extends ClientCommand {
 				blocksToCheck.remove(0);
 				undoBlockPositions.add(pos);
 				setBlockHandler.setBlock(pos, Blocks.AIR.getDefaultState());
-				blockList.add(pos);
 			}
 			chunkList.remove(0);
 		}
@@ -164,7 +177,8 @@ public class CommandDrain extends ClientCommand {
 	}
 
 	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args)
+		throws CommandException {
 		if (args.length == 0 || args.length == 1) {
 			World world = sender.getEntityWorld();
 			BlockPos pos = WorldEdit.playerPos();
@@ -179,10 +193,12 @@ public class CommandDrain extends ClientCommand {
 				t.start();
 				ClientCommandHandler.instance.threads.add(t);
 			} else {
-				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.drain.notInWater"));
+				WorldEdit.sendMessage(new TextComponentTranslation(
+					"text.cutelessmod.clientcommands.worldEdit.drain.notInWater"));
 			}
 		} else {
-			WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.drain.usage"));
+			WorldEdit.sendMessage(new TextComponentTranslation(
+				"text.cutelessmod.clientcommands.worldEdit.drain.usage"));
 		}
 	}
 }

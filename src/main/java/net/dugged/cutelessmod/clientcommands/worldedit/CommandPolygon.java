@@ -1,5 +1,11 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nullable;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
@@ -13,13 +19,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
-
 public class CommandPolygon extends ClientCommand {
 
 	@Override
@@ -29,13 +28,17 @@ public class CommandPolygon extends ClientCommand {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.polygon.usage").getUnformattedText();
+		return new TextComponentTranslation(
+			"text.cutelessmod.clientcommands.worldEdit.polygon.usage").getUnformattedText();
 	}
 
-	private void generatePolygon(World world, WorldEditSelection selection, BlockPos center, IBlockState blockState, int radius, int points, boolean halfStep) {
-		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world, selection);
+	private void generatePolygon(World world, WorldEditSelection selection, BlockPos center,
+		IBlockState blockState, int radius, int points, boolean halfStep) {
+		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(
+			HandlerSetBlock.class, world, selection);
 		List<BlockPos> undoBlockPositions = new ArrayList<>();
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world, selection);
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
+			HandlerUndo.class, world, selection);
 		undoHandler.setHandler(setBlockHandler);
 		undoHandler.running = false;
 		double rotation = Math.PI / points;
@@ -46,10 +49,16 @@ public class CommandPolygon extends ClientCommand {
 			if (Thread.interrupted()) {
 				return;
 			}
-			int x1 = (int) (radius * Math.cos(2 * (-(Math.PI + rotation) + (Math.PI / points) * i)) + center.getX());
-			int z1 = (int) (radius * Math.sin(2 * (-(Math.PI + rotation) + (Math.PI / points) * i)) + center.getZ());
-			int x2 = (int) (radius * Math.cos(2 * (-(Math.PI + rotation) + (Math.PI / points) * (i + 1))) + center.getX());
-			int z2 = (int) (radius * Math.sin(2 * (-(Math.PI + rotation) + (Math.PI / points) * (i + 1))) + center.getZ());
+			int x1 = (int) (radius * Math.cos(2 * (-(Math.PI + rotation) + (Math.PI / points) * i))
+				+ center.getX());
+			int z1 = (int) (radius * Math.sin(2 * (-(Math.PI + rotation) + (Math.PI / points) * i))
+				+ center.getZ());
+			int x2 = (int) (
+				radius * Math.cos(2 * (-(Math.PI + rotation) + (Math.PI / points) * (i + 1)))
+					+ center.getX());
+			int z2 = (int) (
+				radius * Math.sin(2 * (-(Math.PI + rotation) + (Math.PI / points) * (i + 1)))
+					+ center.getZ());
 			int dx = Math.abs(x2 - x1);
 			int dz = Math.abs(z2 - z1);
 			int err, sx, sz;
@@ -100,7 +109,8 @@ public class CommandPolygon extends ClientCommand {
 	}
 
 	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args)
+		throws CommandException {
 		if (args.length >= 4 && args.length <= 5) {
 			if (WorldEdit.hasCurrentSelection()) {
 				WorldEditSelection selection = WorldEdit.getCurrentSelection();
@@ -116,21 +126,26 @@ public class CommandPolygon extends ClientCommand {
 					} else {
 						halfStep = false;
 					}
-					Thread t = new Thread(() -> generatePolygon(world, selection, selection.getPos(A), blockState, radius, points, halfStep));
+					Thread t = new Thread(
+						() -> generatePolygon(world, selection, selection.getPos(A), blockState,
+							radius, points, halfStep));
 					t.start();
 					ClientCommandHandler.instance.threads.add(t);
 				} else {
-					WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noOneByOneSelected"));
+					WorldEdit.sendMessage(new TextComponentTranslation(
+						"text.cutelessmod.clientcommands.worldEdit.noOneByOneSelected"));
 				}
 			} else {
-				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
+				WorldEdit.sendMessage(new TextComponentTranslation(
+					"text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
 			}
 		} else {
 			WorldEdit.sendMessage(getUsage(sender));
 		}
 	}
 
-	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
+	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
+		String[] args, @Nullable BlockPos pos) {
 		if (args.length == 1) {
 			return getListOfStringsMatchingLastWord(args, Block.REGISTRY.getKeys());
 		} else if (args.length == 5) {

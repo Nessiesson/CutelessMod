@@ -86,3 +86,5 @@ text.cutelessmod.clientcommands.worldEdit.brush.notFound=No brush with name %s f
 text.cutelessmod.clientcommands.worldEdit.runbrush.usage=/runbrush <block> <dataValue:state> <brush name> [options]
 text.cutelessmod.clientcommands.worldEdit.woolify.usage=/woolify
 text.cutelessmod.clientcommands.worldEdit.erode.usage=/erosion
+text.cutelessmod.clientcommands.worldEdit.stackdiagonal.usage=/stackdiagonal <count> <xOffset> <yOffset> <zOffset> [masked] [moveSelection]
+text.cutelessmod.clientcommands.worldEdit.swap.usage=/swap <block1> [dataValue:state1] <block2> [dataValue:state2]

@@ -22,17 +22,25 @@ public class CommandSize extends ClientCommand {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.size.usage").getUnformattedText();
+		return new TextComponentTranslation(
+			"text.cutelessmod.clientcommands.worldEdit.size.usage").getUnformattedText();
 	}
 
 	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args)
+		throws CommandException {
 		if (args.length == 0) {
 			if (WorldEdit.hasCurrentSelection()) {
 				WorldEditSelection selection = WorldEdit.getCurrentSelection();
-				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.size.response", selection.getPos(A).getX(), selection.getPos(A).getY(), selection.getPos(A).getZ(), selection.getPos(B).getX(), selection.getPos(B).getY(), selection.getPos(B).getZ(), selection.widthX(), selection.widthY(), selection.widthZ(), selection.volume()));
+				WorldEdit.sendMessage(new TextComponentTranslation(
+					"text.cutelessmod.clientcommands.worldEdit.size.response",
+					selection.getPos(A).getX(), selection.getPos(A).getY(),
+					selection.getPos(A).getZ(), selection.getPos(B).getX(),
+					selection.getPos(B).getY(), selection.getPos(B).getZ(), selection.widthX(),
+					selection.widthY(), selection.widthZ(), selection.volume()));
 			} else {
-				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
+				WorldEdit.sendMessage(new TextComponentTranslation(
+					"text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
 			}
 		} else {
 			WorldEdit.sendMessage(getUsage(sender));

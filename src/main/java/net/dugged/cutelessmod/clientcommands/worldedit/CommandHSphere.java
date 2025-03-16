@@ -1,5 +1,11 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
+import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.annotation.Nullable;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
@@ -13,13 +19,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
-import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
-
 public class CommandHSphere extends ClientCommand {
 
 	@Override
@@ -29,13 +28,17 @@ public class CommandHSphere extends ClientCommand {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.hsphere.usage").getUnformattedText();
+		return new TextComponentTranslation(
+			"text.cutelessmod.clientcommands.worldEdit.hsphere.usage").getUnformattedText();
 	}
 
-	private void generateHollowSphere(World world, BlockPos center, IBlockState blockState, double radius) {
-		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(HandlerSetBlock.class, world, null);
+	private void generateHollowSphere(World world, BlockPos center, IBlockState blockState,
+		double radius) {
+		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(
+			HandlerSetBlock.class, world, null);
 		List<BlockPos> undoBlockPositions = new ArrayList<>();
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(HandlerUndo.class, world, null);
+		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
+			HandlerUndo.class, world, null);
 		undoHandler.setHandler(setBlockHandler);
 		undoHandler.running = false;
 		for (double x = 0; x <= radius; x++) {
@@ -45,24 +48,57 @@ public class CommandHSphere extends ClientCommand {
 						return;
 					}
 					if (WorldEdit.checkSphere(x, y, z, radius)) {
-						if (!WorldEdit.checkSphere(x + 1, y, z, radius) || !WorldEdit.checkSphere(x, y + 1, z, radius) || !WorldEdit.checkSphere(x, y, z + 1, radius)) {
-							undoBlockPositions.add(new BlockPos(center.getX() + x, center.getY() + y, center.getZ() + z));
-							setBlockHandler.setBlock(new BlockPos(center.getX() + x, center.getY() + y, center.getZ() + z), blockState);
-							undoBlockPositions.add(new BlockPos(center.getX() + x, center.getY() + y, center.getZ() - z));
-							setBlockHandler.setBlock(new BlockPos(center.getX() + x, center.getY() + y, center.getZ() - z), blockState);
-							undoBlockPositions.add(new BlockPos(center.getX() - x, center.getY() + y, center.getZ() + z));
-							setBlockHandler.setBlock(new BlockPos(center.getX() - x, center.getY() + y, center.getZ() + z), blockState);
-							undoBlockPositions.add(new BlockPos(center.getX() - x, center.getY() + y, center.getZ() - z));
-							setBlockHandler.setBlock(new BlockPos(center.getX() - x, center.getY() + y, center.getZ() - z), blockState);
+						if (!WorldEdit.checkSphere(x + 1, y, z, radius) || !WorldEdit.checkSphere(x,
+							y + 1, z, radius) || !WorldEdit.checkSphere(x, y, z + 1, radius)) {
+							undoBlockPositions.add(
+								new BlockPos(center.getX() + x, center.getY() + y,
+									center.getZ() + z));
+							setBlockHandler.setBlock(
+								new BlockPos(center.getX() + x, center.getY() + y,
+									center.getZ() + z), blockState);
+							undoBlockPositions.add(
+								new BlockPos(center.getX() + x, center.getY() + y,
+									center.getZ() - z));
+							setBlockHandler.setBlock(
+								new BlockPos(center.getX() + x, center.getY() + y,
+									center.getZ() - z), blockState);
+							undoBlockPositions.add(
+								new BlockPos(center.getX() - x, center.getY() + y,
+									center.getZ() + z));
+							setBlockHandler.setBlock(
+								new BlockPos(center.getX() - x, center.getY() + y,
+									center.getZ() + z), blockState);
+							undoBlockPositions.add(
+								new BlockPos(center.getX() - x, center.getY() + y,
+									center.getZ() - z));
+							setBlockHandler.setBlock(
+								new BlockPos(center.getX() - x, center.getY() + y,
+									center.getZ() - z), blockState);
 							if (center.getY() + y >= 0) {
-								undoBlockPositions.add(new BlockPos(center.getX() + x, center.getY() - y, center.getZ() - z));
-								setBlockHandler.setBlock(new BlockPos(center.getX() + x, center.getY() - y, center.getZ() - z), blockState);
-								undoBlockPositions.add(new BlockPos(center.getX() + x, center.getY() - y, center.getZ() + z));
-								setBlockHandler.setBlock(new BlockPos(center.getX() + x, center.getY() - y, center.getZ() + z), blockState);
-								undoBlockPositions.add(new BlockPos(center.getX() - x, center.getY() - y, center.getZ() + z));
-								setBlockHandler.setBlock(new BlockPos(center.getX() - x, center.getY() - y, center.getZ() + z), blockState);
-								undoBlockPositions.add(new BlockPos(center.getX() - x, center.getY() - y, center.getZ() - z));
-								setBlockHandler.setBlock(new BlockPos(center.getX() - x, center.getY() - y, center.getZ() - z), blockState);
+								undoBlockPositions.add(
+									new BlockPos(center.getX() + x, center.getY() - y,
+										center.getZ() - z));
+								setBlockHandler.setBlock(
+									new BlockPos(center.getX() + x, center.getY() - y,
+										center.getZ() - z), blockState);
+								undoBlockPositions.add(
+									new BlockPos(center.getX() + x, center.getY() - y,
+										center.getZ() + z));
+								setBlockHandler.setBlock(
+									new BlockPos(center.getX() + x, center.getY() - y,
+										center.getZ() + z), blockState);
+								undoBlockPositions.add(
+									new BlockPos(center.getX() - x, center.getY() - y,
+										center.getZ() + z));
+								setBlockHandler.setBlock(
+									new BlockPos(center.getX() - x, center.getY() - y,
+										center.getZ() + z), blockState);
+								undoBlockPositions.add(
+									new BlockPos(center.getX() - x, center.getY() - y,
+										center.getZ() - z));
+								setBlockHandler.setBlock(
+									new BlockPos(center.getX() - x, center.getY() - y,
+										center.getZ() - z), blockState);
 							}
 						}
 					}
@@ -74,7 +110,8 @@ public class CommandHSphere extends ClientCommand {
 	}
 
 	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args)
+		throws CommandException {
 		if (args.length == 3) {
 			if (WorldEdit.hasCurrentSelection()) {
 				WorldEditSelection selection = WorldEdit.getCurrentSelection();
@@ -83,21 +120,25 @@ public class CommandHSphere extends ClientCommand {
 					IBlockState blockState = convertArgToBlockState(block, args[1]);
 					World world = sender.getEntityWorld();
 					double radius = parseInt(args[2]) + 0.5;
-					Thread t = new Thread(() -> generateHollowSphere(world, selection.getPos(A), blockState, radius));
+					Thread t = new Thread(
+						() -> generateHollowSphere(world, selection.getPos(A), blockState, radius));
 					t.start();
 					ClientCommandHandler.instance.threads.add(t);
 				} else {
-					WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noOneByOneSelected"));
+					WorldEdit.sendMessage(new TextComponentTranslation(
+						"text.cutelessmod.clientcommands.worldEdit.noOneByOneSelected"));
 				}
 			} else {
-				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
+				WorldEdit.sendMessage(new TextComponentTranslation(
+					"text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
 			}
 		} else {
 			WorldEdit.sendMessage(getUsage(sender));
 		}
 	}
 
-	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
+	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
+		String[] args, @Nullable BlockPos pos) {
 		if (args.length == 1) {
 			return getListOfStringsMatchingLastWord(args, Block.REGISTRY.getKeys());
 		} else {

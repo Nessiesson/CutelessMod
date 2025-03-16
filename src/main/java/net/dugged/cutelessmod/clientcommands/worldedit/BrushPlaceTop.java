@@ -1,12 +1,12 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
+import java.util.ArrayList;
 import net.minecraft.block.Block;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-
 public class BrushPlaceTop extends BrushBase {
+
 	@Override
 	public String getName() {
 		return "placeTop";

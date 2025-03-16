@@ -30,34 +30,42 @@ public class CommandCount extends ClientCommand {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.count.usage").getUnformattedText();
+		return new TextComponentTranslation(
+			"text.cutelessmod.clientcommands.worldEdit.count.usage").getUnformattedText();
 	}
 
-	private void countBlock(World world, WorldEditSelection selection, IBlockState blockState, boolean exclusive, boolean compareStates) {
+	private void countBlock(World world, WorldEditSelection selection, IBlockState blockState,
+		boolean exclusive, boolean compareStates) {
 		int count = 0;
-		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.getPos(A), selection.getPos(B))) {
+		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.getPos(A),
+			selection.getPos(B))) {
 			if (Thread.interrupted()) {
 				return;
 			}
 			if (exclusive) {
-				if (!((compareStates && world.getBlockState(pos) == blockState) || (!compareStates && world.getBlockState(pos).getBlock() == blockState.getBlock()))) {
+				if (!((compareStates && world.getBlockState(pos) == blockState) || (!compareStates
+					&& world.getBlockState(pos).getBlock() == blockState.getBlock()))) {
 					count++;
 				}
 			} else {
-				if ((compareStates && world.getBlockState(pos) == blockState) || (!compareStates && world.getBlockState(pos).getBlock() == blockState.getBlock())) {
+				if ((compareStates && world.getBlockState(pos) == blockState) || (!compareStates
+					&& world.getBlockState(pos).getBlock() == blockState.getBlock())) {
 					count++;
 				}
 			}
 		}
 		if (exclusive) {
-			WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.count.responseInclusive", count));
+			WorldEdit.sendMessage(new TextComponentTranslation(
+				"text.cutelessmod.clientcommands.worldEdit.count.responseInclusive", count));
 		} else {
-			WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.count.responseExclusive", count));
+			WorldEdit.sendMessage(new TextComponentTranslation(
+				"text.cutelessmod.clientcommands.worldEdit.count.responseExclusive", count));
 		}
 	}
 
 	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args)
+		throws CommandException {
 		if (args.length == 2 || args.length == 3) {
 			if (WorldEdit.hasCurrentSelection()) {
 				WorldEditSelection selection = WorldEdit.getCurrentSelection();
@@ -73,18 +81,21 @@ public class CommandCount extends ClientCommand {
 					compareStates = false;
 				}
 				World world = sender.getEntityWorld();
-				Thread t = new Thread(() -> countBlock(world, selection, blockState, exclusive, compareStates));
+				Thread t = new Thread(
+					() -> countBlock(world, selection, blockState, exclusive, compareStates));
 				t.start();
 				ClientCommandHandler.instance.threads.add(t);
 			} else {
-				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
+				WorldEdit.sendMessage(new TextComponentTranslation(
+					"text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
 			}
 		} else {
 			WorldEdit.sendMessage(getUsage(sender));
 		}
 	}
 
-	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, @Nullable BlockPos pos) {
+	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
+		String[] args, @Nullable BlockPos pos) {
 		if (args.length == 1) {
 			return getListOfStringsMatchingLastWord(args, "true", "false");
 		} else if (args.length == 2) {

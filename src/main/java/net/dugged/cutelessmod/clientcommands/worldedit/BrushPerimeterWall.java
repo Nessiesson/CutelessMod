@@ -1,12 +1,12 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
+import java.util.ArrayList;
 import net.minecraft.block.material.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
-import java.util.ArrayList;
-
 public class BrushPerimeterWall extends BrushBase {
+
 	@Override
 	public String getName() {
 		return "perimeterWall";
@@ -50,7 +50,8 @@ public class BrushPerimeterWall extends BrushBase {
 		posList.add(pos.south().east());
 		posList.add(pos.south().west());
 		for (BlockPos pos1 : posList) {
-			if (world.getBlockState(pos1).getMaterial() != Material.AIR && world.getBlockState(pos1).getBlock() != getBlockState().getBlock()) {
+			if (world.getBlockState(pos1).getMaterial() != Material.AIR
+				&& world.getBlockState(pos1).getBlock() != getBlockState().getBlock()) {
 				return false;
 			}
 		}
