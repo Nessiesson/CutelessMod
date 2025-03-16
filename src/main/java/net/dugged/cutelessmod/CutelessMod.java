@@ -160,7 +160,7 @@ public class CutelessMod {
 		ClientRegistry.registerKeyBinding(zoomerKey);
 
 		spy = new ContainerSpy();
-		ClientCommandHandler.instance.init();
+		ClientCommandHandler.getInstance().init();
 		GuiChunkGrid.instance = new GuiChunkGrid();
 		if (Configuration.chestWithoutTESR) {
 			TileEntityRendererDispatcher.instance.renderers.remove(TileEntityChest.class);
@@ -328,7 +328,7 @@ public class CutelessMod {
 		if (event.phase != TickEvent.Phase.END) {
 			return;
 		}
-		ClientCommandHandler.instance.tick();
+		ClientCommandHandler.getInstance().tick();
 		tickCounter++;
 		swordCooldown--;
 		if (overlayTimer > 0) {

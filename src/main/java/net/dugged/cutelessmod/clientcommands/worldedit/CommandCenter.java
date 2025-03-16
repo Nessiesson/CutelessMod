@@ -1,13 +1,13 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
-import net.dugged.cutelessmod.clientcommands.HandlerUndo;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
+import net.dugged.cutelessmod.clientcommands.TaskSetBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
@@ -44,49 +44,39 @@ public class CommandCenter extends ClientCommand {
 				if (args.length >= 2) {
 					blockState = convertArgToBlockState(block, args[1]);
 				}
-				HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(
-					HandlerSetBlock.class, sender.getEntityWorld(), selection);
-				List<BlockPos> undoBlockPositions = new ArrayList<>();
-				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
-					HandlerUndo.class, sender.getEntityWorld(), selection);
-				undoHandler.setHandler(setBlockHandler);
+				Map<BlockPos, IBlockState> blocksToPlace = new HashMap<>();
 				BlockPos center = new BlockPos(selection.minPos().getX() + selection.widthX() / 2,
 					selection.minPos().getY() + selection.widthY() / 2,
 					selection.minPos().getZ() + selection.widthZ() / 2);
-				setBlockHandler.setBlock(center, blockState);
-				undoBlockPositions.add(center);
+				blocksToPlace.put(center, blockState);
 				boolean x = selection.widthX() % 2 == 0;
 				boolean y = selection.widthY() % 2 == 0;
 				boolean z = selection.widthZ() % 2 == 0;
 				if (x) {
-					setBlockHandler.setBlock(center.west(), blockState);
-					undoBlockPositions.add(center.west());
+					blocksToPlace.put(center.west(), blockState);
 				}
 				if (y) {
-					setBlockHandler.setBlock(center.down(), blockState);
-					undoBlockPositions.add(center.down());
+					blocksToPlace.put(center.down(), blockState);
 				}
 				if (z) {
-					setBlockHandler.setBlock(center.north(), blockState);
-					undoBlockPositions.add(center.north());
+					blocksToPlace.put(center.north(), blockState);
 				}
 				if (x && y) {
-					setBlockHandler.setBlock(center.west().down(), blockState);
-					undoBlockPositions.add(center.west().down());
+					blocksToPlace.put(center.west().down(), blockState);
 				}
 				if (y && z) {
-					setBlockHandler.setBlock(center.down().north(), blockState);
-					undoBlockPositions.add(center.down().north());
+					blocksToPlace.put(center.down().north(), blockState);
 				}
 				if (x && z) {
-					setBlockHandler.setBlock(center.west().north(), blockState);
-					undoBlockPositions.add(center.west().north());
+					blocksToPlace.put(center.west().north(), blockState);
 				}
 				if (x && y && z) {
-					setBlockHandler.setBlock(center.west().down().north(), blockState);
-					undoBlockPositions.add(center.west().down().north());
+					blocksToPlace.put(center.west().down().north(), blockState);
 				}
-				undoHandler.saveBlocks(undoBlockPositions);
+				if (!blocksToPlace.isEmpty()) {
+					TaskSetBlock task = new TaskSetBlock(blocksToPlace, sender.getEntityWorld());
+					TaskManager.getInstance().addTask(task);
+				}
 			} else {
 				WorldEdit.sendMessage(getUsage(sender));
 			}

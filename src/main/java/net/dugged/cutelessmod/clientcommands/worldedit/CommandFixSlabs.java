@@ -3,12 +3,11 @@ package net.dugged.cutelessmod.clientcommands.worldedit;
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
-import net.dugged.cutelessmod.clientcommands.HandlerUndo;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
+import net.dugged.cutelessmod.clientcommands.TaskSetBlock;
 import net.minecraft.block.BlockDoubleStoneSlab;
 import net.minecraft.block.BlockDoubleStoneSlabNew;
 import net.minecraft.block.BlockDoubleWoodSlab;
@@ -16,6 +15,7 @@ import net.minecraft.block.BlockPlanks;
 import net.minecraft.block.BlockPurpurSlab;
 import net.minecraft.block.BlockSlab;
 import net.minecraft.block.BlockStoneSlab;
+import net.minecraft.block.BlockStoneSlabNew;
 import net.minecraft.block.BlockWoodSlab;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
@@ -41,13 +41,7 @@ public class CommandFixSlabs extends ClientCommand {
 
 	private void fixSlabs(World world, WorldEditSelection selection) {
 		int count = 0;
-		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(
-			HandlerSetBlock.class, world, selection);
-		List<BlockPos> undoBlockPositions = new ArrayList<>();
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
-			HandlerUndo.class, world, selection);
-		undoHandler.setHandler(setBlockHandler);
-		undoHandler.running = false;
+		Map<BlockPos, IBlockState> blockList = new HashMap<>();
 		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.getPos(A),
 			selection.getPos(B))) {
 			if (Thread.interrupted()) {
@@ -58,39 +52,32 @@ public class CommandFixSlabs extends ClientCommand {
 				.containsKey(BlockDoubleStoneSlab.VARIANT)) {
 				switch (blockState.getValue(BlockDoubleStoneSlab.VARIANT)) {
 					case SAND:
-						undoBlockPositions.add(pos);
-						setBlockHandler.setBlock(pos, Blocks.SANDSTONE.getDefaultState());
+						blockList.put(pos, Blocks.SANDSTONE.getDefaultState());
 						count++;
 						break;
 					case WOOD:
-						undoBlockPositions.add(pos);
-						setBlockHandler.setBlock(pos, Blocks.PLANKS.getDefaultState()
+						blockList.put(pos, Blocks.PLANKS.getDefaultState()
 							.withProperty(BlockPlanks.VARIANT, BlockPlanks.EnumType.OAK));
 						count++;
 						break;
 					case COBBLESTONE:
-						undoBlockPositions.add(pos);
-						setBlockHandler.setBlock(pos, Blocks.COBBLESTONE.getDefaultState());
+						blockList.put(pos, Blocks.COBBLESTONE.getDefaultState());
 						count++;
 						break;
 					case BRICK:
-						undoBlockPositions.add(pos);
-						setBlockHandler.setBlock(pos, Blocks.BRICK_BLOCK.getDefaultState());
+						blockList.put(pos, Blocks.BRICK_BLOCK.getDefaultState());
 						count++;
 						break;
 					case SMOOTHBRICK:
-						undoBlockPositions.add(pos);
-						setBlockHandler.setBlock(pos, Blocks.STONEBRICK.getDefaultState());
+						blockList.put(pos, Blocks.STONEBRICK.getDefaultState());
 						count++;
 						break;
 					case NETHERBRICK:
-						undoBlockPositions.add(pos);
-						setBlockHandler.setBlock(pos, Blocks.NETHER_BRICK.getDefaultState());
+						blockList.put(pos, Blocks.NETHER_BRICK.getDefaultState());
 						count++;
 						break;
 					case QUARTZ:
-						undoBlockPositions.add(pos);
-						setBlockHandler.setBlock(pos, Blocks.QUARTZ_BLOCK.getDefaultState());
+						blockList.put(pos, Blocks.QUARTZ_BLOCK.getDefaultState());
 						count++;
 						break;
 					default:
@@ -98,51 +85,41 @@ public class CommandFixSlabs extends ClientCommand {
 				}
 			} else if (blockState.getBlock() instanceof BlockDoubleStoneSlabNew
 				&& blockState.getProperties().containsKey(BlockDoubleStoneSlabNew.VARIANT)) {
-				switch (blockState.getValue(BlockDoubleStoneSlabNew.VARIANT)) {
-					case RED_SANDSTONE:
-						undoBlockPositions.add(pos);
-						setBlockHandler.setBlock(pos, Blocks.RED_SANDSTONE.getDefaultState());
-						count++;
-						break;
-					default:
-						break;
+				if (blockState.getValue(BlockDoubleStoneSlabNew.VARIANT)
+					== BlockStoneSlabNew.EnumType.RED_SANDSTONE) {
+					blockList.put(pos, Blocks.RED_SANDSTONE.getDefaultState());
+					count++;
 				}
 			} else if (blockState.getBlock() instanceof BlockDoubleWoodSlab
 				&& blockState.getProperties().containsKey(BlockDoubleWoodSlab.VARIANT)) {
 				switch (blockState.getValue(BlockDoubleWoodSlab.VARIANT)) {
 					case OAK:
-						undoBlockPositions.add(pos);
-						setBlockHandler.setBlock(pos, Blocks.PLANKS.getDefaultState()
+						blockList.put(pos, Blocks.PLANKS.getDefaultState()
 							.withProperty(BlockPlanks.VARIANT, BlockPlanks.EnumType.OAK));
 						count++;
 						break;
 					case SPRUCE:
-						undoBlockPositions.add(pos);
-						setBlockHandler.setBlock(pos, Blocks.PLANKS.getDefaultState()
+						blockList.put(pos, Blocks.PLANKS.getDefaultState()
 							.withProperty(BlockPlanks.VARIANT, BlockPlanks.EnumType.SPRUCE));
 						count++;
 						break;
 					case BIRCH:
-						undoBlockPositions.add(pos);
-						setBlockHandler.setBlock(pos, Blocks.PLANKS.getDefaultState()
+						blockList.put(pos, Blocks.PLANKS.getDefaultState()
 							.withProperty(BlockPlanks.VARIANT, BlockPlanks.EnumType.BIRCH));
 						count++;
 						break;
 					case JUNGLE:
-						undoBlockPositions.add(pos);
-						setBlockHandler.setBlock(pos, Blocks.PLANKS.getDefaultState()
+						blockList.put(pos, Blocks.PLANKS.getDefaultState()
 							.withProperty(BlockPlanks.VARIANT, BlockPlanks.EnumType.JUNGLE));
 						count++;
 						break;
 					case ACACIA:
-						undoBlockPositions.add(pos);
-						setBlockHandler.setBlock(pos, Blocks.PLANKS.getDefaultState()
+						blockList.put(pos, Blocks.PLANKS.getDefaultState()
 							.withProperty(BlockPlanks.VARIANT, BlockPlanks.EnumType.ACACIA));
 						count++;
 						break;
 					case DARK_OAK:
-						undoBlockPositions.add(pos);
-						setBlockHandler.setBlock(pos, Blocks.PLANKS.getDefaultState()
+						blockList.put(pos, Blocks.PLANKS.getDefaultState()
 							.withProperty(BlockPlanks.VARIANT, BlockPlanks.EnumType.DARK_OAK));
 						count++;
 						break;
@@ -151,21 +128,19 @@ public class CommandFixSlabs extends ClientCommand {
 				}
 			} else if (blockState.getBlock() instanceof BlockPurpurSlab
 				&& ((BlockPurpurSlab) blockState.getBlock()).isDouble()) {
-				undoBlockPositions.add(pos);
-				setBlockHandler.setBlock(pos, Blocks.PURPUR_BLOCK.getDefaultState());
+				blockList.put(pos, Blocks.PURPUR_BLOCK.getDefaultState());
 				count++;
 			} else if (blockState.getBlock() instanceof BlockStoneSlab && blockState.getProperties()
 				.containsKey(BlockStoneSlab.VARIANT)
 				&& blockState.getValue(BlockStoneSlab.VARIANT) == BlockStoneSlab.EnumType.WOOD) {
-				undoBlockPositions.add(pos);
-				setBlockHandler.setBlock(pos, Blocks.WOODEN_SLAB.getDefaultState()
+				blockList.put(pos, Blocks.WOODEN_SLAB.getDefaultState()
 					.withProperty(BlockWoodSlab.VARIANT, BlockPlanks.EnumType.OAK)
 					.withProperty(BlockSlab.HALF, blockState.getValue(BlockStoneSlab.HALF)));
 				count++;
 			}
 		}
-		undoHandler.saveBlocks(undoBlockPositions);
-		undoHandler.running = true;
+		TaskSetBlock task = new TaskSetBlock(blockList, world);
+		TaskManager.getInstance().addTask(task);
 		WorldEdit.sendMessage(new TextComponentTranslation(
 			"text.cutelessmod.clientcommands.worldEdit.fixslabs.response", count));
 	}
@@ -179,13 +154,14 @@ public class CommandFixSlabs extends ClientCommand {
 				World world = sender.getEntityWorld();
 				Thread t = new Thread(() -> fixSlabs(world, selection));
 				t.start();
-				ClientCommandHandler.instance.threads.add(t);
+				TaskManager.getInstance().threads.add(t);
 			} else {
 				WorldEdit.sendMessage(new TextComponentTranslation(
 					"text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
 			}
 		} else {
-			WorldEdit.sendMessage(getUsage(sender));
+			WorldEdit.sendMessage(new TextComponentTranslation(
+				"text.cutelessmod.clientcommands.worldEdit.fixslabs.usage"));
 		}
 	}
 }

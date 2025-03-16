@@ -3,9 +3,8 @@ package net.dugged.cutelessmod.clientcommands.worldedit;
 import java.util.HashMap;
 import java.util.Map;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.HandlerFill;
-import net.dugged.cutelessmod.clientcommands.HandlerUndo;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
+import net.dugged.cutelessmod.clientcommands.TaskSetBlock;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -28,49 +27,44 @@ public class CommandUpscale extends ClientCommand {
 	}
 
 	private void upscaleSelection(World world, WorldEditSelection selection, int factor) {
-		Map<BlockPos, IBlockState> blockList = new HashMap<>();
 		if (factor <= 0) {
 			factor = 1;
 		}
-		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.minPos(),
-			selection.maxPos())) {
-			blockList.put(pos, world.getBlockState(pos));
-		}
-		HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(
-			HandlerFill.class, world, selection);
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
-			HandlerUndo.class, world, selection);
-		undoHandler.setHandler(fillHandler);
-		undoHandler.running = false;
-		for (int x = 0; x < selection.widthX(); x++) {
-			for (int y = 0; y < selection.widthY(); y++) {
-				for (int z = 0; z < selection.widthZ(); z++) {
+		Map<BlockPos, IBlockState> blocksToPlace = new HashMap<>();
+		BlockPos base = selection.minPos();
+		int widthX = selection.widthX();
+		int widthY = selection.widthY();
+		int widthZ = selection.widthZ();
+		for (int x = 0; x < widthX; x++) {
+			for (int y = 0; y < widthY; y++) {
+				for (int z = 0; z < widthZ; z++) {
 					if (Thread.interrupted()) {
 						return;
 					}
-					IBlockState blockState = world.getBlockState(
-						new BlockPos(selection.minPos().getX() + x, selection.minPos().getY() + y,
-							selection.minPos().getZ() + z));
-					BlockPos minPos = new BlockPos(selection.minPos().getX() + (x * factor),
-						selection.minPos().getY() + (y * factor),
-						selection.minPos().getZ() + (z * factor));
-					BlockPos maxPos = new BlockPos(minPos.getX() + (factor - 1),
-						minPos.getY() + (factor - 1), minPos.getZ() + (factor - 1));
+					IBlockState blockState = world.getBlockState(base.add(x, y, z));
+					BlockPos scaledMin = new BlockPos(base.getX() + (x * factor),
+						base.getY() + (y * factor), base.getZ() + (z * factor));
+					BlockPos scaledMax = new BlockPos(scaledMin.getX() + factor - 1,
+						scaledMin.getY() + factor - 1, scaledMin.getZ() + factor - 1);
 					boolean skip = true;
-					for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(minPos, maxPos)) {
-						if (world.getBlockState(pos) != blockState) {
+					for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(scaledMin,
+						scaledMax)) {
+						if (!world.getBlockState(pos).equals(blockState)) {
 							skip = false;
 							break;
 						}
 					}
 					if (!skip) {
-						undoHandler.saveBox(minPos, maxPos);
-						fillHandler.fill(minPos, maxPos, blockState);
+						for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(scaledMin,
+							scaledMax)) {
+							blocksToPlace.put(pos, blockState);
+						}
 					}
 				}
 			}
 		}
-		undoHandler.running = true;
+		TaskSetBlock task = new TaskSetBlock(blocksToPlace, world);
+		TaskManager.getInstance().addTask(task);
 	}
 
 	@Override
@@ -83,9 +77,10 @@ public class CommandUpscale extends ClientCommand {
 				World world = sender.getEntityWorld();
 				Thread t = new Thread(() -> upscaleSelection(world, selection, factor));
 				t.start();
-				ClientCommandHandler.instance.threads.add(t);
+				TaskManager.getInstance().threads.add(t);
 			} else {
-				WorldEdit.sendMessage(getUsage(sender));
+				WorldEdit.sendMessage(new TextComponentTranslation(
+					"text.cutelessmod.clientcommands.worldEdit.upscale.usage"));
 			}
 		} else {
 			WorldEdit.sendMessage(new TextComponentTranslation(

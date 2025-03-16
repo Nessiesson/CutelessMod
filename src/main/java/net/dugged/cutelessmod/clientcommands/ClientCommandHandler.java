@@ -3,11 +3,8 @@ package net.dugged.cutelessmod.clientcommands;
 import static net.minecraft.util.text.TextFormatting.GRAY;
 import static net.minecraft.util.text.TextFormatting.RESET;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.IntStream;
-import net.dugged.cutelessmod.CutelessMod;
 import net.dugged.cutelessmod.clientcommands.worldedit.BrushIceSpike;
 import net.dugged.cutelessmod.clientcommands.worldedit.BrushPerimeterWall;
 import net.dugged.cutelessmod.clientcommands.worldedit.BrushPlaceTop;
@@ -45,33 +42,46 @@ import net.dugged.cutelessmod.clientcommands.worldedit.CommandStack;
 import net.dugged.cutelessmod.clientcommands.worldedit.CommandStackDiagonal;
 import net.dugged.cutelessmod.clientcommands.worldedit.CommandStackQuarter;
 import net.dugged.cutelessmod.clientcommands.worldedit.CommandSwap;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandUndo;
 import net.dugged.cutelessmod.clientcommands.worldedit.CommandUpscale;
 import net.dugged.cutelessmod.clientcommands.worldedit.CommandWalls;
 import net.dugged.cutelessmod.clientcommands.worldedit.CommandWoolify;
 import net.dugged.cutelessmod.clientcommands.worldedit.WorldEdit;
 import net.dugged.cutelessmod.clientcommands.worldedit.WorldEditRenderer;
-import net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.command.CommandHandler;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
+import net.minecraft.network.play.client.CPacketTabComplete;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraft.world.World;
 
 public class ClientCommandHandler extends CommandHandler {
 
-	public static final ClientCommandHandler instance = new ClientCommandHandler();
+	private static final ClientCommandHandler instance = new ClientCommandHandler();
 	public static int PACKET_LIMIT = 5000;
 	private final Minecraft mc = Minecraft.getMinecraft();
-	public CopyOnWriteArrayList<Handler> handlers = new CopyOnWriteArrayList<>();
-	public CopyOnWriteArrayList<Thread> threads = new CopyOnWriteArrayList();
-	public Position lastPosition = new Position(null, 0);
+	public PlayerPos lastPlayerPos = new PlayerPos(null, 0);
 	public String[] latestAutoComplete = null;
 	private long tick = 0;
+
+	public static ClientCommandHandler getInstance() {
+		return instance;
+	}
+
+	public static void updatePermissions() {
+		Minecraft mc = Minecraft.getMinecraft();
+		if (mc.player != null && mc.player.connection != null) {
+			mc.player.connection.sendPacket(new CPacketTabComplete("/setbloc", null, false));
+			mc.player.connection.sendPacket(new CPacketTabComplete("/fil", null, false));
+			mc.player.connection.sendPacket(new CPacketTabComplete("/clon", null, false));
+			mc.player.connection.sendPacket(new CPacketTabComplete("/replaceite", null, false));
+			mc.player.connection.sendPacket(new CPacketTabComplete("/gamerul", null, false));
+		}
+	}
 
 	public void init() {
 		instance.registerCommand(new CommandPing());
@@ -186,80 +196,24 @@ public class ClientCommandHandler extends CommandHandler {
 		return mc.getIntegratedServer();
 	}
 
-	synchronized public Handler createHandler(final Class<? extends Handler> type, World world,
-		WorldEditSelection selection) {
-		try {
-			Class[] constructors = {World.class, WorldEditSelection.class};
-			final Handler handler = type.getDeclaredConstructor(constructors)
-				.newInstance(world, selection);
-			instance.handlers.add(handler);
-			return handler;
-		} catch (Exception e) {
-			return new Handler(world, selection);
-		}
-	}
-
-	public int countHandlerType(final Class<? extends Handler> type) {
-		return (int) handlers.stream().filter(type::isInstance).count();
-	}
-
-	public float getProgress() {
-		float progress = 0;
-		if (!handlers.isEmpty()) {
-			for (Handler handler : handlers) {
-				if (handler.isWorldEditHandler && handler.running) {
-					progress += handler.getProgress();
-				}
-			}
-			float percent =
-				progress / handlers.stream().filter(hand -> hand.isWorldEditHandler && hand.running)
-					.count();
-			if (percent > 0) {
-				return percent;
-			} else {
-				return -1;
-			}
-		} else if (!threads.isEmpty()) {
-			return -1;
-		} else {
-			return 0;
-		}
-	}
-
-	public boolean otherHandlersRunning(Handler excluding) {
-		return handlers.stream().filter(hand -> hand != excluding && hand.running).count() > 0;
-	}
-
 	public void tick() {
-		WorldEditRenderer.update();
-		if (!handlers.isEmpty() && Arrays.stream(CutelessMod.receivedPackets).sum() <= PACKET_LIMIT
-			&& Arrays.stream(CutelessMod.sendPackets).sum() <= PACKET_LIMIT) {
-			if (mc.player == null) {
-				handlers.clear();
-			}
-			handlers.removeIf(handler -> handler.finished);
-			for (Handler handler : handlers) {
-				if (handler.running) {
-					handler.tick();
-				}
-			}
+		if (mc.world == null) {
+			return;
 		}
-		threads.removeIf(thread -> thread.isInterrupted() || !thread.isAlive());
 		if (tick % 36000 == 0 && !mc.ingameGUI.getChatGUI().getChatOpen()) {
-			HandlerSetBlock.getCommandPermission();
-			HandlerFill.getCommandPermission();
-			HandlerClone.getCommandPermission();
-			HandlerReplaceItem.getCommandPermission();
+			updatePermissions();
 		}
+		TaskManager.getInstance().tick();
+		WorldEditRenderer.update();
 		tick++;
 	}
 
-	public class Position {
+	public static class PlayerPos {
 
 		public BlockPos position;
 		public int dimension;
 
-		Position(BlockPos pos, int dim) {
+		PlayerPos(BlockPos pos, int dim) {
 			update(pos, dim);
 		}
 

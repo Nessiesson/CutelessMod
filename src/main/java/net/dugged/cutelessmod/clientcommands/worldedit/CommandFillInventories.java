@@ -4,15 +4,13 @@ import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.HandlerReplaceItem;
-import net.minecraft.block.BlockChest;
-import net.minecraft.block.BlockDispenser;
-import net.minecraft.block.BlockHopper;
-import net.minecraft.block.state.IBlockState;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
+import net.dugged.cutelessmod.clientcommands.TaskReplaceItem;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.item.Item;
@@ -36,20 +34,20 @@ public class CommandFillInventories extends ClientCommand {
 	}
 
 	private void fillInventories(World world, WorldEditSelection selection, ItemStack stack) {
-		HandlerReplaceItem handler = (HandlerReplaceItem) ClientCommandHandler.instance.createHandler(
-			HandlerReplaceItem.class, world, selection);
+		Map<BlockPos, ItemStack> containerMap = new HashMap<>();
 		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.getPos(A),
 			selection.getPos(B))) {
 			if (Thread.interrupted()) {
 				return;
 			}
-			IBlockState blockState = world.getBlockState(pos);
-			if (blockState.getBlock() instanceof BlockDispenser
-				|| blockState.getBlock() instanceof BlockChest
-				|| blockState.getBlock() instanceof BlockHopper) {
-				handler.fillContainer(pos, stack);
+			if (world.getBlockState(pos).getBlock() instanceof net.minecraft.block.BlockDispenser
+				|| world.getBlockState(pos).getBlock() instanceof net.minecraft.block.BlockChest
+				|| world.getBlockState(pos).getBlock() instanceof net.minecraft.block.BlockHopper) {
+				containerMap.put(pos, stack);
 			}
 		}
+		TaskReplaceItem task = new TaskReplaceItem(containerMap, world);
+		TaskManager.getInstance().addTask(task);
 	}
 
 	@Override
@@ -60,15 +58,12 @@ public class CommandFillInventories extends ClientCommand {
 				WorldEditSelection selection = WorldEdit.getCurrentSelection();
 				Item item = getItemByText(sender, args[0]);
 				int count = Math.min(item.getItemStackLimit(), Math.max(parseInt(args[1]), 1));
-				int damage = 0;
-				if (args.length == 3) {
-					damage = parseInt(args[2]);
-				}
+				int damage = (args.length == 3) ? parseInt(args[2]) : 0;
 				ItemStack stack = new ItemStack(item, count, damage);
 				World world = sender.getEntityWorld();
 				Thread t = new Thread(() -> fillInventories(world, selection, stack));
 				t.start();
-				ClientCommandHandler.instance.threads.add(t);
+				TaskManager.getInstance().threads.add(t);
 			} else {
 				WorldEdit.sendMessage(getUsage(sender));
 			}
@@ -78,8 +73,9 @@ public class CommandFillInventories extends ClientCommand {
 		}
 	}
 
-	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[]
-		args, @Nullable BlockPos pos) {
+	@Override
+	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
+		String[] args, @Nullable BlockPos pos) {
 		if (args.length == 1) {
 			return getListOfStringsMatchingLastWord(args, Item.REGISTRY.getKeys());
 		} else {

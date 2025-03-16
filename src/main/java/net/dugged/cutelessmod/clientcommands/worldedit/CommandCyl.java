@@ -3,17 +3,19 @@ package net.dugged.cutelessmod.clientcommands.worldedit;
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.HandlerFill;
-import net.dugged.cutelessmod.clientcommands.HandlerUndo;
+import net.dugged.cutelessmod.clientcommands.TaskFill;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
@@ -33,14 +35,10 @@ public class CommandCyl extends ClientCommand {
 
 	private void generateCyl(World world, WorldEditSelection selection, BlockPos center,
 		IBlockState blockState, double radius, int height) {
-		HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(
-			HandlerFill.class, world, selection);
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
-			HandlerUndo.class, world, selection);
-		undoHandler.setHandler(fillHandler);
 		if (height > world.getHeight() - center.getY()) {
 			height = world.getHeight() - center.getY();
 		}
+		Map<AxisAlignedBB, IBlockState> regionMap = new LinkedHashMap<>();
 		for (double x = 0; x <= radius; x++) {
 			for (double z = 0; z <= radius; z++) {
 				if (Thread.interrupted()) {
@@ -49,26 +47,24 @@ public class CommandCyl extends ClientCommand {
 				if (WorldEdit.checkCircle(x, z, radius)) {
 					if (!WorldEdit.checkCircle(x + 1, z, radius) || !WorldEdit.checkCircle(x, z + 1,
 						radius)) {
-						undoHandler.saveBox(
-							new BlockPos(center.getX() + x, center.getY(), center.getZ() - z),
-							new BlockPos(center.getX() + x, center.getY() + height - 1,
-								center.getZ() + z));
-						undoHandler.saveBox(
-							new BlockPos(center.getX() - x, center.getY(), center.getZ() - z),
-							new BlockPos(center.getX() - x, center.getY() + height - 1,
-								center.getZ() + z));
-						fillHandler.fill(
-							new BlockPos(center.getX() + x, center.getY(), center.getZ() - z),
-							new BlockPos(center.getX() + x, center.getY() + height - 1,
-								center.getZ() + z), blockState);
-						fillHandler.fill(
-							new BlockPos(center.getX() - x, center.getY(), center.getZ() - z),
-							new BlockPos(center.getX() - x, center.getY() + height - 1,
-								center.getZ() + z), blockState);
+						BlockPos pos1 = new BlockPos(center.getX() + (int) x, center.getY(),
+							center.getZ() - (int) z);
+						BlockPos pos2 = new BlockPos(center.getX() + (int) x,
+							center.getY() + height - 1, center.getZ() + (int) z);
+						AxisAlignedBB box1 = new AxisAlignedBB(pos1, pos2.add(1, 1, 1));
+						regionMap.put(box1, blockState);
+						BlockPos pos3 = new BlockPos(center.getX() - (int) x, center.getY(),
+							center.getZ() - (int) z);
+						BlockPos pos4 = new BlockPos(center.getX() - (int) x,
+							center.getY() + height - 1, center.getZ() + (int) z);
+						AxisAlignedBB box2 = new AxisAlignedBB(pos3, pos4.add(1, 1, 1));
+						regionMap.put(box2, blockState);
 					}
 				}
 			}
 		}
+		TaskFill task = new TaskFill(regionMap, world);
+		TaskManager.getInstance().addTask(task);
 	}
 
 	@Override
@@ -92,7 +88,7 @@ public class CommandCyl extends ClientCommand {
 						() -> generateCyl(world, selection, selection.getPos(A), blockState, radius,
 							height));
 					t.start();
-					ClientCommandHandler.instance.threads.add(t);
+					TaskManager.getInstance().threads.add(t);
 				} else {
 					WorldEdit.sendMessage(new TextComponentTranslation(
 						"text.cutelessmod.clientcommands.worldEdit.noOneByOneSelected"));

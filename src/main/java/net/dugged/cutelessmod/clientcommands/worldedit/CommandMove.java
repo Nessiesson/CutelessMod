@@ -1,9 +1,8 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.HandlerClone;
-import net.dugged.cutelessmod.clientcommands.HandlerUndo;
+import net.dugged.cutelessmod.clientcommands.TaskClone;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
@@ -35,28 +34,21 @@ public class CommandMove extends ClientCommand {
 				if (args.length == 1) {
 					distance = parseInt(args[0]);
 				}
-				HandlerClone cloneHandler = (HandlerClone) ClientCommandHandler.instance.createHandler(
-					HandlerClone.class, world, selection);
-				cloneHandler.moveBlocks = true;
-				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
-					HandlerUndo.class, world, selection);
-				undoHandler.setHandler(cloneHandler);
+				BlockPos dstOrigin;
 				if (distance > 0) {
-					final BlockPos pos = WorldEdit.offsetLookingDirection(selection.minPos(),
-						distance);
-					undoHandler.saveBox(selection.minPos(), selection.maxPos());
-					undoHandler.saveBox(pos,
-						pos.add(selection.widthX(), selection.widthY(), selection.widthZ()));
-					cloneHandler.clone(selection.minPos(), selection.maxPos(), pos);
+					dstOrigin = WorldEdit.offsetLookingDirection(selection.minPos(), distance);
 				} else {
-					undoHandler.saveBox(selection.minPos(), selection.maxPos());
-					undoHandler.saveBox(WorldEdit.playerPos(), WorldEdit.playerPos()
-						.add(selection.widthX(), selection.widthY(), selection.widthZ()));
-					cloneHandler.clone(selection.minPos(), selection.maxPos(),
-						WorldEdit.playerPos());
+					dstOrigin = WorldEdit.playerPos();
 				}
+				TaskClone.Mode mode = (distance > 0) ? TaskClone.Mode.MOVE : TaskClone.Mode.FORCE;
+				TaskClone task = new TaskClone(selection.minPos(), selection.maxPos(), dstOrigin,
+					world, mode);
+				Thread t = new Thread(() -> TaskManager.getInstance().addTask(task));
+				t.start();
+				TaskManager.getInstance().threads.add(t);
 			} else {
-				WorldEdit.sendMessage(getUsage(sender));
+				WorldEdit.sendMessage(new TextComponentTranslation(
+					"text.cutelessmod.clientcommands.worldEdit.move.usage"));
 			}
 		} else {
 			WorldEdit.sendMessage(new TextComponentTranslation(

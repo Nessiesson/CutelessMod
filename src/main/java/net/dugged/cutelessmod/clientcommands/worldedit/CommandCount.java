@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
@@ -84,7 +84,7 @@ public class CommandCount extends ClientCommand {
 				Thread t = new Thread(
 					() -> countBlock(world, selection, blockState, exclusive, compareStates));
 				t.start();
-				ClientCommandHandler.instance.threads.add(t);
+				TaskManager.getInstance().threads.add(t);
 			} else {
 				WorldEdit.sendMessage(new TextComponentTranslation(
 					"text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));

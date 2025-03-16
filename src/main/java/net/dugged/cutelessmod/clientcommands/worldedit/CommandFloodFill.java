@@ -7,9 +7,8 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
-import net.dugged.cutelessmod.clientcommands.HandlerUndo;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
+import net.dugged.cutelessmod.clientcommands.TaskSetBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.state.IBlockState;
@@ -34,143 +33,69 @@ public class CommandFloodFill extends ClientCommand {
 			"text.cutelessmod.clientcommands.worldEdit.floodfill.usage").getUnformattedText();
 	}
 
+	private void checkAndAddNeighbor(World world, BlockPos neighbor, BlockPos startPos, int radius,
+		ChunkPos currentChunk, List<BlockPos> checkedBlocks, List<BlockPos> blocksToCheck,
+		Map<ChunkPos, BlockPos> chunkMap, List<ChunkPos> chunkList) {
+		if (!(world.getBlockState(neighbor).getBlock() instanceof BlockAir)) {
+			return;
+		}
+		if (!WorldEdit.checkCircle(neighbor.getX() - startPos.getX(),
+			neighbor.getZ() - startPos.getZ(), radius)) {
+			return;
+		}
+		ChunkPos np = world.getChunk(neighbor).getPos();
+		if (np.equals(currentChunk)) {
+			if (!checkedBlocks.contains(neighbor)) {
+				blocksToCheck.add(neighbor);
+				checkedBlocks.add(neighbor);
+			}
+		} else {
+			if (!chunkMap.containsKey(np)) {
+				chunkList.add(np);
+				chunkMap.put(np, neighbor);
+			}
+		}
+	}
+
 	private void floodFill(World world, IBlockState blockState, BlockPos startPos, int radius) {
-		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(
-			HandlerSetBlock.class, world, null);
-		List<BlockPos> undoBlockPositions = new ArrayList<>();
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
-			HandlerUndo.class, world, null);
-		undoHandler.setHandler(setBlockHandler);
-		undoHandler.running = false;
+		Map<BlockPos, IBlockState> blocksToPlace = new HashMap<>();
 		List<ChunkPos> chunkList = new ArrayList<>();
 		Map<ChunkPos, BlockPos> chunkMap = new HashMap<>();
-		chunkList.add(world.getChunk(startPos).getPos());
-		chunkMap.put(world.getChunk(startPos).getPos(), startPos);
-		BlockPos pos1;
+		ChunkPos startChunk = world.getChunk(startPos).getPos();
+		chunkList.add(startChunk);
+		chunkMap.put(startChunk, startPos);
 		while (!chunkList.isEmpty()) {
-			ChunkPos chunkPos = chunkList.get(0);
-			BlockPos chunkStartPos = chunkMap.get(chunkPos);
+			ChunkPos currentChunk = chunkList.remove(0);
+			BlockPos chunkStart = chunkMap.get(currentChunk);
 			List<BlockPos> checkedBlocks = new ArrayList<>();
 			List<BlockPos> blocksToCheck = new ArrayList<>();
-			blocksToCheck.add(chunkStartPos);
-			checkedBlocks.add(chunkStartPos);
+			blocksToCheck.add(chunkStart);
+			checkedBlocks.add(chunkStart);
 			while (!blocksToCheck.isEmpty()) {
 				if (Thread.interrupted()) {
 					return;
 				}
-				BlockPos pos = blocksToCheck.get(0);
-				if (pos.up().getY() <= startPos.getY()) {
-					pos1 = pos.up();
-					if (world.getBlockState(pos1).getBlock() instanceof BlockAir
-						&& WorldEdit.checkCircle(pos1.getX() - startPos.getX(),
-						pos1.getZ() - startPos.getZ(), radius)) {
-						ChunkPos chunkPos1 = world.getChunk(pos1).getPos();
-						if (chunkPos1.equals(chunkPos)) {
-							if (!checkedBlocks.contains(pos1)) {
-								blocksToCheck.add(pos1);
-								checkedBlocks.add(pos1);
-							}
-						} else {
-							if (!chunkMap.containsKey(chunkPos1)) {
-								chunkList.add(chunkPos1);
-								chunkMap.put(chunkPos1, pos1);
-							}
-						}
-					}
+				BlockPos pos = blocksToCheck.remove(0);
+				BlockPos up = pos.up();
+				if (up.getY() <= startPos.getY()) {
+					checkAndAddNeighbor(world, up, startPos, radius, currentChunk, checkedBlocks,
+						blocksToCheck, chunkMap, chunkList);
 				}
-				pos1 = pos.down();
-				if (world.getBlockState(pos1).getBlock() instanceof BlockAir
-					&& WorldEdit.checkCircle(pos1.getX() - startPos.getX(),
-					pos1.getZ() - startPos.getZ(), radius)) {
-					ChunkPos chunkPos1 = world.getChunk(pos1).getPos();
-					if (chunkPos1.equals(chunkPos)) {
-						if (!checkedBlocks.contains(pos1)) {
-							blocksToCheck.add(pos1);
-							checkedBlocks.add(pos1);
-						}
-					} else {
-						if (!chunkMap.containsKey(chunkPos1)) {
-							chunkList.add(chunkPos1);
-							chunkMap.put(chunkPos1, pos1);
-						}
-					}
-				}
-				pos1 = pos.north();
-				if (world.getBlockState(pos1).getBlock() instanceof BlockAir
-					&& WorldEdit.checkCircle(pos1.getX() - startPos.getX(),
-					pos1.getZ() - startPos.getZ(), radius)) {
-					ChunkPos chunkPos1 = world.getChunk(pos1).getPos();
-					if (chunkPos1.equals(chunkPos)) {
-						if (!checkedBlocks.contains(pos1)) {
-							blocksToCheck.add(pos1);
-							checkedBlocks.add(pos1);
-						}
-					} else {
-						if (!chunkMap.containsKey(chunkPos1)) {
-							chunkList.add(chunkPos1);
-							chunkMap.put(chunkPos1, pos1);
-						}
-					}
-				}
-				pos1 = pos.east();
-				if (world.getBlockState(pos1).getBlock() instanceof BlockAir
-					&& WorldEdit.checkCircle(pos1.getX() - startPos.getX(),
-					pos1.getZ() - startPos.getZ(), radius)) {
-					ChunkPos chunkPos1 = world.getChunk(pos1).getPos();
-					if (chunkPos1.equals(chunkPos)) {
-						if (!checkedBlocks.contains(pos1)) {
-							blocksToCheck.add(pos1);
-							checkedBlocks.add(pos1);
-						}
-					} else {
-						if (!chunkMap.containsKey(chunkPos1)) {
-							chunkList.add(chunkPos1);
-							chunkMap.put(chunkPos1, pos1);
-						}
-					}
-				}
-				pos1 = pos.south();
-				if (world.getBlockState(pos1).getBlock() instanceof BlockAir
-					&& WorldEdit.checkCircle(pos1.getX() - startPos.getX(),
-					pos1.getZ() - startPos.getZ(), radius)) {
-					ChunkPos chunkPos1 = world.getChunk(pos1).getPos();
-					if (chunkPos1.equals(chunkPos)) {
-						if (!checkedBlocks.contains(pos1)) {
-							blocksToCheck.add(pos1);
-							checkedBlocks.add(pos1);
-						}
-					} else {
-						if (!chunkMap.containsKey(chunkPos1)) {
-							chunkList.add(chunkPos1);
-							chunkMap.put(chunkPos1, pos1);
-						}
-					}
-				}
-				pos1 = pos.west();
-				if (world.getBlockState(pos1).getBlock() instanceof BlockAir
-					&& WorldEdit.checkCircle(pos1.getX() - startPos.getX(),
-					pos1.getZ() - startPos.getZ(), radius)) {
-					ChunkPos chunkPos1 = world.getChunk(pos1).getPos();
-					if (chunkPos1.equals(chunkPos)) {
-						if (!checkedBlocks.contains(pos1)) {
-							blocksToCheck.add(pos1);
-							checkedBlocks.add(pos1);
-						}
-					} else {
-						if (!chunkMap.containsKey(chunkPos1)) {
-							chunkList.add(chunkPos1);
-							chunkMap.put(chunkPos1, pos1);
-						}
-					}
-				}
-				undoBlockPositions.add(pos);
-				setBlockHandler.setBlock(pos, blockState);
-				blocksToCheck.remove(0);
+				checkAndAddNeighbor(world, pos.down(), startPos, radius, currentChunk,
+					checkedBlocks, blocksToCheck, chunkMap, chunkList);
+				checkAndAddNeighbor(world, pos.north(), startPos, radius, currentChunk,
+					checkedBlocks, blocksToCheck, chunkMap, chunkList);
+				checkAndAddNeighbor(world, pos.east(), startPos, radius, currentChunk,
+					checkedBlocks, blocksToCheck, chunkMap, chunkList);
+				checkAndAddNeighbor(world, pos.south(), startPos, radius, currentChunk,
+					checkedBlocks, blocksToCheck, chunkMap, chunkList);
+				checkAndAddNeighbor(world, pos.west(), startPos, radius, currentChunk,
+					checkedBlocks, blocksToCheck, chunkMap, chunkList);
+				blocksToPlace.put(pos, blockState);
 			}
-			chunkList.remove(0);
 		}
-		undoHandler.saveBlocks(undoBlockPositions);
-		undoHandler.running = true;
+		TaskSetBlock task = new TaskSetBlock(blocksToPlace, world);
+		TaskManager.getInstance().addTask(task);
 	}
 
 	@Override
@@ -181,21 +106,12 @@ public class CommandFloodFill extends ClientCommand {
 			BlockPos pos = WorldEdit.playerPos();
 			if (world.getBlockState(pos).getBlock() instanceof BlockAir) {
 				Block block = getBlockByText(sender, args[0]);
-				IBlockState blockState;
-				if (args.length >= 2) {
-					blockState = convertArgToBlockState(block, args[1]);
-				} else {
-					blockState = block.getDefaultState();
-				}
-				int radius;
-				if (args.length == 3) {
-					radius = parseInt(args[2]);
-				} else {
-					radius = 100;
-				}
+				IBlockState blockState = args.length >= 2 ? convertArgToBlockState(block, args[1])
+					: block.getDefaultState();
+				int radius = args.length == 3 ? parseInt(args[2]) : 100;
 				Thread t = new Thread(() -> floodFill(world, blockState, pos, radius));
 				t.start();
-				ClientCommandHandler.instance.threads.add(t);
+				TaskManager.getInstance().threads.add(t);
 			} else {
 				WorldEdit.sendMessage(new TextComponentTranslation(
 					"text.cutelessmod.clientcommands.worldEdit.floodfill.noSpaceToFlood"));
@@ -206,12 +122,12 @@ public class CommandFloodFill extends ClientCommand {
 		}
 	}
 
+	@Override
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
 		String[] args, @Nullable BlockPos pos) {
 		if (args.length == 1) {
 			return getListOfStringsMatchingLastWord(args, Block.REGISTRY.getKeys());
-		} else {
-			return Collections.emptyList();
 		}
+		return Collections.emptyList();
 	}
 }

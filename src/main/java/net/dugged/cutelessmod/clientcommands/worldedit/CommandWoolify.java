@@ -3,12 +3,10 @@ package net.dugged.cutelessmod.clientcommands.worldedit;
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
-import net.dugged.cutelessmod.clientcommands.HandlerUndo;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
+import net.dugged.cutelessmod.clientcommands.TaskSetBlock;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.block.state.IBlockState;
@@ -24,6 +22,29 @@ import net.minecraft.world.World;
 
 public class CommandWoolify extends ClientCommand {
 
+	public static int getClosestDyeMetadata(IBlockState state, IBlockAccess world, BlockPos pos) {
+		MapColor blockMapColor = state.getBlock().getMapColor(state, world, pos);
+		int blockColor = blockMapColor.colorValue;
+		float r = ((blockColor >> 16) & 0xFF) / 255f;
+		float g = ((blockColor >> 8) & 0xFF) / 255f;
+		float b = (blockColor & 0xFF) / 255f;
+		EnumDyeColor closestDye = null;
+		float smallestDistance = Float.MAX_VALUE;
+		for (EnumDyeColor dye : EnumDyeColor.values()) {
+			int dyeColorInt = dye.getColorValue();
+			float dyeR = ((dyeColorInt >> 16) & 0xFF) / 255f;
+			float dyeG = ((dyeColorInt >> 8) & 0xFF) / 255f;
+			float dyeB = (dyeColorInt & 0xFF) / 255f;
+			float distance =
+				(r - dyeR) * (r - dyeR) + (g - dyeG) * (g - dyeG) + (b - dyeB) * (b - dyeB);
+			if (distance < smallestDistance) {
+				smallestDistance = distance;
+				closestDye = dye;
+			}
+		}
+		return closestDye.getMetadata();
+	}
+
 	@Override
 	public String getName() {
 		return "woolify";
@@ -35,42 +56,8 @@ public class CommandWoolify extends ClientCommand {
 			"text.cutelessmod.clientcommands.worldEdit.size.usage").getUnformattedText();
 	}
 
-	public static int getClosestDyeMetadata(IBlockState state, IBlockAccess world, BlockPos pos) {
-		MapColor blockMapColor = state.getBlock().getMapColor(state, world, pos);
-		int blockColor = blockMapColor.colorValue;
-
-		float r = ((blockColor >> 16) & 0xFF) / 255f;
-		float g = ((blockColor >> 8) & 0xFF) / 255f;
-		float b = (blockColor & 0xFF) / 255f;
-
-		EnumDyeColor closestDye = null;
-		float smallestDistance = Float.MAX_VALUE;
-		for (EnumDyeColor dye : EnumDyeColor.values()) {
-			int dyeColorInt = dye.getColorValue();
-			float dyeR = ((dyeColorInt >> 16) & 0xFF) / 255f;
-			float dyeG = ((dyeColorInt >> 8) & 0xFF) / 255f;
-			float dyeB = (dyeColorInt & 0xFF) / 255f;
-			float distance = (r - dyeR) * (r - dyeR)
-				+ (g - dyeG) * (g - dyeG)
-				+ (b - dyeB) * (b - dyeB);
-
-			if (distance < smallestDistance) {
-				smallestDistance = distance;
-				closestDye = dye;
-			}
-		}
-		return closestDye.getMetadata();
-	}
-
-
 	public void woolify(World world, WorldEditSelection selection) {
-		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(
-			HandlerSetBlock.class, world, selection);
-		List<BlockPos> undoBlockPositions = new ArrayList<>();
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
-			HandlerUndo.class, world, selection);
-		undoHandler.setHandler(setBlockHandler);
-		undoHandler.running = false;
+		HashMap<BlockPos, IBlockState> blocksToPlace = new HashMap<>();
 		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.getPos(A),
 			selection.getPos(B))) {
 			if (Thread.interrupted()) {
@@ -82,23 +69,22 @@ public class CommandWoolify extends ClientCommand {
 				continue;
 			}
 			int metadata = getClosestDyeMetadata(blockState, world, pos);
-			undoBlockPositions.add(pos);
-			setBlockHandler.setBlock(pos, Blocks.WOOL.getStateFromMeta(metadata));
+			blocksToPlace.put(pos, Blocks.WOOL.getStateFromMeta(metadata));
 		}
-		undoHandler.saveBlocks(undoBlockPositions);
-		undoHandler.running = true;
+		TaskSetBlock task = new TaskSetBlock(blocksToPlace, world);
+		TaskManager.getInstance().addTask(task);
 	}
 
 	@Override
-	public void execute(
-		MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args)
+		throws CommandException {
 		if (args.length == 0) {
 			if (WorldEdit.hasCurrentSelection()) {
 				WorldEditSelection selection = WorldEdit.getCurrentSelection();
-				final World world = sender.getEntityWorld();
+				World world = sender.getEntityWorld();
 				Thread t = new Thread(() -> woolify(world, selection));
 				t.start();
-				ClientCommandHandler.instance.threads.add(t);
+				TaskManager.getInstance().threads.add(t);
 			} else {
 				WorldEdit.sendMessage(new TextComponentTranslation(
 					"text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));

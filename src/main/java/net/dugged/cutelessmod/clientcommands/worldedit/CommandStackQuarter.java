@@ -1,17 +1,13 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
-import net.dugged.cutelessmod.clientcommands.HandlerUndo;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
+import net.dugged.cutelessmod.clientcommands.TaskSetBlock;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
-import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -25,7 +21,7 @@ public class CommandStackQuarter extends ClientCommand {
 	}
 
 	@Override
-	public String getUsage(ICommandSender sender) {
+	public String getUsage(net.minecraft.command.ICommandSender sender) {
 		return new TextComponentTranslation(
 			"text.cutelessmod.clientcommands.worldEdit.stackquarter.usage").getUnformattedText();
 	}
@@ -45,161 +41,173 @@ public class CommandStackQuarter extends ClientCommand {
 						return;
 					}
 					IBlockState blockState = world.getBlockState(selection.minPos().add(x, y, z));
-					// Horizontal diagonals
-					// SW -X +Z
 					if (yaw >= 45 - tolerance && yaw <= 45 + tolerance && pitch >= -tolerance
 						&& pitch <= tolerance) {
 						blockList.put(selection.minPos().add(-x - 1 - spacing, y, z),
-							WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
+							WorldEdit.flipBlockstate(blockState,
+								net.minecraft.util.EnumFacing.Axis.X));
 						blockList.put(
 							selection.minPos().add(x, y, widthZ - z - 1 + widthZ + spacing),
-							WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
+							WorldEdit.flipBlockstate(blockState,
+								net.minecraft.util.EnumFacing.Axis.Z));
 						blockList.put(selection.minPos()
 								.add(-x - 1 - spacing, y, widthZ - z - 1 + widthZ + spacing),
-							WorldEdit.flipBlockstate(
-								WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X),
-								EnumFacing.Axis.Z));
-						// NW -X -Z
+							WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState,
+									net.minecraft.util.EnumFacing.Axis.X),
+								net.minecraft.util.EnumFacing.Axis.Z));
 					} else if (yaw >= 135 - tolerance && yaw <= 135 + tolerance
 						&& pitch >= -tolerance && pitch <= tolerance) {
 						blockList.put(selection.minPos().add(-x - 1 - spacing, y, z),
-							WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
+							WorldEdit.flipBlockstate(blockState,
+								net.minecraft.util.EnumFacing.Axis.X));
 						blockList.put(selection.minPos().add(x, y, -z - 1 - spacing),
-							WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
+							WorldEdit.flipBlockstate(blockState,
+								net.minecraft.util.EnumFacing.Axis.Z));
 						blockList.put(selection.minPos().add(-x - 1 - spacing, y, -z - 1 - spacing),
-							WorldEdit.flipBlockstate(
-								WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X),
-								EnumFacing.Axis.Z));
-						// SE +X +Z
+							WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState,
+									net.minecraft.util.EnumFacing.Axis.X),
+								net.minecraft.util.EnumFacing.Axis.Z));
 					} else if (yaw >= -45 - tolerance && yaw <= -45 + tolerance
 						&& pitch >= -tolerance && pitch <= tolerance) {
 						blockList.put(
 							selection.minPos().add(widthX - x - 1 + widthX + spacing, y, z),
-							WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
+							WorldEdit.flipBlockstate(blockState,
+								net.minecraft.util.EnumFacing.Axis.X));
 						blockList.put(
 							selection.minPos().add(x, y, widthZ - z - 1 + widthZ + spacing),
-							WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
+							WorldEdit.flipBlockstate(blockState,
+								net.minecraft.util.EnumFacing.Axis.Z));
 						blockList.put(selection.minPos().add(widthX - x - 1 + widthX + spacing, y,
 							widthZ - z - 1 + widthZ + spacing), WorldEdit.flipBlockstate(
-							WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X),
-							EnumFacing.Axis.Z));
-						// NE +X -Z
+							WorldEdit.flipBlockstate(blockState,
+								net.minecraft.util.EnumFacing.Axis.X),
+							net.minecraft.util.EnumFacing.Axis.Z));
 					} else if (yaw >= -135 - tolerance && yaw <= -135 + tolerance
 						&& pitch >= -tolerance && pitch <= tolerance) {
 						blockList.put(
 							selection.minPos().add(widthX - x - 1 + widthX + spacing, y, z),
-							WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
-						blockList.put(selection.minPos().add(x, y, -z - 1 + spacing),
-							WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
+							WorldEdit.flipBlockstate(blockState,
+								net.minecraft.util.EnumFacing.Axis.X));
+						blockList.put(selection.minPos().add(x, y, -z - 1 - spacing),
+							WorldEdit.flipBlockstate(blockState,
+								net.minecraft.util.EnumFacing.Axis.Z));
 						blockList.put(selection.minPos()
 								.add(widthX - x - 1 + widthX + spacing, y, -z - 1 - spacing),
-							WorldEdit.flipBlockstate(
-								WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X),
-								EnumFacing.Axis.Z));
-
-						// Vertical diagonals
+							WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState,
+									net.minecraft.util.EnumFacing.Axis.X),
+								net.minecraft.util.EnumFacing.Axis.Z));
 					} else if (yaw >= -tolerance && yaw <= tolerance) {
-						// S +Z -Y
 						if (pitch >= 45 - tolerance && pitch <= 45 + tolerance) {
 							blockList.put(
 								selection.minPos().add(x, y, widthZ - z - 1 + widthZ + spacing),
-								WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
+								WorldEdit.flipBlockstate(blockState,
+									net.minecraft.util.EnumFacing.Axis.Z));
 							blockList.put(selection.minPos().add(x, -y - 1 - spacing, z),
-								WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Y));
+								WorldEdit.flipBlockstate(blockState,
+									net.minecraft.util.EnumFacing.Axis.Y));
 							blockList.put(selection.minPos()
 									.add(x, -y - 1 - spacing, widthZ - z - 1 + widthZ + spacing),
-								WorldEdit.flipBlockstate(
-									WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z),
-									EnumFacing.Axis.Y));
-							// S +Z +Y
+								WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState,
+										net.minecraft.util.EnumFacing.Axis.Z),
+									net.minecraft.util.EnumFacing.Axis.Y));
 						} else if (pitch >= -45 - tolerance && pitch <= -45 + tolerance) {
 							blockList.put(
 								selection.minPos().add(x, y, widthZ - z - 1 + widthZ + spacing),
-								WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
+								WorldEdit.flipBlockstate(blockState,
+									net.minecraft.util.EnumFacing.Axis.Z));
 							blockList.put(
 								selection.minPos().add(x, widthY - y - 1 + widthY + spacing, z),
-								WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Y));
+								WorldEdit.flipBlockstate(blockState,
+									net.minecraft.util.EnumFacing.Axis.Y));
 							blockList.put(selection.minPos()
 								.add(x, widthY - y - 1 + widthY + spacing,
 									widthZ - z - 1 + widthZ + spacing), WorldEdit.flipBlockstate(
-								WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z),
-								EnumFacing.Axis.Y));
+								WorldEdit.flipBlockstate(blockState,
+									net.minecraft.util.EnumFacing.Axis.Z),
+								net.minecraft.util.EnumFacing.Axis.Y));
 						}
 					} else if (yaw >= 90 - tolerance && yaw <= 90 + tolerance) {
-						// W -X -Y
 						if (pitch >= 45 - tolerance && pitch <= 45 + tolerance) {
 							blockList.put(selection.minPos().add(-x - 1 - spacing, y, z),
-								WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
+								WorldEdit.flipBlockstate(blockState,
+									net.minecraft.util.EnumFacing.Axis.X));
 							blockList.put(selection.minPos().add(x, -y - 1 - spacing, z),
-								WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
+								WorldEdit.flipBlockstate(blockState,
+									net.minecraft.util.EnumFacing.Axis.X));
 							blockList.put(
 								selection.minPos().add(-x - 1 - spacing, -y - 1 - spacing, z),
-								WorldEdit.flipBlockstate(
-									WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X),
-									EnumFacing.Axis.Y));
-							// W -X +Y
+								WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState,
+										net.minecraft.util.EnumFacing.Axis.X),
+									net.minecraft.util.EnumFacing.Axis.Y));
 						} else if (pitch >= -45 - tolerance && pitch <= -45 + tolerance) {
 							blockList.put(selection.minPos().add(-x - 1 - spacing, y, z),
-								WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
+								WorldEdit.flipBlockstate(blockState,
+									net.minecraft.util.EnumFacing.Axis.X));
 							blockList.put(
 								selection.minPos().add(x, widthY - y - 1 + widthY + spacing, z),
-								WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Y));
+								WorldEdit.flipBlockstate(blockState,
+									net.minecraft.util.EnumFacing.Axis.Y));
 							blockList.put(selection.minPos()
 									.add(-x - 1 - spacing, widthY - y - 1 + widthY + spacing, z),
-								WorldEdit.flipBlockstate(
-									WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X),
-									EnumFacing.Axis.Y));
+								WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState,
+										net.minecraft.util.EnumFacing.Axis.X),
+									net.minecraft.util.EnumFacing.Axis.Y));
 						}
 					} else if (yaw >= -90 - tolerance && yaw <= -90 + tolerance) {
-						// E +X -Y
 						if (pitch >= 45 - tolerance && pitch <= 45 + tolerance) {
 							blockList.put(
 								selection.minPos().add(widthX - x - 1 + widthX + spacing, y, z),
-								WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
+								WorldEdit.flipBlockstate(blockState,
+									net.minecraft.util.EnumFacing.Axis.X));
 							blockList.put(selection.minPos().add(x, -y - 1 - spacing, z),
-								WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Y));
+								WorldEdit.flipBlockstate(blockState,
+									net.minecraft.util.EnumFacing.Axis.Y));
 							blockList.put(selection.minPos()
 									.add(widthX - x - 1 + widthX + spacing, -y - 1 - spacing, z),
-								WorldEdit.flipBlockstate(
-									WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X),
-									EnumFacing.Axis.Y));
-							// E +X +Y
+								WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState,
+										net.minecraft.util.EnumFacing.Axis.X),
+									net.minecraft.util.EnumFacing.Axis.Y));
 						} else if (pitch >= -45 - tolerance && pitch <= -45 + tolerance) {
 							blockList.put(
 								selection.minPos().add(widthX - x - 1 + widthX + spacing, y, z),
-								WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X));
+								WorldEdit.flipBlockstate(blockState,
+									net.minecraft.util.EnumFacing.Axis.X));
 							blockList.put(
 								selection.minPos().add(x, widthY - y - 1 + widthY + spacing, z),
-								WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Y));
+								WorldEdit.flipBlockstate(blockState,
+									net.minecraft.util.EnumFacing.Axis.Y));
 							blockList.put(selection.minPos().add(widthX - x - 1 + widthX + spacing,
 								widthY - y - 1 + widthY + spacing, z), WorldEdit.flipBlockstate(
-								WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.X),
-								EnumFacing.Axis.Y));
+								WorldEdit.flipBlockstate(blockState,
+									net.minecraft.util.EnumFacing.Axis.X),
+								net.minecraft.util.EnumFacing.Axis.Y));
 						}
 					} else if (yaw >= 180 - tolerance || yaw <= -180 + tolerance) {
-						// N -Z -Y
 						if (pitch >= 45 - tolerance && pitch <= 45 + tolerance) {
 							blockList.put(selection.minPos().add(x, y, -z - 1 - spacing),
-								WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
+								WorldEdit.flipBlockstate(blockState,
+									net.minecraft.util.EnumFacing.Axis.Z));
 							blockList.put(selection.minPos().add(x, -y - 1 - spacing, z),
-								WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Y));
+								WorldEdit.flipBlockstate(blockState,
+									net.minecraft.util.EnumFacing.Axis.Y));
 							blockList.put(
 								selection.minPos().add(x, -y - 1 - spacing, -z - 1 - spacing),
-								WorldEdit.flipBlockstate(
-									WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z),
-									EnumFacing.Axis.Y));
-							// N -Z +Y
+								WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState,
+										net.minecraft.util.EnumFacing.Axis.Z),
+									net.minecraft.util.EnumFacing.Axis.Y));
 						} else if (pitch >= -45 - tolerance && pitch <= -45 + tolerance) {
 							blockList.put(selection.minPos().add(x, y, -z - 1 - spacing),
-								WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z));
+								WorldEdit.flipBlockstate(blockState,
+									net.minecraft.util.EnumFacing.Axis.Z));
 							blockList.put(
 								selection.minPos().add(x, widthY - y - 1 + widthY + spacing, z),
-								WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Y));
+								WorldEdit.flipBlockstate(blockState,
+									net.minecraft.util.EnumFacing.Axis.Y));
 							blockList.put(selection.minPos()
 									.add(x, widthY - y - 1 + widthY + spacing, -z - 1 - spacing),
-								WorldEdit.flipBlockstate(
-									WorldEdit.flipBlockstate(blockState, EnumFacing.Axis.Z),
-									EnumFacing.Axis.Y));
+								WorldEdit.flipBlockstate(WorldEdit.flipBlockstate(blockState,
+										net.minecraft.util.EnumFacing.Axis.Z),
+									net.minecraft.util.EnumFacing.Axis.Y));
 						}
 					} else {
 						WorldEdit.sendMessage(new TextComponentTranslation(
@@ -209,39 +217,29 @@ public class CommandStackQuarter extends ClientCommand {
 				}
 			}
 		}
-		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(
-			HandlerSetBlock.class, world, selection);
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
-			HandlerUndo.class, world, selection);
-		undoHandler.setHandler(setBlockHandler);
-		undoHandler.running = false;
-		undoHandler.saveBlocks(new ArrayList<>(blockList.keySet()));
-		setBlockHandler.setBlocks(blockList);
-		undoHandler.running = true;
+		TaskSetBlock task = new TaskSetBlock(blockList, world);
+		TaskManager.getInstance().addTask(task);
 	}
 
 	@Override
-	public void execute(MinecraftServer server, ICommandSender sender, String[] args)
+	public void execute(MinecraftServer server, net.minecraft.command.ICommandSender sender,
+		String[] args)
 		throws CommandException {
 		if (args.length == 0 || args.length == 1) {
-			int spacing;
-			if (args.length == 1) {
-				spacing = parseInt(args[0]);
-			} else {
-				spacing = 0;
-			}
+			int spacing = (args.length == 1) ? parseInt(args[0]) : 0;
 			if (WorldEdit.hasCurrentSelection()) {
 				WorldEditSelection selection = WorldEdit.getCurrentSelection();
 				World world = sender.getEntityWorld();
 				Thread t = new Thread(() -> stackQuarter(world, selection, spacing));
 				t.start();
-				ClientCommandHandler.instance.threads.add(t);
+				TaskManager.getInstance().threads.add(t);
 			} else {
 				WorldEdit.sendMessage(new TextComponentTranslation(
 					"text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));
 			}
 		} else {
-			WorldEdit.sendMessage(getUsage(sender));
+			WorldEdit.sendMessage(new TextComponentTranslation(
+				"text.cutelessmod.clientcommands.worldEdit.outlinefill.usage"));
 		}
 	}
 }

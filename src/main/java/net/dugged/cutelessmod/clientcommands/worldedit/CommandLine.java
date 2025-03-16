@@ -3,14 +3,14 @@ package net.dugged.cutelessmod.clientcommands.worldedit;
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
-import net.dugged.cutelessmod.clientcommands.HandlerUndo;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
+import net.dugged.cutelessmod.clientcommands.TaskSetBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
@@ -35,13 +35,7 @@ public class CommandLine extends ClientCommand {
 	}
 
 	private void placeLine(World world, WorldEditSelection selection, IBlockState blockState) {
-		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(
-			HandlerSetBlock.class, world, selection);
-		List<BlockPos> undoBlockPositions = new ArrayList<>();
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
-			HandlerUndo.class, world, selection);
-		undoHandler.setHandler(setBlockHandler);
-		undoHandler.running = false;
+		Map<BlockPos, IBlockState> blocksToPlace = new HashMap<>();
 		int x1 = selection.getPos(A).getX();
 		int y1 = selection.getPos(A).getY();
 		int z1 = selection.getPos(A).getZ();
@@ -51,27 +45,13 @@ public class CommandLine extends ClientCommand {
 		int dx = Math.abs(x2 - x1);
 		int dy = Math.abs(y2 - y1);
 		int dz = Math.abs(z2 - z1);
-		int xs, ys, zs, p1, p2;
-		undoBlockPositions.add(new BlockPos(x1, y1, z1));
-		setBlockHandler.setBlock(new BlockPos(x1, y1, z1), blockState);
-		if (x2 > x1) {
-			xs = 1;
-		} else {
-			xs = -1;
-		}
-		if (y2 > y1) {
-			ys = 1;
-		} else {
-			ys = -1;
-		}
-		if (z2 > z1) {
-			zs = 1;
-		} else {
-			zs = -1;
-		}
+		int xs = (x2 > x1) ? 1 : -1;
+		int ys = (y2 > y1) ? 1 : -1;
+		int zs = (z2 > z1) ? 1 : -1;
+		blocksToPlace.put(new BlockPos(x1, y1, z1), blockState);
 		if (dx >= dy && dx >= dz) {
-			p1 = 2 * dy - dx;
-			p2 = 2 * dz - dx;
+			int p1 = 2 * dy - dx;
+			int p2 = 2 * dz - dx;
 			while (x1 != x2) {
 				if (Thread.interrupted()) {
 					return;
@@ -87,12 +67,11 @@ public class CommandLine extends ClientCommand {
 				}
 				p1 += 2 * dy;
 				p2 += 2 * dz;
-				undoBlockPositions.add(new BlockPos(x1, y1, z1));
-				setBlockHandler.setBlock(new BlockPos(x1, y1, z1), blockState);
+				blocksToPlace.put(new BlockPos(x1, y1, z1), blockState);
 			}
 		} else if (dy >= dx && dy >= dz) {
-			p1 = 2 * dx - dy;
-			p2 = 2 * dz - dy;
+			int p1 = 2 * dx - dy;
+			int p2 = 2 * dz - dy;
 			while (y1 != y2) {
 				if (Thread.interrupted()) {
 					return;
@@ -108,12 +87,11 @@ public class CommandLine extends ClientCommand {
 				}
 				p1 += 2 * dx;
 				p2 += 2 * dz;
-				undoBlockPositions.add(new BlockPos(x1, y1, z1));
-				setBlockHandler.setBlock(new BlockPos(x1, y1, z1), blockState);
+				blocksToPlace.put(new BlockPos(x1, y1, z1), blockState);
 			}
 		} else {
-			p1 = 2 * dy - dz;
-			p2 = 2 * dx - dz;
+			int p1 = 2 * dy - dz;
+			int p2 = 2 * dx - dz;
 			while (z1 != z2) {
 				if (Thread.interrupted()) {
 					return;
@@ -129,12 +107,11 @@ public class CommandLine extends ClientCommand {
 				}
 				p1 += 2 * dy;
 				p2 += 2 * dx;
-				undoBlockPositions.add(new BlockPos(x1, y1, z1));
-				setBlockHandler.setBlock(new BlockPos(x1, y1, z1), blockState);
+				blocksToPlace.put(new BlockPos(x1, y1, z1), blockState);
 			}
 		}
-		undoHandler.saveBlocks(undoBlockPositions);
-		undoHandler.running = true;
+		TaskSetBlock task = new TaskSetBlock(blocksToPlace, world);
+		TaskManager.getInstance().addTask(task);
 	}
 
 	@Override
@@ -156,7 +133,7 @@ public class CommandLine extends ClientCommand {
 				World world = sender.getEntityWorld();
 				Thread t = new Thread(() -> placeLine(world, selection, blockState));
 				t.start();
-				ClientCommandHandler.instance.threads.add(t);
+				TaskManager.getInstance().threads.add(t);
 			} else {
 				WorldEdit.sendMessage(new TextComponentTranslation(
 					"text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));

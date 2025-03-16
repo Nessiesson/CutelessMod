@@ -5,12 +5,13 @@ import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
-import net.dugged.cutelessmod.clientcommands.HandlerUndo;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
+import net.dugged.cutelessmod.clientcommands.TaskSetBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
@@ -33,27 +34,24 @@ public class CommandRunBrush extends ClientCommand {
 			"text.cutelessmod.clientcommands.worldEdit.runbrush.usage").getUnformattedText();
 	}
 
-	public void runBrush(World world, WorldEditSelection selection, IBlockState maskBlockState,
+	private void runBrush(World world, WorldEditSelection selection, IBlockState maskBlockState,
 		BrushBase brush) {
-		ArrayList<BlockPos> positions = new ArrayList<>();
+		List<BlockPos> positions = new ArrayList<>();
 		for (BlockPos pos : BlockPos.getAllInBox(selection.getPos(A), selection.getPos(B))) {
 			if (Thread.interrupted()) {
 				return;
 			}
-			if (world.getBlockState(pos) == maskBlockState) {
+			if (world.getBlockState(pos).equals(maskBlockState)) {
 				positions.addAll(brush.run(world, pos));
 			}
 		}
-		if (positions.size() > 0) {
-			HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(
-				HandlerSetBlock.class, world, selection);
-			HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
-				HandlerUndo.class, world, selection);
-			undoHandler.setHandler(setBlockHandler);
-			undoHandler.saveBlocks(positions);
-			for (BlockPos pos1 : positions) {
-				setBlockHandler.setBlock(pos1, brush.getBlockState());
+		if (!positions.isEmpty()) {
+			Map<BlockPos, IBlockState> blocksToPlace = new HashMap<>();
+			for (BlockPos pos : positions) {
+				blocksToPlace.put(pos, brush.getBlockState());
 			}
+			TaskSetBlock task = new TaskSetBlock(blocksToPlace, world);
+			TaskManager.getInstance().addTask(task);
 		}
 	}
 
@@ -83,10 +81,10 @@ public class CommandRunBrush extends ClientCommand {
 					}
 					BrushBase finalBrush = brush;
 					Thread t = new Thread(
-						() -> runBrush(mc.world, WorldEdit.getCurrentSelection(), maskBlockState,
-							finalBrush));
+						() -> runBrush(sender.getEntityWorld(), WorldEdit.getCurrentSelection(),
+							maskBlockState, finalBrush));
 					t.start();
-					ClientCommandHandler.instance.threads.add(t);
+					TaskManager.getInstance().threads.add(t);
 				} else {
 					WorldEdit.sendMessage(new TextComponentTranslation(
 						"text.cutelessmod.clientcommands.worldEdit.brush.notFound", args[0]));
@@ -102,12 +100,12 @@ public class CommandRunBrush extends ClientCommand {
 
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
 		String[] args, @Nullable BlockPos pos) {
-		ArrayList<String> brushNames = new ArrayList<>();
+		List<String> result = new ArrayList<>();
 		if (args.length == 3) {
 			for (BrushBase brush : WorldEdit.brushes) {
-				brushNames.add(brush.getName());
+				result.add(brush.getName());
 			}
-			return getListOfStringsMatchingLastWord(args, brushNames);
+			return getListOfStringsMatchingLastWord(args, result);
 		} else if (args.length == 1 || args.length == 4) {
 			return getListOfStringsMatchingLastWord(args, Block.REGISTRY.getKeys());
 		} else {

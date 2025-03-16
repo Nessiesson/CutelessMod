@@ -2,14 +2,14 @@ package net.dugged.cutelessmod.clientcommands.worldedit;
 
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
-import net.dugged.cutelessmod.clientcommands.HandlerUndo;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
+import net.dugged.cutelessmod.clientcommands.TaskSetBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
@@ -34,13 +34,7 @@ public class CommandHSphere extends ClientCommand {
 
 	private void generateHollowSphere(World world, BlockPos center, IBlockState blockState,
 		double radius) {
-		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(
-			HandlerSetBlock.class, world, null);
-		List<BlockPos> undoBlockPositions = new ArrayList<>();
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
-			HandlerUndo.class, world, null);
-		undoHandler.setHandler(setBlockHandler);
-		undoHandler.running = false;
+		Map<BlockPos, IBlockState> blocksToPlace = new HashMap<>();
 		for (double x = 0; x <= radius; x++) {
 			for (double y = 0; y <= Math.min(radius, world.getHeight() - center.getY()); y++) {
 				for (double z = 0; z <= radius; z++) {
@@ -48,65 +42,42 @@ public class CommandHSphere extends ClientCommand {
 						return;
 					}
 					if (WorldEdit.checkSphere(x, y, z, radius)) {
-						if (!WorldEdit.checkSphere(x + 1, y, z, radius) || !WorldEdit.checkSphere(x,
-							y + 1, z, radius) || !WorldEdit.checkSphere(x, y, z + 1, radius)) {
-							undoBlockPositions.add(
-								new BlockPos(center.getX() + x, center.getY() + y,
-									center.getZ() + z));
-							setBlockHandler.setBlock(
-								new BlockPos(center.getX() + x, center.getY() + y,
-									center.getZ() + z), blockState);
-							undoBlockPositions.add(
-								new BlockPos(center.getX() + x, center.getY() + y,
-									center.getZ() - z));
-							setBlockHandler.setBlock(
-								new BlockPos(center.getX() + x, center.getY() + y,
-									center.getZ() - z), blockState);
-							undoBlockPositions.add(
-								new BlockPos(center.getX() - x, center.getY() + y,
-									center.getZ() + z));
-							setBlockHandler.setBlock(
-								new BlockPos(center.getX() - x, center.getY() + y,
-									center.getZ() + z), blockState);
-							undoBlockPositions.add(
-								new BlockPos(center.getX() - x, center.getY() + y,
-									center.getZ() - z));
-							setBlockHandler.setBlock(
-								new BlockPos(center.getX() - x, center.getY() + y,
-									center.getZ() - z), blockState);
-							if (center.getY() + y >= 0) {
-								undoBlockPositions.add(
-									new BlockPos(center.getX() + x, center.getY() - y,
-										center.getZ() - z));
-								setBlockHandler.setBlock(
-									new BlockPos(center.getX() + x, center.getY() - y,
-										center.getZ() - z), blockState);
-								undoBlockPositions.add(
-									new BlockPos(center.getX() + x, center.getY() - y,
-										center.getZ() + z));
-								setBlockHandler.setBlock(
-									new BlockPos(center.getX() + x, center.getY() - y,
-										center.getZ() + z), blockState);
-								undoBlockPositions.add(
-									new BlockPos(center.getX() - x, center.getY() - y,
-										center.getZ() + z));
-								setBlockHandler.setBlock(
-									new BlockPos(center.getX() - x, center.getY() - y,
-										center.getZ() + z), blockState);
-								undoBlockPositions.add(
-									new BlockPos(center.getX() - x, center.getY() - y,
-										center.getZ() - z));
-								setBlockHandler.setBlock(
-									new BlockPos(center.getX() - x, center.getY() - y,
-										center.getZ() - z), blockState);
+						if (!WorldEdit.checkSphere(x + 1, y, z, radius)
+							|| !WorldEdit.checkSphere(x, y + 1, z, radius)
+							|| !WorldEdit.checkSphere(x, y, z + 1, radius)) {
+							blocksToPlace.put(
+								new BlockPos(center.getX() + (int) x, center.getY() + (int) y,
+									center.getZ() + (int) z), blockState);
+							blocksToPlace.put(
+								new BlockPos(center.getX() + (int) x, center.getY() + (int) y,
+									center.getZ() - (int) z), blockState);
+							blocksToPlace.put(
+								new BlockPos(center.getX() - (int) x, center.getY() + (int) y,
+									center.getZ() + (int) z), blockState);
+							blocksToPlace.put(
+								new BlockPos(center.getX() - (int) x, center.getY() + (int) y,
+									center.getZ() - (int) z), blockState);
+							if (center.getY() - (int) y >= 0) {
+								blocksToPlace.put(
+									new BlockPos(center.getX() + (int) x, center.getY() - (int) y,
+										center.getZ() + (int) z), blockState);
+								blocksToPlace.put(
+									new BlockPos(center.getX() + (int) x, center.getY() - (int) y,
+										center.getZ() - (int) z), blockState);
+								blocksToPlace.put(
+									new BlockPos(center.getX() - (int) x, center.getY() - (int) y,
+										center.getZ() + (int) z), blockState);
+								blocksToPlace.put(
+									new BlockPos(center.getX() - (int) x, center.getY() - (int) y,
+										center.getZ() - (int) z), blockState);
 							}
 						}
 					}
 				}
 			}
 		}
-		undoHandler.saveBlocks(undoBlockPositions);
-		undoHandler.running = true;
+		TaskSetBlock task = new TaskSetBlock(blocksToPlace, world);
+		TaskManager.getInstance().addTask(task);
 	}
 
 	@Override
@@ -123,7 +94,7 @@ public class CommandHSphere extends ClientCommand {
 					Thread t = new Thread(
 						() -> generateHollowSphere(world, selection.getPos(A), blockState, radius));
 					t.start();
-					ClientCommandHandler.instance.threads.add(t);
+					TaskManager.getInstance().threads.add(t);
 				} else {
 					WorldEdit.sendMessage(new TextComponentTranslation(
 						"text.cutelessmod.clientcommands.worldEdit.noOneByOneSelected"));

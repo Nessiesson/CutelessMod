@@ -1,11 +1,11 @@
 package net.dugged.cutelessmod.clientcommands.mixins;
 
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.Handler;
-import net.dugged.cutelessmod.clientcommands.HandlerClone;
-import net.dugged.cutelessmod.clientcommands.HandlerFill;
-import net.dugged.cutelessmod.clientcommands.HandlerReplaceItem;
-import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
+import net.dugged.cutelessmod.clientcommands.TaskClone;
+import net.dugged.cutelessmod.clientcommands.TaskFill;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
+import net.dugged.cutelessmod.clientcommands.TaskReplaceItem;
+import net.dugged.cutelessmod.clientcommands.TaskSetBlock;
 import net.dugged.cutelessmod.clientcommands.worldedit.WorldEdit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
@@ -29,7 +29,7 @@ public class MixinNetHandlerPlayClient {
 	private void onHandleChat(SPacketChat packet, CallbackInfo ci) {
 		if (packet.isSystem()) {
 			final String chatLine = packet.getChatComponent().getUnformattedText();
-			if (!ClientCommandHandler.instance.handlers.isEmpty() && (
+			if (TaskManager.getInstance().isActive() && (
 				chatLine.contains("The block couldn't be placed") || chatLine.contains(
 					"Block placed") || chatLine.contains("No blocks filled"))) {
 				ci.cancel();
@@ -37,6 +37,7 @@ public class MixinNetHandlerPlayClient {
 		}
 	}
 
+	@Unique
 	private boolean contains(String[] matches, String word) {
 		for (String s : matches) {
 			if (s.contains(word)) {
@@ -46,18 +47,18 @@ public class MixinNetHandlerPlayClient {
 		return false;
 	}
 
-	@Inject(method = "handleTabComplete", at = @At(value = "INVOKE", target = START_OF_PACKET, shift = At.Shift.AFTER), cancellable = true)
+	@Inject(method = "handleTabComplete", at = @At(value = "INVOKE", target = START_OF_PACKET, shift = At.Shift.AFTER))
 	private void onHandleTabComplete(SPacketTabComplete packetIn, CallbackInfo ci) {
 		if (contains(packetIn.getMatches(), "setblock")) {
-			HandlerSetBlock.setblockPermission = true;
+			TaskSetBlock.setblockPermission = true;
 		} else if (contains(packetIn.getMatches(), "fill")) {
-			HandlerFill.fillPermission = true;
+			TaskFill.fillPermission = true;
 		} else if (contains(packetIn.getMatches(), "clone")) {
-			HandlerClone.clonePermission = true;
+			TaskClone.clonePermission = true;
 		} else if (contains(packetIn.getMatches(), "replaceitem")) {
-			HandlerReplaceItem.replaceitemPermission = true;
+			TaskReplaceItem.replaceItemPermission = true;
 		} else if (contains(packetIn.getMatches(), "gamerule")) {
-			Handler.gamerulePermission = true;
+			TaskManager.gamerulePermission = true;
 		}
 	}
 
@@ -67,7 +68,7 @@ public class MixinNetHandlerPlayClient {
 			String msg = ((CPacketChatMessage) packetIn).getMessage();
 			String[] args = msg.split(" ");
 			if (args[0].equals("/tp")) {
-				ClientCommandHandler.instance.lastPosition.update(WorldEdit.playerPos(),
+				ClientCommandHandler.getInstance().lastPlayerPos.update(WorldEdit.playerPos(),
 					Minecraft.getMinecraft().player.dimension);
 			}
 		}

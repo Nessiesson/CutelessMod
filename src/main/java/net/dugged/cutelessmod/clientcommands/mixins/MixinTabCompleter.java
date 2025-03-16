@@ -24,12 +24,12 @@ public abstract class MixinTabCompleter {
 
 	@Inject(method = "requestCompletions", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/NetHandlerPlayClient;sendPacket(Lnet/minecraft/network/Packet;)V"))
 	private void addAutoComplete(String prefix, CallbackInfo ci) {
-		ClientCommandHandler.instance.autoComplete(prefix);
+		ClientCommandHandler.getInstance().autoComplete(prefix);
 	}
 
-	@ModifyVariable(method = "setCompletions", at = @At(value = "INVOKE", target = "Ljava/util/List;clear()V", remap = false))
+	@ModifyVariable(method = "setCompletions", at = @At(value = "INVOKE", target = "Ljava/util/List;clear()V", remap = false), argsOnly = true)
 	private String[] setLatestAutoComplete(String... completions) {
-		final String[] complete = ClientCommandHandler.instance.latestAutoComplete;
+		final String[] complete = ClientCommandHandler.getInstance().latestAutoComplete;
 		if (complete != null) {
 			return ObjectArrays.concat(complete, completions, String.class);
 		}

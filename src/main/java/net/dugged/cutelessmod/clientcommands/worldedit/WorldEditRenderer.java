@@ -58,7 +58,6 @@ public class WorldEditRenderer {
 		GlStateManager.enableBlend();
 		// TODO: More visualizations
 		for (RenderedBB bb : bbToRender) {
-			System.out.println(bb.getA());
 			RenderGlobal.drawSelectionBoundingBox(bb.offset(-d1, -d2, -d3), bb.getR() / 255.0F,
 				bb.getG() / 255.0F, bb.getB() / 255.0F, bb.getA());
 		}

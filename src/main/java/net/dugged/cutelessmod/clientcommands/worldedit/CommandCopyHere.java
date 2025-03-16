@@ -4,9 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.HandlerClone;
-import net.dugged.cutelessmod.clientcommands.HandlerUndo;
+import net.dugged.cutelessmod.clientcommands.TaskClone;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
@@ -36,18 +35,15 @@ public class CommandCopyHere extends ClientCommand {
 				if (args.length == 1) {
 					moveSelection = parseBoolean(args[0]);
 				}
-				HandlerClone cloneHandler = (HandlerClone) ClientCommandHandler.instance.createHandler(
-					HandlerClone.class, sender.getEntityWorld(), selection);
-				cloneHandler.moveSelectionAfterwards = moveSelection;
-				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
-					HandlerUndo.class, sender.getEntityWorld(), selection);
-				undoHandler.setHandler(cloneHandler);
-				undoHandler.saveBox(selection.minPos(), selection.maxPos());
-				undoHandler.saveBox(WorldEdit.playerPos(), WorldEdit.playerPos()
-					.add(selection.widthX(), selection.widthY(), selection.widthZ()));
-				cloneHandler.clone(selection.minPos(), selection.maxPos(), WorldEdit.playerPos());
+				TaskClone.Mode mode = moveSelection ? TaskClone.Mode.MOVE : TaskClone.Mode.FORCE;
+				TaskClone task = new TaskClone(selection.minPos(), selection.maxPos(),
+					WorldEdit.playerPos(), sender.getEntityWorld(), mode);
+				Thread t = new Thread(() -> TaskManager.getInstance().addTask(task));
+				t.start();
+				TaskManager.getInstance().threads.add(t);
 			} else {
-				WorldEdit.sendMessage(getUsage(sender));
+				WorldEdit.sendMessage(new TextComponentTranslation(
+					"text.cutelessmod.clientcommands.worldEdit.copyhere.usage"));
 			}
 		} else {
 			WorldEdit.sendMessage(new TextComponentTranslation(

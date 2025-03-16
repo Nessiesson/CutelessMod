@@ -3,12 +3,12 @@ package net.dugged.cutelessmod.clientcommands.worldedit;
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
-import net.dugged.cutelessmod.clientcommands.HandlerUndo;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
+import net.dugged.cutelessmod.clientcommands.TaskSetBlock;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.init.Blocks;
@@ -58,14 +58,7 @@ public class CommandErode extends ClientCommand {
 	}
 
 	public void erode(World world, WorldEditSelection selection) {
-		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(
-			HandlerSetBlock.class, world, selection);
-		setBlockHandler.running = false;
-		List<BlockPos> undoBlockPositions = new ArrayList<>();
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
-			HandlerUndo.class, world, selection);
-		undoHandler.setHandler(setBlockHandler);
-		undoHandler.running = false;
+		Map<BlockPos, IBlockState> blocksToPlace = new HashMap<>();
 		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.getPos(A),
 			selection.getPos(B))) {
 			if (Thread.interrupted()) {
@@ -74,23 +67,24 @@ public class CommandErode extends ClientCommand {
 			if (world.isAirBlock(pos) || !isSurrounded(pos, world, selection)) {
 				continue;
 			}
-			undoBlockPositions.add(pos);
-			setBlockHandler.setBlock(pos, Blocks.AIR.getDefaultState());
+			blocksToPlace.put(pos, Blocks.AIR.getDefaultState());
 		}
-		undoHandler.saveBlocks(undoBlockPositions);
-		undoHandler.running = true;
+		if (!blocksToPlace.isEmpty()) {
+			TaskSetBlock task = new TaskSetBlock(blocksToPlace, world);
+			TaskManager.getInstance().addTask(task);
+		}
 	}
 
 	@Override
-	public void execute(
-		MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
+	public void execute(MinecraftServer server, ICommandSender sender, String[] args)
+		throws CommandException {
 		if (args.length == 0) {
 			if (WorldEdit.hasCurrentSelection()) {
 				WorldEditSelection selection = WorldEdit.getCurrentSelection();
 				final World world = sender.getEntityWorld();
 				Thread t = new Thread(() -> erode(world, selection));
 				t.start();
-				ClientCommandHandler.instance.threads.add(t);
+				TaskManager.getInstance().threads.add(t);
 			} else {
 				WorldEdit.sendMessage(new TextComponentTranslation(
 					"text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));

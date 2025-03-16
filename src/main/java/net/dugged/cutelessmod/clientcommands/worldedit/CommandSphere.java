@@ -3,12 +3,13 @@ package net.dugged.cutelessmod.clientcommands.worldedit;
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.HandlerFill;
-import net.dugged.cutelessmod.clientcommands.HandlerUndo;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
+import net.dugged.cutelessmod.clientcommands.TaskSetBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
@@ -31,61 +32,42 @@ public class CommandSphere extends ClientCommand {
 			"text.cutelessmod.clientcommands.worldEdit.sphere.usage").getUnformattedText();
 	}
 
+	private void addSphereColumn(Map<BlockPos, IBlockState> blocksToPlace, BlockPos center,
+		int offsetX, int offsetZ, int y, IBlockState state) {
+		BlockPos posTop = new BlockPos(center.getX() + offsetX, center.getY() + y,
+			center.getZ() + offsetZ);
+		blocksToPlace.put(posTop, state);
+		int bottomY = Math.max(0, center.getY() - y);
+		BlockPos posBottom = new BlockPos(center.getX() + offsetX, bottomY,
+			center.getZ() + offsetZ);
+		blocksToPlace.put(posBottom, state);
+	}
+
 	private void generateSphere(World world, BlockPos center, IBlockState blockState,
 		double radius) {
-		HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(
-			HandlerFill.class, world, null);
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
-			HandlerUndo.class, world, null);
-		undoHandler.setHandler(fillHandler);
-		undoHandler.running = false;
-		for (double x = 0; x <= radius; x++) {
-			for (double y = 0; y <= Math.min(radius, world.getHeight() - center.getY()); y++) {
-				for (double z = 0; z <= radius; z++) {
+		Map<BlockPos, IBlockState> blocksToPlace = new HashMap<>();
+		int yMax = (int) Math.min(radius, world.getHeight() - center.getY());
+		for (int x = 0; x <= (int) radius; x++) {
+			for (int y = 0; y <= yMax; y++) {
+				for (int z = 0; z <= (int) radius; z++) {
 					if (Thread.interrupted()) {
 						return;
 					}
 					if (WorldEdit.checkSphere(x, y, z, radius)) {
-						if (!WorldEdit.checkSphere(x + 1, y, z, radius) || !WorldEdit.checkSphere(x,
-							y + 1, z, radius) || !WorldEdit.checkSphere(x, y, z + 1, radius)) {
-							undoHandler.saveBox(new BlockPos(center.getX() + x, center.getY() + y,
-									center.getZ() + z),
-								new BlockPos(center.getX() + x, Math.max(0, center.getY() - y),
-									center.getZ() + z));
-							fillHandler.fill(new BlockPos(center.getX() + x, center.getY() + y,
-									center.getZ() + z),
-								new BlockPos(center.getX() + x, Math.max(0, center.getY() - y),
-									center.getZ() + z), blockState);
-							undoHandler.saveBox(new BlockPos(center.getX() + x, center.getY() + y,
-									center.getZ() - z),
-								new BlockPos(center.getX() + x, Math.max(0, center.getY() - y),
-									center.getZ() - z));
-							fillHandler.fill(new BlockPos(center.getX() + x, center.getY() + y,
-									center.getZ() - z),
-								new BlockPos(center.getX() + x, Math.max(0, center.getY() - y),
-									center.getZ() - z), blockState);
-							undoHandler.saveBox(new BlockPos(center.getX() - x, center.getY() + y,
-									center.getZ() + z),
-								new BlockPos(center.getX() - x, Math.max(0, center.getY() - y),
-									center.getZ() + z));
-							fillHandler.fill(new BlockPos(center.getX() - x, center.getY() + y,
-									center.getZ() + z),
-								new BlockPos(center.getX() - x, Math.max(0, center.getY() - y),
-									center.getZ() + z), blockState);
-							undoHandler.saveBox(new BlockPos(center.getX() - x, center.getY() + y,
-									center.getZ() - z),
-								new BlockPos(center.getX() - x, Math.max(0, center.getY() - y),
-									center.getZ() - z));
-							fillHandler.fill(new BlockPos(center.getX() - x, center.getY() + y,
-									center.getZ() - z),
-								new BlockPos(center.getX() - x, Math.max(0, center.getY() - y),
-									center.getZ() - z), blockState);
+						if (!WorldEdit.checkSphere(x + 1, y, z, radius)
+							|| !WorldEdit.checkSphere(x, y + 1, z, radius)
+							|| !WorldEdit.checkSphere(x, y, z + 1, radius)) {
+							addSphereColumn(blocksToPlace, center, x, z, y, blockState);
+							addSphereColumn(blocksToPlace, center, x, -z, y, blockState);
+							addSphereColumn(blocksToPlace, center, -x, z, y, blockState);
+							addSphereColumn(blocksToPlace, center, -x, -z, y, blockState);
 						}
 					}
 				}
 			}
 		}
-		undoHandler.running = true;
+		TaskSetBlock task = new TaskSetBlock(blocksToPlace, world);
+		TaskManager.getInstance().addTask(task);
 	}
 
 	@Override
@@ -102,7 +84,7 @@ public class CommandSphere extends ClientCommand {
 					Thread t = new Thread(
 						() -> generateSphere(world, selection.getPos(A), blockState, radius));
 					t.start();
-					ClientCommandHandler.instance.threads.add(t);
+					TaskManager.getInstance().threads.add(t);
 				} else {
 					WorldEdit.sendMessage(new TextComponentTranslation(
 						"text.cutelessmod.clientcommands.worldEdit.noOneByOneSelected"));
@@ -116,6 +98,7 @@ public class CommandSphere extends ClientCommand {
 		}
 	}
 
+	@Override
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
 		String[] args, @Nullable BlockPos pos) {
 		if (args.length == 1) {

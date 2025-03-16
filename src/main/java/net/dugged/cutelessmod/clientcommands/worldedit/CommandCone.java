@@ -1,17 +1,19 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.HandlerFill;
-import net.dugged.cutelessmod.clientcommands.HandlerUndo;
+import net.dugged.cutelessmod.clientcommands.TaskFill;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
@@ -29,7 +31,7 @@ public class CommandCone extends ClientCommand {
 			"text.cutelessmod.clientcommands.worldEdit.cone.usage").getUnformattedText();
 	}
 
-	private void generateCircle(HandlerFill fillHandler, HandlerUndo undoHandler, BlockPos center,
+	private void generateCircle(Map<AxisAlignedBB, IBlockState> regionMap, BlockPos center,
 		IBlockState blockState, double radius) {
 		for (double x = 0; x <= radius; x++) {
 			for (double z = 0; z <= radius; z++) {
@@ -39,20 +41,18 @@ public class CommandCone extends ClientCommand {
 				if (WorldEdit.checkCircle(x, z, radius)) {
 					if (!WorldEdit.checkCircle(x + 1, z, radius) || !WorldEdit.checkCircle(x, z + 1,
 						radius)) {
-						undoHandler.saveBox(
-							new BlockPos(center.getX() + x, center.getY(), center.getZ() - z),
-							new BlockPos(center.getX() + x, center.getY(), center.getZ() + z));
-						undoHandler.saveBox(
-							new BlockPos(center.getX() - x, center.getY(), center.getZ() - z),
-							new BlockPos(center.getX() - x, center.getY(), center.getZ() + z));
-						fillHandler.fill(
-							new BlockPos(center.getX() + x, center.getY(), center.getZ() - z),
-							new BlockPos(center.getX() + x, center.getY(), center.getZ() + z),
-							blockState);
-						fillHandler.fill(
-							new BlockPos(center.getX() - x, center.getY(), center.getZ() - z),
-							new BlockPos(center.getX() - x, center.getY(), center.getZ() + z),
-							blockState);
+						BlockPos pos1 = new BlockPos(center.getX() + (int) x, center.getY(),
+							center.getZ() - (int) z);
+						BlockPos pos2 = new BlockPos(center.getX() + (int) x, center.getY(),
+							center.getZ() + (int) z);
+						AxisAlignedBB region1 = new AxisAlignedBB(pos1, pos2.add(1, 1, 1));
+						regionMap.put(region1, blockState);
+						BlockPos pos3 = new BlockPos(center.getX() - (int) x, center.getY(),
+							center.getZ() - (int) z);
+						BlockPos pos4 = new BlockPos(center.getX() - (int) x, center.getY(),
+							center.getZ() + (int) z);
+						AxisAlignedBB region2 = new AxisAlignedBB(pos3, pos4.add(1, 1, 1));
+						regionMap.put(region2, blockState);
 					}
 				}
 			}
@@ -70,23 +70,19 @@ public class CommandCone extends ClientCommand {
 
 	private void generateCone(World world, WorldEditSelection selection, IBlockState blockState,
 		int startRadius, int endRadius, int height, double bezierA, double bezierB) {
-		HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(
-			HandlerFill.class, world, selection);
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
-			HandlerUndo.class, world, selection);
-		undoHandler.setHandler(fillHandler);
-		undoHandler.running = false;
-		generateCircle(fillHandler, undoHandler, selection.minPos().down(height - 1), blockState,
-			startRadius);
+		Map<AxisAlignedBB, IBlockState> regionMap = new LinkedHashMap<>();
+		generateCircle(regionMap, selection.minPos().down(height - 1), blockState, startRadius);
 		for (int i = 1; i <= height; i++) {
 			if (Thread.interrupted()) {
 				return;
 			}
 			double t = (1.0D / height) * i;
-			generateCircle(fillHandler, undoHandler, selection.minPos().down(height - i),
-				blockState, calculateBezierValue(startRadius, endRadius, bezierA, bezierB, t));
+			int currentRadius = calculateBezierValue(startRadius, endRadius, bezierA, bezierB, t);
+			generateCircle(regionMap, selection.minPos().down(height - i), blockState,
+				currentRadius);
 		}
-		undoHandler.running = true;
+		TaskFill task = new TaskFill(regionMap, world);
+		TaskManager.getInstance().addTask(task);
 	}
 
 	@Override
@@ -108,7 +104,7 @@ public class CommandCone extends ClientCommand {
 						() -> generateCone(world, selection, blockState, startRadius, endRadius,
 							height, bezierA, bezierB));
 					t.start();
-					ClientCommandHandler.instance.threads.add(t);
+					TaskManager.getInstance().threads.add(t);
 				} else {
 					WorldEdit.sendMessage(new TextComponentTranslation(
 						"text.cutelessmod.clientcommands.worldEdit.noOneByOneSelected"));

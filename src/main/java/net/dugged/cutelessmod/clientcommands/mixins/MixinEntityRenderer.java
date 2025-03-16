@@ -1,5 +1,6 @@
 package net.dugged.cutelessmod.clientcommands.mixins;
 
+import net.dugged.cutelessmod.clientcommands.TaskRenderer;
 import net.dugged.cutelessmod.clientcommands.worldedit.WorldEditRenderer;
 import net.minecraft.client.renderer.EntityRenderer;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,5 +15,6 @@ public abstract class MixinEntityRenderer {
 	private void onPostRenderEntities(final int pass, final float partialTicks,
 		final long finishTimeNano, final CallbackInfo ci) {
 		WorldEditRenderer.render(partialTicks);
+		TaskRenderer.renderTasksFancy(partialTicks);
 	}
 }

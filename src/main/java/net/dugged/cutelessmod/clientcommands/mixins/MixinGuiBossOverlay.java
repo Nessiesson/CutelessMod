@@ -2,7 +2,7 @@ package net.dugged.cutelessmod.clientcommands.mixins;
 
 import com.google.common.base.Strings;
 import net.dugged.cutelessmod.CutelessMod;
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiBossOverlay;
@@ -13,6 +13,7 @@ import net.minecraft.util.text.TextComponentTranslation;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -23,13 +24,15 @@ public abstract class MixinGuiBossOverlay extends Gui {
 	@Shadow
 	@Final
 	private static ResourceLocation GUI_BARS_TEXTURES;
+	@Unique
 	private int counter = 0;
+	@Unique
 	private long lastTick = 0;
 
-	@Inject(method = "renderBossHealth", at = @At(value = "HEAD"))
+	@Inject(method = "renderBossHealth", at = @At("HEAD"))
 	private void renderProgressBar(CallbackInfo ci) {
 		final Minecraft mc = Minecraft.getMinecraft();
-		final float progress = ClientCommandHandler.instance.getProgress();
+		final float progress = TaskManager.getInstance().getProgress();
 		ScaledResolution scaledresolution = new ScaledResolution(mc);
 		int i = scaledresolution.getScaledWidth();
 		int y = scaledresolution.getScaledHeight() - 30;
@@ -48,7 +51,14 @@ public abstract class MixinGuiBossOverlay extends Gui {
 			s += " " + String.format("%.2f", progress * 100) + "%";
 			mc.fontRenderer.drawString(s, i / 2 - mc.fontRenderer.getStringWidth(s) / 2, y - 10,
 				16777215);
-		} else if (progress == -1) {
+			if (TaskManager.getInstance().isWaitingForPlayer()) {
+				s = new TextComponentTranslation(
+					"text.cutelessmod.clientcommands.worldEdit.progressWaiting").getUnformattedText();
+				s += Strings.repeat(".", counter);
+				mc.fontRenderer.drawString(s, i / 2 - mc.fontRenderer.getStringWidth(s) / 2, y - 20,
+					16777215);
+			}
+		} else if (!TaskManager.getInstance().threads.isEmpty()) {
 			String s = new TextComponentTranslation(
 				"text.cutelessmod.clientcommands.worldEdit.progressProcessing").getUnformattedText();
 			s += Strings.repeat(".", counter);

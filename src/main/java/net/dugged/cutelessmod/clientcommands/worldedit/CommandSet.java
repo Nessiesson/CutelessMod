@@ -7,9 +7,8 @@ import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.HandlerFill;
-import net.dugged.cutelessmod.clientcommands.HandlerUndo;
+import net.dugged.cutelessmod.clientcommands.TaskFill;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
@@ -17,7 +16,6 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
-
 
 public class CommandSet extends ClientCommand {
 
@@ -43,13 +41,9 @@ public class CommandSet extends ClientCommand {
 				if (args.length == 2) {
 					blockState = convertArgToBlockState(block, args[1]);
 				}
-				HandlerFill fillHandler = (HandlerFill) ClientCommandHandler.instance.createHandler(
-					HandlerFill.class, sender.getEntityWorld(), selection);
-				HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
-					HandlerUndo.class, sender.getEntityWorld(), selection);
-				undoHandler.setHandler(fillHandler);
-				undoHandler.saveBox(selection.getPos(A), selection.getPos(B));
-				fillHandler.fill(selection.getPos(A), selection.getPos(B), blockState);
+				TaskFill task = new TaskFill(selection.getPos(A), selection.getPos(B), blockState,
+					sender.getEntityWorld());
+				TaskManager.getInstance().addTask(task);
 			} else {
 				WorldEdit.sendMessage(getUsage(sender));
 			}

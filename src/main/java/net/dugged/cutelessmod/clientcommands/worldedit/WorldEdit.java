@@ -27,10 +27,9 @@ import net.minecraft.util.text.TextFormatting;
 public class WorldEdit {
 
 	private static final Minecraft mc = Minecraft.getMinecraft();
-	public static boolean undo = true;
 	public static List<BrushBase> brushes = new ArrayList<>();
-	public static HashMap<Item, BrushBase> currentBrushes = new HashMap();
-	protected static HashMap<WorldEditSelection.SelectionType, WorldEditSelection> selections = new HashMap();
+	public static HashMap<Item, BrushBase> currentBrushes = new HashMap<>();
+	protected static HashMap<WorldEditSelection.SelectionType, WorldEditSelection> selections = new HashMap<>();
 
 	public static BlockPos getPos(WorldEditSelection.SelectionType type,
 		WorldEditSelection.Position pos) {

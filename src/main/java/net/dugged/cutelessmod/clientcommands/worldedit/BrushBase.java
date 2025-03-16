@@ -1,9 +1,12 @@
 package net.dugged.cutelessmod.clientcommands.worldedit;
 
 import java.util.ArrayList;
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
-import net.dugged.cutelessmod.clientcommands.HandlerUndo;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
+import net.dugged.cutelessmod.clientcommands.TaskSetBlock;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -45,17 +48,12 @@ public abstract class BrushBase {
 	}
 
 	public void execute(World world, BlockPos pos) {
-		ArrayList<BlockPos> positions = run(world, pos);
-		if (!positions.isEmpty()) {
-			HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(
-				HandlerSetBlock.class, world, null);
-			HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
-				HandlerUndo.class, world, null);
-			undoHandler.setHandler(setBlockHandler);
-			undoHandler.saveBlocks(positions);
-			for (BlockPos pos1 : positions) {
-				setBlockHandler.setBlock(pos1, blockState);
-			}
+		List<BlockPos> positions = run(world, pos);
+		Map<BlockPos, IBlockState> blocksToPlace = positions.stream()
+			.collect(Collectors.toMap(Function.identity(), p -> blockState));
+		if (!blocksToPlace.isEmpty()) {
+			TaskManager.getInstance().addTask(new TaskSetBlock(blocksToPlace, world));
 		}
 	}
+
 }

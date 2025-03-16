@@ -3,14 +3,14 @@ package net.dugged.cutelessmod.clientcommands.worldedit;
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
-import net.dugged.cutelessmod.clientcommands.HandlerUndo;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
+import net.dugged.cutelessmod.clientcommands.TaskSetBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
@@ -36,13 +36,7 @@ public class CommandSwap extends ClientCommand {
 	public void swapBlocks(World world, WorldEditSelection selection, IBlockState state1,
 		IBlockState state2, boolean ignoreBlockState1, boolean preserveMeta,
 		boolean ignoreBlockState2) {
-		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(
-			HandlerSetBlock.class, world, selection);
-		List<BlockPos> undoBlockPositions = new ArrayList<>();
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
-			HandlerUndo.class, world, selection);
-		undoHandler.setHandler(setBlockHandler);
-		undoHandler.running = false;
+		Map<BlockPos, IBlockState> blocksToPlace = new HashMap<>();
 		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.getPos(A),
 			selection.getPos(B))) {
 			if (Thread.interrupted()) {
@@ -54,27 +48,25 @@ public class CommandSwap extends ClientCommand {
 			boolean isState2 = ignoreBlockState2 ? currentState.getBlock() == state2.getBlock()
 				: currentState.equals(state2);
 			if (isState1) {
-				undoBlockPositions.add(pos);
 				if (preserveMeta) {
 					int meta = currentState.getBlock().getMetaFromState(currentState);
 					IBlockState newState = state2.getBlock().getStateFromMeta(meta);
-					setBlockHandler.setBlock(pos, newState);
+					blocksToPlace.put(pos, newState);
 				} else {
-					setBlockHandler.setBlock(pos, state2);
+					blocksToPlace.put(pos, state2);
 				}
 			} else if (isState2) {
-				undoBlockPositions.add(pos);
 				if (preserveMeta) {
 					int meta = currentState.getBlock().getMetaFromState(currentState);
 					IBlockState newState = state1.getBlock().getStateFromMeta(meta);
-					setBlockHandler.setBlock(pos, newState);
+					blocksToPlace.put(pos, newState);
 				} else {
-					setBlockHandler.setBlock(pos, state1);
+					blocksToPlace.put(pos, state1);
 				}
 			}
 		}
-		undoHandler.saveBlocks(undoBlockPositions);
-		undoHandler.running = true;
+		TaskSetBlock task = new TaskSetBlock(blocksToPlace, world);
+		TaskManager.getInstance().addTask(task);
 	}
 
 	@Override
@@ -136,7 +128,7 @@ public class CommandSwap extends ClientCommand {
 				() -> swapBlocks(world, selection, state1, state2, ignoreBlockState1, preserveMeta,
 					ignoreBlockState2));
 			t.start();
-			ClientCommandHandler.instance.threads.add(t);
+			TaskManager.getInstance().threads.add(t);
 		} else {
 			WorldEdit.sendMessage(new TextComponentTranslation(
 				"text.cutelessmod.clientcommands.worldEdit.noAreaSelected"));

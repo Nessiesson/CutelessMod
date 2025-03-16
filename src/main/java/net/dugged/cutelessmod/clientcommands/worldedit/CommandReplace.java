@@ -3,14 +3,14 @@ package net.dugged.cutelessmod.clientcommands.worldedit;
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
 import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.annotation.Nullable;
 import net.dugged.cutelessmod.clientcommands.ClientCommand;
-import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
-import net.dugged.cutelessmod.clientcommands.HandlerUndo;
+import net.dugged.cutelessmod.clientcommands.TaskManager;
+import net.dugged.cutelessmod.clientcommands.TaskSetBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.command.CommandException;
@@ -35,13 +35,7 @@ public class CommandReplace extends ClientCommand {
 
 	public void replaceBlocks(World world, WorldEditSelection selection, IBlockState stateToReplace,
 		IBlockState replacementState, boolean ignoreBlockState, boolean preserveMeta) {
-		HandlerSetBlock setBlockHandler = (HandlerSetBlock) ClientCommandHandler.instance.createHandler(
-			HandlerSetBlock.class, world, selection);
-		List<BlockPos> undoBlockPositions = new ArrayList<>();
-		HandlerUndo undoHandler = (HandlerUndo) ClientCommandHandler.instance.createHandler(
-			HandlerUndo.class, world, selection);
-		undoHandler.setHandler(setBlockHandler);
-		undoHandler.running = false;
+		Map<BlockPos, IBlockState> blocksToPlace = new HashMap<>();
 		for (BlockPos pos : BlockPos.MutableBlockPos.getAllInBox(selection.getPos(A),
 			selection.getPos(B))) {
 			if (Thread.interrupted()) {
@@ -50,19 +44,18 @@ public class CommandReplace extends ClientCommand {
 			IBlockState blockState = world.getBlockState(pos);
 			if (blockState == stateToReplace || (ignoreBlockState
 				&& blockState.getBlock() == stateToReplace.getBlock())) {
-				undoBlockPositions.add(pos);
 				if (preserveMeta) {
 					int meta = blockState.getBlock().getMetaFromState(blockState);
 					IBlockState newReplacementState = replacementState.getBlock()
 						.getStateFromMeta(meta);
-					setBlockHandler.setBlock(pos, newReplacementState);
+					blocksToPlace.put(pos, newReplacementState);
 				} else {
-					setBlockHandler.setBlock(pos, replacementState);
+					blocksToPlace.put(pos, replacementState);
 				}
 			}
 		}
-		undoHandler.saveBlocks(undoBlockPositions);
-		undoHandler.running = true;
+		TaskSetBlock task = new TaskSetBlock(blocksToPlace, world);
+		TaskManager.getInstance().addTask(task);
 	}
 
 	@Override
@@ -96,11 +89,11 @@ public class CommandReplace extends ClientCommand {
 				} else {
 					blockState2 = block2.getDefaultState();
 				}
-				Thread t = new Thread(
-					() -> replaceBlocks(world, selection, blockState1, blockState2,
-						ignoreBlockState, preserveMeta));
+				Thread t = new Thread(() ->
+					replaceBlocks(world, selection, blockState1, blockState2, ignoreBlockState,
+						preserveMeta));
 				t.start();
-				ClientCommandHandler.instance.threads.add(t);
+				TaskManager.getInstance().threads.add(t);
 			} else {
 				WorldEdit.sendMessage(getUsage(sender));
 			}
@@ -110,6 +103,7 @@ public class CommandReplace extends ClientCommand {
 		}
 	}
 
+	@Override
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender,
 		String[] args, @Nullable BlockPos pos) {
 		if (args.length == 1 || args.length == 3) {

@@ -1,5 +1,6 @@
 package net.dugged.cutelessmod.clientcommands;
 
+import net.dugged.cutelessmod.clientcommands.ClientCommandHandler.PlayerPos;
 import net.dugged.cutelessmod.clientcommands.worldedit.WorldEdit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -24,7 +25,7 @@ public class CommandBack extends ClientCommand {
 	public void execute(final MinecraftServer server, final ICommandSender sender,
 		final String[] args) throws CommandException {
 		final Minecraft mc = Minecraft.getMinecraft();
-		final ClientCommandHandler.Position pos = ClientCommandHandler.instance.lastPosition;
+		final PlayerPos pos = ClientCommandHandler.getInstance().lastPlayerPos;
 		if (pos.position != null) {
 			if (mc.player.dimension == pos.dimension) {
 				((EntityPlayerSP) sender).sendChatMessage(
@@ -33,7 +34,7 @@ public class CommandBack extends ClientCommand {
 				mc.player.sendMessage(
 					new TextComponentTranslation("text.cutelessmod.clientcommands.back.tp",
 						pos.position.getX(), pos.position.getY(), pos.position.getZ()));
-				ClientCommandHandler.instance.lastPosition.update(WorldEdit.playerPos(),
+				ClientCommandHandler.getInstance().lastPlayerPos.update(WorldEdit.playerPos(),
 					mc.player.dimension);
 			} else {
 				throw new CommandException("text.cutelessmod.clientcommands.back.wrongDimension");
