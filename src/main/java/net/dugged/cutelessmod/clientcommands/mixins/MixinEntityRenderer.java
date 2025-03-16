@@ -9,8 +9,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityRenderer.class)
 public abstract class MixinEntityRenderer {
+
 	@Inject(method = "renderWorldPass", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/profiler/Profiler;endStartSection(Ljava/lang/String;)V", args = "ldc=litParticles"))
-	private void onPostRenderEntities(final int pass, final float partialTicks, final long finishTimeNano, final CallbackInfo ci) {
+	private void onPostRenderEntities(final int pass, final float partialTicks,
+		final long finishTimeNano, final CallbackInfo ci) {
 		WorldEditRenderer.render(partialTicks);
 	}
 }

@@ -12,8 +12,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerMenuObject.class)
 public abstract class MixinPlayerMenuObject {
+
 	@Inject(method = "selectItem", at = @At(value = "INVOKE"))
 	private void onSendChat(SpectatorMenu menu, CallbackInfo ci) {
-		ClientCommandHandler.instance.lastPosition.update(WorldEdit.playerPos(), Minecraft.getMinecraft().player.dimension);
+		ClientCommandHandler.instance.lastPosition.update(WorldEdit.playerPos(),
+			Minecraft.getMinecraft().player.dimension);
 	}
 }

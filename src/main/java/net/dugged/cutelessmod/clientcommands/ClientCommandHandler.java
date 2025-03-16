@@ -1,7 +1,56 @@
 package net.dugged.cutelessmod.clientcommands;
 
+import static net.minecraft.util.text.TextFormatting.GRAY;
+import static net.minecraft.util.text.TextFormatting.RESET;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.IntStream;
 import net.dugged.cutelessmod.CutelessMod;
-import net.dugged.cutelessmod.clientcommands.worldedit.*;
+import net.dugged.cutelessmod.clientcommands.worldedit.BrushIceSpike;
+import net.dugged.cutelessmod.clientcommands.worldedit.BrushPerimeterWall;
+import net.dugged.cutelessmod.clientcommands.worldedit.BrushPlaceTop;
+import net.dugged.cutelessmod.clientcommands.worldedit.BrushRemoveColumn;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandBrush;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandCancel;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandCenter;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandCone;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandCopyHere;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandCount;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandCyl;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandDrain;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandErode;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandFillInventories;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandFixSlabs;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandFlip;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandFloodFill;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandHCyl;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandHSphere;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandHollow;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandLine;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandMove;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandOutlineFill;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandPerimeterVolume;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandPolygon;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandPos;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandRandomize;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandReplace;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandRunBrush;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandSelection;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandSet;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandSize;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandSphere;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandStack;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandStackDiagonal;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandStackQuarter;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandSwap;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandUpscale;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandWalls;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandWoolify;
+import net.dugged.cutelessmod.clientcommands.worldedit.WorldEdit;
+import net.dugged.cutelessmod.clientcommands.worldedit.WorldEditRenderer;
+import net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiChat;
 import net.minecraft.command.CommandHandler;
@@ -13,15 +62,8 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.IntStream;
-
-import static net.minecraft.util.text.TextFormatting.GRAY;
-import static net.minecraft.util.text.TextFormatting.RESET;
-
 public class ClientCommandHandler extends CommandHandler {
+
 	public static final ClientCommandHandler instance = new ClientCommandHandler();
 	public static int PACKET_LIMIT = 5000;
 	private final Minecraft mc = Minecraft.getMinecraft();
@@ -95,8 +137,10 @@ public class ClientCommandHandler extends CommandHandler {
 		final String commandName = temp[0];
 		System.arraycopy(temp, 1, args, 0, args.length);
 		final ICommand command = getCommands().get(commandName);
-		if (command instanceof ClientCommand && ((ClientCommand) command).creativeOnly && !(mc.player.isCreative() || mc.player.isSpectator())) {
-			final TextComponentTranslation error = new TextComponentTranslation("text.cutelessmod.clientcommands.wrongGamemode");
+		if (command instanceof ClientCommand && ((ClientCommand) command).creativeOnly && !(
+			mc.player.isCreative() || mc.player.isSpectator())) {
+			final TextComponentTranslation error = new TextComponentTranslation(
+				"text.cutelessmod.clientcommands.wrongGamemode");
 			error.getStyle().setColor(TextFormatting.RED);
 			sender.sendMessage(error);
 			return -1;
@@ -108,7 +152,8 @@ public class ClientCommandHandler extends CommandHandler {
 		try {
 			this.tryExecute(sender, args, command, message);
 		} catch (Throwable t) {
-			final TextComponentTranslation error = new TextComponentTranslation("commands.generic.exception");
+			final TextComponentTranslation error = new TextComponentTranslation(
+				"commands.generic.exception");
 			error.getStyle().setColor(TextFormatting.RED);
 			sender.sendMessage(error);
 		}
@@ -120,12 +165,15 @@ public class ClientCommandHandler extends CommandHandler {
 		if (leftOfCursor.charAt(0) == '/') {
 			leftOfCursor = leftOfCursor.substring(1);
 			if (mc.currentScreen instanceof GuiChat) {
-				final List<String> commands = this.getTabCompletions(mc.player, leftOfCursor, mc.player.getPosition());
+				final List<String> commands = this.getTabCompletions(mc.player, leftOfCursor,
+					mc.player.getPosition());
 				if (!commands.isEmpty()) {
 					if (leftOfCursor.indexOf(' ') == -1) {
-						IntStream.range(0, commands.size()).forEach(s -> commands.set(s, GRAY + "/" + commands.get(s) + RESET));
+						IntStream.range(0, commands.size())
+							.forEach(s -> commands.set(s, GRAY + "/" + commands.get(s) + RESET));
 					} else {
-						IntStream.range(0, commands.size()).forEach(s -> commands.set(s, GRAY + commands.get(s) + RESET));
+						IntStream.range(0, commands.size())
+							.forEach(s -> commands.set(s, GRAY + commands.get(s) + RESET));
 					}
 					this.latestAutoComplete = commands.toArray(new String[0]);
 				}
@@ -138,10 +186,12 @@ public class ClientCommandHandler extends CommandHandler {
 		return mc.getIntegratedServer();
 	}
 
-	synchronized public Handler createHandler(final Class<? extends Handler> type, World world, WorldEditSelection selection) {
+	synchronized public Handler createHandler(final Class<? extends Handler> type, World world,
+		WorldEditSelection selection) {
 		try {
 			Class[] constructors = {World.class, WorldEditSelection.class};
-			final Handler handler = type.getDeclaredConstructor(constructors).newInstance(world, selection);
+			final Handler handler = type.getDeclaredConstructor(constructors)
+				.newInstance(world, selection);
 			instance.handlers.add(handler);
 			return handler;
 		} catch (Exception e) {
@@ -161,7 +211,9 @@ public class ClientCommandHandler extends CommandHandler {
 					progress += handler.getProgress();
 				}
 			}
-			float percent = progress / handlers.stream().filter(hand -> hand.isWorldEditHandler && hand.running).count();
+			float percent =
+				progress / handlers.stream().filter(hand -> hand.isWorldEditHandler && hand.running)
+					.count();
 			if (percent > 0) {
 				return percent;
 			} else {
@@ -169,7 +221,9 @@ public class ClientCommandHandler extends CommandHandler {
 			}
 		} else if (!threads.isEmpty()) {
 			return -1;
-		} else return 0;
+		} else {
+			return 0;
+		}
 	}
 
 	public boolean otherHandlersRunning(Handler excluding) {
@@ -178,7 +232,8 @@ public class ClientCommandHandler extends CommandHandler {
 
 	public void tick() {
 		WorldEditRenderer.update();
-		if (!handlers.isEmpty() && Arrays.stream(CutelessMod.receivedPackets).sum() <= PACKET_LIMIT && Arrays.stream(CutelessMod.sendPackets).sum() <= PACKET_LIMIT) {
+		if (!handlers.isEmpty() && Arrays.stream(CutelessMod.receivedPackets).sum() <= PACKET_LIMIT
+			&& Arrays.stream(CutelessMod.sendPackets).sum() <= PACKET_LIMIT) {
 			if (mc.player == null) {
 				handlers.clear();
 			}
@@ -200,6 +255,7 @@ public class ClientCommandHandler extends CommandHandler {
 	}
 
 	public class Position {
+
 		public BlockPos position;
 		public int dimension;
 

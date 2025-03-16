@@ -1,7 +1,39 @@
 package net.dugged.cutelessmod.clientcommands;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 import net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection;
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockBanner;
+import net.minecraft.block.BlockBasePressurePlate;
+import net.minecraft.block.BlockBed;
+import net.minecraft.block.BlockBush;
+import net.minecraft.block.BlockButton;
+import net.minecraft.block.BlockCactus;
+import net.minecraft.block.BlockCake;
+import net.minecraft.block.BlockCarpet;
+import net.minecraft.block.BlockChorusFlower;
+import net.minecraft.block.BlockDoor;
+import net.minecraft.block.BlockEndRod;
+import net.minecraft.block.BlockFire;
+import net.minecraft.block.BlockFlowerPot;
+import net.minecraft.block.BlockLadder;
+import net.minecraft.block.BlockLever;
+import net.minecraft.block.BlockPistonExtension;
+import net.minecraft.block.BlockPistonMoving;
+import net.minecraft.block.BlockRailBase;
+import net.minecraft.block.BlockRedstoneDiode;
+import net.minecraft.block.BlockRedstoneWire;
+import net.minecraft.block.BlockReed;
+import net.minecraft.block.BlockSign;
+import net.minecraft.block.BlockSnow;
+import net.minecraft.block.BlockTorch;
+import net.minecraft.block.BlockTripWireHook;
+import net.minecraft.block.BlockVine;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.client.CPacketTabComplete;
@@ -9,14 +41,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.ArrayDeque;
-import java.util.Set;
-
 public class HandlerSetBlock extends Handler {
+
 	private static final int COMMANDS_EXECUTED_PER_TICK = 512;
 	private static final int BLOCKS_PROCESSED_PER_TICK = 32768;
 	public static boolean setblockPermission = false;
@@ -89,10 +115,12 @@ public class HandlerSetBlock extends Handler {
 	synchronized public void tick() {
 		super.tick();
 		if (!blockPositions.isEmpty()) {
-			final int handlerCount = ClientCommandHandler.instance.countHandlerType(HandlerSetBlock.class);
+			final int handlerCount = ClientCommandHandler.instance.countHandlerType(
+				HandlerSetBlock.class);
 			int commandsExecuted = 0;
 			int counter = 0;
-			while (counter <= BLOCKS_PROCESSED_PER_TICK && !blockPositions.isEmpty() && commandsExecuted < (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
+			while (counter <= BLOCKS_PROCESSED_PER_TICK && !blockPositions.isEmpty()
+				&& commandsExecuted < (COMMANDS_EXECUTED_PER_TICK / handlerCount)) {
 				BlockPos pos = blockPositions.pollLast();
 				blockPositionSet.remove(pos);
 				IBlockState blockState = blocksToPlace.get(pos);
@@ -125,17 +153,22 @@ public class HandlerSetBlock extends Handler {
 
 	public void finish() {
 		if (sendAffectedBlocks) {
-			mc.ingameGUI.getChatGUI().printChatMessage(new TextComponentTranslation("commands.fill.success", affectedBlocks));
+			mc.ingameGUI.getChatGUI().printChatMessage(
+				new TextComponentTranslation("commands.fill.success", affectedBlocks));
 		}
 		super.finish();
 	}
 
 	private boolean sendSetBlockCommand(BlockPos pos, IBlockState blockState) {
 		final String name = blockState.getBlock().getRegistryName().toString();
-		final String metadata = Integer.toString(blockState.getBlock().getMetaFromState(blockState));
-		if (setblockPermission && world.isBlockLoaded(pos) && pos.getY() >= 0 && pos.getY() < 256 && !world.getBlockState(pos).equals(blockState)) {
+		final String metadata = Integer.toString(
+			blockState.getBlock().getMetaFromState(blockState));
+		if (setblockPermission && world.isBlockLoaded(pos) && pos.getY() >= 0 && pos.getY() < 256
+			&& !world.getBlockState(pos).equals(blockState)) {
 			last_execution = age;
-			world.sendPacketToServer(new CPacketChatMessage("/setblock " + pos.getX() + " " + pos.getY() + " " + pos.getZ() + " " + name + " " + metadata));
+			world.sendPacketToServer(new CPacketChatMessage(
+				"/setblock " + pos.getX() + " " + pos.getY() + " " + pos.getZ() + " " + name + " "
+					+ metadata));
 			affectedBlocks++;
 			return true;
 		} else {

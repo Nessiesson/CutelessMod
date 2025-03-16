@@ -9,6 +9,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextComponentTranslation;
 
 public class CommandBack extends ClientCommand {
+
 	@Override
 	public String getName() {
 		return "back";
@@ -20,14 +21,20 @@ public class CommandBack extends ClientCommand {
 	}
 
 	@Override
-	public void execute(final MinecraftServer server, final ICommandSender sender, final String[] args) throws CommandException {
+	public void execute(final MinecraftServer server, final ICommandSender sender,
+		final String[] args) throws CommandException {
 		final Minecraft mc = Minecraft.getMinecraft();
 		final ClientCommandHandler.Position pos = ClientCommandHandler.instance.lastPosition;
 		if (pos.position != null) {
 			if (mc.player.dimension == pos.dimension) {
-				((EntityPlayerSP) sender).sendChatMessage("/tp " + pos.position.getX() + " " + pos.position.getY() + " " + pos.position.getZ());
-				mc.player.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.back.tp", pos.position.getX(), pos.position.getY(), pos.position.getZ()));
-				ClientCommandHandler.instance.lastPosition.update(WorldEdit.playerPos(), mc.player.dimension);
+				((EntityPlayerSP) sender).sendChatMessage(
+					"/tp " + pos.position.getX() + " " + pos.position.getY() + " "
+						+ pos.position.getZ());
+				mc.player.sendMessage(
+					new TextComponentTranslation("text.cutelessmod.clientcommands.back.tp",
+						pos.position.getX(), pos.position.getY(), pos.position.getZ()));
+				ClientCommandHandler.instance.lastPosition.update(WorldEdit.playerPos(),
+					mc.player.dimension);
 			} else {
 				throw new CommandException("text.cutelessmod.clientcommands.back.wrongDimension");
 			}

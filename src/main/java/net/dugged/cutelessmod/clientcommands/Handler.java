@@ -9,6 +9,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 
 public class Handler {
+
 	protected static final Minecraft mc = Minecraft.getMinecraft();
 	public static boolean gamerulePermission = false;
 	public static boolean sendCommandfeedback = true;
@@ -31,15 +32,12 @@ public class Handler {
 		world = worldIn;
 		selection = selectionIn;
 		if (gamerulePermission) {
-			if (sendCommandfeedback) {
-				mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule sendCommandFeedback false"));
-			}
-			if (logAdminCommands) {
-				mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule logAdminCommands false"));
-			}
-			if (doTileDrops) {
-				mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule doTileDrops false"));
-			}
+			mc.player.connection.sendPacket(
+				new CPacketChatMessage("/gamerule sendCommandFeedback false"));
+			mc.player.connection.sendPacket(
+				new CPacketChatMessage("/gamerule logAdminCommands false"));
+			mc.player.connection.sendPacket(
+				new CPacketChatMessage("/gamerule doTileDrops false"));
 		}
 	}
 
@@ -49,8 +47,10 @@ public class Handler {
 			mc.player.connection.sendPacket(new CPacketTabComplete("/gamerul", null, false));
 			if (gamerulePermission) {
 				mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule doTileDrops"));
-				mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule sendCommandFeedback"));
-				mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule logAdminCommands"));
+				mc.player.connection.sendPacket(
+					new CPacketChatMessage("/gamerule sendCommandFeedback"));
+				mc.player.connection.sendPacket(
+					new CPacketChatMessage("/gamerule logAdminCommands"));
 			}
 		}
 	}
@@ -61,24 +61,21 @@ public class Handler {
 
 	public void finish() {
 		if (gamerulePermission && !ClientCommandHandler.instance.otherHandlersRunning(this)) {
-			if (doTileDrops) {
-				mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule doTileDrops true"));
-			}
-			if (logAdminCommands) {
-				mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule logAdminCommands true"));
-			}
-			if (sendCommandfeedback) {
-				mc.player.connection.sendPacket(new CPacketChatMessage("/gamerule sendCommandFeedback true"));
-			}
+			mc.player.connection.sendPacket(
+				new CPacketChatMessage("/gamerule doTileDrops true"));
+			mc.player.connection.sendPacket(
+				new CPacketChatMessage("/gamerule logAdminCommands true"));
+			mc.player.connection.sendPacket(
+				new CPacketChatMessage("/gamerule sendCommandFeedback true"));
 		}
-		getGameruleStates();
 		finished = true;
 	}
 
 	synchronized public void tick() {
 		if (age - last_execution > 300 && !warned) {
 			warned = true;
-			TextComponentTranslation warning = new TextComponentTranslation("text.cutelessmod.clientcommands.handlerAgeWarning", getClass());
+			TextComponentTranslation warning = new TextComponentTranslation(
+				"text.cutelessmod.clientcommands.handlerAgeWarning", getClass());
 			if (isWorldEditHandler) {
 				warning.getStyle().setColor(TextFormatting.LIGHT_PURPLE);
 			} else {
@@ -87,7 +84,8 @@ public class Handler {
 			mc.ingameGUI.getChatGUI().printChatMessage(warning);
 		}
 		if (age - last_execution > 600 && warned) {
-			TextComponentTranslation error = new TextComponentTranslation("text.cutelessmod.clientcommands.handlerTermination", getClass());
+			TextComponentTranslation error = new TextComponentTranslation(
+				"text.cutelessmod.clientcommands.handlerTermination", getClass());
 			if (isWorldEditHandler) {
 				error.getStyle().setColor(TextFormatting.LIGHT_PURPLE);
 			} else {

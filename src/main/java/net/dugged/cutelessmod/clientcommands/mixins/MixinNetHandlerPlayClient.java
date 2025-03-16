@@ -1,6 +1,11 @@
 package net.dugged.cutelessmod.clientcommands.mixins;
 
-import net.dugged.cutelessmod.clientcommands.*;
+import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
+import net.dugged.cutelessmod.clientcommands.Handler;
+import net.dugged.cutelessmod.clientcommands.HandlerClone;
+import net.dugged.cutelessmod.clientcommands.HandlerFill;
+import net.dugged.cutelessmod.clientcommands.HandlerReplaceItem;
+import net.dugged.cutelessmod.clientcommands.HandlerSetBlock;
 import net.dugged.cutelessmod.clientcommands.worldedit.WorldEdit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.network.NetHandlerPlayClient;
@@ -16,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(NetHandlerPlayClient.class)
 public class MixinNetHandlerPlayClient {
+
 	@Unique
 	private static final String START_OF_PACKET = "Lnet/minecraft/network/PacketThreadUtil;checkThreadAndEnqueue(Lnet/minecraft/network/Packet;Lnet/minecraft/network/INetHandler;Lnet/minecraft/util/IThreadListener;)V";
 
@@ -23,21 +29,9 @@ public class MixinNetHandlerPlayClient {
 	private void onHandleChat(SPacketChat packet, CallbackInfo ci) {
 		if (packet.isSystem()) {
 			final String chatLine = packet.getChatComponent().getUnformattedText();
-			boolean flag = false;
-			if (chatLine.contains("sendCommandFeedback") && !chatLine.contains("updated")) {
-				Handler.sendCommandfeedback = chatLine.contains("true");
-				flag = true;
-			} else if (chatLine.contains("doTileDrops")) {
-				Handler.doTileDrops = chatLine.contains("true");
-				flag = true;
-			} else if (chatLine.contains("logAdminCommands")) {
-				Handler.logAdminCommands = chatLine.contains("true");
-				flag = true;
-			}
-			if (flag && !chatLine.contains("updated")) {
-				ci.cancel();
-			}
-			if (ClientCommandHandler.instance.handlers.size() > 0 && (chatLine.contains("The block couldn't be placed") || chatLine.contains("Block placed") || chatLine.contains("No blocks filled"))) {
+			if (!ClientCommandHandler.instance.handlers.isEmpty() && (
+				chatLine.contains("The block couldn't be placed") || chatLine.contains(
+					"Block placed") || chatLine.contains("No blocks filled"))) {
 				ci.cancel();
 			}
 		}
@@ -73,7 +67,8 @@ public class MixinNetHandlerPlayClient {
 			String msg = ((CPacketChatMessage) packetIn).getMessage();
 			String[] args = msg.split(" ");
 			if (args[0].equals("/tp")) {
-				ClientCommandHandler.instance.lastPosition.update(WorldEdit.playerPos(), Minecraft.getMinecraft().player.dimension);
+				ClientCommandHandler.instance.lastPosition.update(WorldEdit.playerPos(),
+					Minecraft.getMinecraft().player.dimension);
 			}
 		}
 	}

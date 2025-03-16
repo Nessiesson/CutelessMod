@@ -5,6 +5,7 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.server.MinecraftServer;
 
 public class CommandStone extends ClientCommand {
+
 	@Override
 	public String getName() {
 		return "stone";
@@ -16,7 +17,8 @@ public class CommandStone extends ClientCommand {
 	}
 
 	@Override
-	public void execute(final MinecraftServer server, final ICommandSender sender, final String[] args) {
+	public void execute(final MinecraftServer server, final ICommandSender sender,
+		final String[] args) {
 		if (sender instanceof EntityPlayerSP) {
 			((EntityPlayerSP) sender).sendChatMessage("/setblock ~ ~-1 ~ stone");
 		}
