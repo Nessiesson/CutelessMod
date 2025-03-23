@@ -16,6 +16,7 @@ import net.dugged.cutelessmod.clientcommands.worldedit.CommandCone;
 import net.dugged.cutelessmod.clientcommands.worldedit.CommandCopyHere;
 import net.dugged.cutelessmod.clientcommands.worldedit.CommandCount;
 import net.dugged.cutelessmod.clientcommands.worldedit.CommandCyl;
+import net.dugged.cutelessmod.clientcommands.worldedit.CommandDiagLine;
 import net.dugged.cutelessmod.clientcommands.worldedit.CommandDrain;
 import net.dugged.cutelessmod.clientcommands.worldedit.CommandErode;
 import net.dugged.cutelessmod.clientcommands.worldedit.CommandFillInventories;
@@ -125,6 +126,7 @@ public class ClientCommandHandler extends CommandHandler {
 		instance.registerCommand(new CommandErode());
 		instance.registerCommand(new CommandStackDiagonal());
 		instance.registerCommand(new CommandSwap());
+		instance.registerCommand(new CommandDiagLine());
 
 		WorldEdit.brushes.add(new BrushIceSpike());
 		WorldEdit.brushes.add(new BrushRemoveColumn());

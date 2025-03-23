@@ -90,3 +90,4 @@ text.cutelessmod.clientcommands.worldEdit.erode.usage=/erosion
 text.cutelessmod.clientcommands.worldEdit.stackdiagonal.usage=/stackdiagonal <count> <xOffset> <yOffset> <zOffset> [masked] [moveSelection]
 text.cutelessmod.clientcommands.worldEdit.swap.usage=/swap <block1> [dataValue:state1] <block2> [dataValue:state2]
 text.cutelessmod.clientcommands.worldEdit.cone.usage=/cone <block> <dataValue:state> <startRadius> <endRadius> <height> <bezierA> <bezierB>
+text.cutelessmod.clientcommands.worldEdit.diagline.usage=/diagline <block> <dataValue:state>

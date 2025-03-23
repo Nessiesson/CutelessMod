@@ -29,19 +29,17 @@ public class CommandDrain extends ClientCommand {
 
 	@Override
 	public String getUsage(ICommandSender sender) {
-		return new TextComponentTranslation(
-			"text.cutelessmod.clientcommands.worldEdit.drain.usage").getUnformattedText();
+		return new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.drain.usage").getUnformattedText();
 	}
 
 	private void checkAndAddNeighbor(World world, BlockPos neighbor, BlockPos startPos, int radius,
 		ChunkPos currentChunk, List<BlockPos> checkedBlocks, List<BlockPos> blocksToCheck,
-		Map<ChunkPos, BlockPos> chunkMap, List<ChunkPos> chunkQueue,
+		Map<ChunkPos, BlockPos> chunkMap, Queue<ChunkPos> chunkQueue,
 		Map<BlockPos, IBlockState> blocksToPlace, boolean drainImmediate) {
 		if (!(world.getBlockState(neighbor).getBlock() instanceof BlockLiquid)) {
 			return;
 		}
-		if (!WorldEdit.checkCircle(neighbor.getX() - startPos.getX(),
-			neighbor.getZ() - startPos.getZ(), radius)) {
+		if (!WorldEdit.checkCircle(neighbor.getX() - startPos.getX(), neighbor.getZ() - startPos.getZ(), radius)) {
 			return;
 		}
 		ChunkPos np = world.getChunk(neighbor).getPos();
@@ -68,8 +66,8 @@ public class CommandDrain extends ClientCommand {
 		ChunkPos startChunk = world.getChunk(startPos).getPos();
 		chunkQueue.add(startChunk);
 		chunkMap.put(startChunk, startPos);
-		int[][] offsets = {{0, 1, 0}, {0, -1, 0}, {0, 0, -1}, {1, 0, 0}, {0, 0, 1}, {-1, 0, 0}};
-		boolean[] immediate = {false, false, true, true, true, true};
+		int[][] offsets = { {0, 1, 0}, {0, -1, 0}, {0, 0, -1}, {1, 0, 0}, {0, 0, 1}, {-1, 0, 0} };
+		boolean[] immediate = { false, false, true, true, true, true };
 		while (!chunkQueue.isEmpty()) {
 			ChunkPos currentChunk = chunkQueue.poll();
 			BlockPos chunkStart = chunkMap.get(currentChunk);
@@ -82,8 +80,7 @@ public class CommandDrain extends ClientCommand {
 				for (int i = 0; i < offsets.length; i++) {
 					BlockPos neighbor = pos.add(offsets[i][0], offsets[i][1], offsets[i][2]);
 					checkAndAddNeighbor(world, neighbor, startPos, radius, currentChunk,
-						checkedBlocks, blocksToCheck, chunkMap, new ArrayList<>(chunkQueue),
-						blocksToPlace, immediate[i]);
+						checkedBlocks, blocksToCheck, chunkMap, chunkQueue, blocksToPlace, immediate[i]);
 				}
 				blocksToPlace.put(pos, Blocks.AIR.getDefaultState());
 			}
@@ -99,17 +96,15 @@ public class CommandDrain extends ClientCommand {
 			World world = sender.getEntityWorld();
 			BlockPos pos = WorldEdit.playerPos();
 			if (world.getBlockState(pos).getBlock() instanceof BlockLiquid) {
-				int radius = args.length == 1 ? parseInt(args[0]) : 50;
+				int radius = args.length == 1 ? parseInt(args[0]) : 100;
 				Thread t = new Thread(() -> drainBody(world, pos, radius));
 				t.start();
 				TaskManager.getInstance().threads.add(t);
 			} else {
-				WorldEdit.sendMessage(new TextComponentTranslation(
-					"text.cutelessmod.clientcommands.worldEdit.drain.notInWater"));
+				WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.drain.notInWater"));
 			}
 		} else {
-			WorldEdit.sendMessage(new TextComponentTranslation(
-				"text.cutelessmod.clientcommands.worldEdit.drain.usage"));
+			WorldEdit.sendMessage(new TextComponentTranslation("text.cutelessmod.clientcommands.worldEdit.drain.usage"));
 		}
 	}
 }
