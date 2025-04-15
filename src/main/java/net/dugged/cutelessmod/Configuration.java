@@ -55,6 +55,8 @@ public class Configuration {
 	public static boolean showGuiBackGround = true;
 	public static boolean showHand = true;
 	public static boolean showIdealToolMarker = false;
+	@Config.RequiresMcRestart
+	public static boolean showIronGolemNose = true;
 	public static boolean showItemAttributes = true;
 	public static boolean showItemFrameFrame = true;
 	public static boolean showHandChangeAnimation = true;
