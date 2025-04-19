@@ -116,7 +116,6 @@
 		"MixinTileEntityStructure",
 		"MixinWorld",
 		"MixinWorldClient",
-		"MixinModelIronGolem",
 		"MixinYggdrasilMinecraftSessionService"
 	]
 }
