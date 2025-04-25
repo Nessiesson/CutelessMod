@@ -1,9 +1,13 @@
 package net.dugged.cutelessmod.mixins;
 
+import net.dugged.cutelessmod.Configuration;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
 import net.minecraft.entity.boss.EntityWither;
+import net.minecraft.util.EnumParticleTypes;
+import net.minecraft.world.IWorldEventListener;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -39,6 +43,13 @@ public abstract class MixinEntityLivingBase extends Entity {
 			entity.move(MoverType.SELF, this.cutelessmodD0 - this.posX, this.cutelessmodD1 - this.posY, this.cutelessmodD2 - this.posZ);
 		} else {
 			entity.setPosition(x, y, z);
+		}
+	}
+
+	@Redirect(method = "onDeathUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;spawnParticle(Lnet/minecraft/util/EnumParticleTypes;DDDDDD[I)V"))
+	private void cutelessmod$onSummonDeathParticles(final World instance, final EnumParticleTypes particleType, final double xCoord, final double yCoord, final double zCoord, final double xSpeed, final double ySpeed, final double zSpeed, final int[] parameters) {
+		if (Configuration.showDeathParticles) {
+			instance.spawnParticle(particleType, xCoord, yCoord, zCoord, xSpeed, ySpeed, zSpeed, parameters);
 		}
 	}
 }

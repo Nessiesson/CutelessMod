@@ -51,6 +51,7 @@ public class Configuration {
 	public static boolean showClearLava = false;
 	public static boolean showDamageTilt = false;
 	public static boolean showDeathAnimations = true;
+	public static boolean showDeathParticles = true;
 	public static boolean saveDungeonLocations = false;
 	public static boolean showGuiBackGround = true;
 	public static boolean showHand = true;
