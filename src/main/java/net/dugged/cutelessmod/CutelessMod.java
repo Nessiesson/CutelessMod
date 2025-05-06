@@ -165,6 +165,12 @@ public class CutelessMod {
 		if (Configuration.chestWithoutTESR) {
 			TileEntityRendererDispatcher.instance.renderers.remove(TileEntityChest.class);
 		}
+
+		try {
+			GuiIngameForge.renderObjective = Configuration.class.getField("showScoreboards").getBoolean(Configuration.class);
+		} catch (NoSuchFieldException | IllegalAccessException ignored) {
+			// noop
+		}
 	}
 
 	@SubscribeEvent
