@@ -49,7 +49,7 @@ public abstract class MixinMinecraft implements IThreadListener, ISnooperInfo {
 
 	@Inject(method = "rightClickMouse", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;rightClickDelayTimer:I", opcode = Opcodes.PUTFIELD, ordinal = 0, shift = At.Shift.AFTER))
 	private void onRightClick(CallbackInfo ci) {
-		this.rightClickDelayTimer = Configuration.speedyPlace;
+		this.rightClickDelayTimer = Configuration._speedyPlace;
 	}
 
 	@ModifyArg(method = "runTickMouse", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/math/MathHelper;clamp(FFF)F"), index = 2)

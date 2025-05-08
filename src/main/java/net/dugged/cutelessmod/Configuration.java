@@ -85,7 +85,7 @@ public class Configuration {
 
 	// Ints
 	@Config.RangeInt(min = 0)
-	public static int speedyPlace = 4;
+	public static int _speedyPlace = 4;
 	@Config.RangeInt(min = 0)
 	public static int reconnectTimer = 10;
 
