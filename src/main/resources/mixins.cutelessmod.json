@@ -64,6 +64,7 @@
 		"MixinGuiDisconnected",
 		"MixinGuiGameOver",
 		"MixinGuiIngame",
+		"MixinGuiIngameForge",
 		"MixinGuiIngameMenu",
 		"MixinGuiInventory",
 		"MixinGuiLanguage_List",
