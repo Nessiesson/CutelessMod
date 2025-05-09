@@ -91,6 +91,7 @@ public class CutelessMod {
 	private static final KeyBinding resetItemCounterKey = new KeyBinding("key.cutelessmod.reset_item_counter", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	private static final KeyBinding putFrequencyAnalyzerKey = new KeyBinding("key.cutelessmod.put_frequency_analyzer", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	private static final KeyBinding putRandomTickAreaKey = new KeyBinding("key.cutelessmod.put_random_tick_area", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
+	private static final KeyBinding snapaimKey = new KeyBinding("key.cutelessmod.snapaim", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	public static final KeyBinding zoomerKey = new KeyBinding("key.cutelessmod.zoomer", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	private static final Minecraft mc = Minecraft.getMinecraft();
 	private static final StepAssistHelper stepAssistHelper = new StepAssistHelper();
@@ -157,6 +158,7 @@ public class CutelessMod {
 		ClientRegistry.registerKeyBinding(resetItemCounterKey);
 		ClientRegistry.registerKeyBinding(putFrequencyAnalyzerKey);
 		ClientRegistry.registerKeyBinding(putRandomTickAreaKey);
+		ClientRegistry.registerKeyBinding(snapaimKey);
 		ClientRegistry.registerKeyBinding(zoomerKey);
 
 		spy = new ContainerSpy();
@@ -263,11 +265,11 @@ public class CutelessMod {
 			}
 		}
 
-		if(putRandomTickAreaKey.isPressed()) {
+		if (putRandomTickAreaKey.isPressed()) {
 			RandomTickHelper.updatePosition(mc.player);
 		}
 
-		if(highlightEntitiesKey.isPressed()) {
+		if (highlightEntitiesKey.isPressed()) {
 			highlightEntities = !highlightEntities;
 		}
 
@@ -311,6 +313,12 @@ public class CutelessMod {
 			mc.gameSettings.gammaSetting = 1000;
 			mc.gameSettings.saveOptions();
 			mc.ingameGUI.setOverlayMessage("Enabled fullbright gammahax.", false);
+		}
+
+		if (snapaimKey.isPressed()) {
+			final EntityPlayerSP player = mc.player;
+			player.rotationYaw = (int) (Math.round(player.rotationYaw / 45F) * 45F);
+			mc.ingameGUI.setOverlayMessage("Snapped.", false);
 		}
 	}
 
