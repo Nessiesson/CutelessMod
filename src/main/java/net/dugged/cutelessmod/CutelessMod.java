@@ -318,7 +318,7 @@ public class CutelessMod {
 		if (snapaimKey.isPressed()) {
 			final EntityPlayerSP player = mc.player;
 			player.rotationYaw = (int) (Math.round(player.rotationYaw / 45F) * 45F);
-			mc.ingameGUI.setOverlayMessage("Snapped.", false);
+			mc.ingameGUI.setOverlayMessage("Thanos'd.", false);
 		}
 	}
 
