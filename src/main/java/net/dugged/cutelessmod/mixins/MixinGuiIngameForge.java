@@ -29,7 +29,7 @@ public abstract class MixinGuiIngameForge extends GuiIngame {
 			this.mc.profiler.startSection("overlayMessage");
 			final float hue = (float) this.overlayMessageTime - partialTicks;
 			final int opacity = (int) Math.min(hue * 255F / 20F, 255);
-			if (opacity > 8) {
+			if (opacity > 0) {
 				GlStateManager.pushMatrix();
 				GlStateManager.translate((float) (width / 2), (float) (height - 68), 0F);
 				GlStateManager.enableBlend();
