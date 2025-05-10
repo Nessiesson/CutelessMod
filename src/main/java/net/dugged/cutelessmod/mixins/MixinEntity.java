@@ -70,6 +70,6 @@ public abstract class MixinEntity {
 	@Unique
 	private float cutelessmod$round(float value) {
 		final long factor = 100_000_000L;
-		return (float) ((long) value * factor) / factor;
+		return (float) ((long) (value * factor)) / factor;
 	}
 }
