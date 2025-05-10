@@ -12,7 +12,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.Arrays;
 import java.util.List;
@@ -37,20 +39,11 @@ public abstract class MixinGuiOverlayDebug {
 		cir.getReturnValue().add(11, String.format("Region: %s", region));
 	}
 
-	@Inject(method = "getDebugInfoRight", at = @At("RETURN"))
-	private void addMetadata(final CallbackInfoReturnable<List<String>> cir) {
-		if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == RayTraceResult.Type.BLOCK && mc.objectMouseOver.getBlockPos() != null) {
-			final BlockPos blockpos = mc.objectMouseOver.getBlockPos();
-			final IBlockState iblockstate = mc.world.getBlockState(blockpos);
-			int i = 0;
-			for (String s : cir.getReturnValue()) {
-				if (s.startsWith("minecraft")) {
-					break;
-				}
-				i++;
-			}
-			cir.getReturnValue().add(i + 1, "metadata: " + iblockstate.getBlock().getMetaFromState(iblockstate));
-		}
+	@Inject(method = "getDebugInfoRight", at = @At(value = "INVOKE", target = "Ljava/util/List;add(Ljava/lang/Object;)Z", ordinal = 0, shift = At.Shift.AFTER, remap = false), slice = @Slice(from = @At(value = "INVOKE", target = "Lnet/minecraft/util/registry/RegistryNamespacedDefaultedByKey;getNameForObject(Ljava/lang/Object;)Ljava/lang/Object;")), locals = LocalCapture.CAPTURE_FAILHARD)
+	private void cutelessmod$addMetadata(final CallbackInfoReturnable<List<String>> cir, final long i, final long j, final long k, final long l, final List<String> list) {
+		final BlockPos blockpos = mc.objectMouseOver.getBlockPos();
+		final IBlockState iblockstate = mc.world.getBlockState(blockpos);
+		list.add("metadata: " + iblockstate.getBlock().getMetaFromState(iblockstate));
 	}
 
 	@Redirect(method = "call", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;getVersion()Ljava/lang/String;"))
