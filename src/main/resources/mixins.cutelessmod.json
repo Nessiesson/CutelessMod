@@ -89,6 +89,7 @@
 		"MixinLazyLoadBase",
 		"MixinMain",
 		"MixinMinecraft",
+		"MixinMouseHelper",
 		"MixinNetHandlerPlayClient",
 		"MixinNetworkManager",
 		"MixinNetworkManager_5",

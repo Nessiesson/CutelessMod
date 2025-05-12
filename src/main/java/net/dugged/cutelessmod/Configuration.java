@@ -33,6 +33,7 @@ public class Configuration {
 	public static boolean instantDoubleRetraction = false;
 	public static boolean jumpBoostStepAssist = false;
 	public static boolean lightUpdates = true;
+	public static boolean lockYaw = false;
 	public static boolean miningGhostBlockFix = false;
 	public static boolean noClip = false;
 	public static boolean noFall = false;
