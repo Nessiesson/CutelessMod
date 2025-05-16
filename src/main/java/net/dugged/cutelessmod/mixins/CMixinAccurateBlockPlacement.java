@@ -1,7 +1,7 @@
 package net.dugged.cutelessmod.mixins;
 
 import net.dugged.cutelessmod.Configuration;
-import net.dugged.cutelessmod.CutelessMod;
+import net.dugged.cutelessmod.KeyBindings;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDispenser;
 import net.minecraft.block.BlockGlazedTerracotta;
@@ -48,7 +48,7 @@ public abstract class CMixinAccurateBlockPlacement {
 			}
 
 			EnumFacing face = dir;
-			if (CutelessMod.carpetFaceIntoKey.isKeyDown() && uselessmod$isPiston(item)) {
+			if (KeyBindings.carpetFaceIntoKey.isKeyDown() && uselessmod$isPiston(item)) {
 				face = face.getOpposite();
 			} else {
 				if (uselessmod$isRedstoneDiode(item) || uselessmod$isGlazedTerracotta(item)) {
@@ -62,7 +62,7 @@ public abstract class CMixinAccurateBlockPlacement {
 				}
 			}
 
-			if (CutelessMod.carpetFlipFaceKey.isKeyDown()) {
+			if (KeyBindings.carpetFlipFaceKey.isKeyDown()) {
 				face = face.getOpposite();
 			}
 

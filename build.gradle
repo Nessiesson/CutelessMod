@@ -65,8 +65,8 @@ repositories {
 dependencies {
 	minecraft "net.minecraftforge:forge:1.12.2-14.23.5.2860"
 
-	jarLibs "org.spongepowered:mixin:0.8.3"
-	annotationProcessor "org.spongepowered:mixin:0.8.3:processor"
+	jarLibs "org.spongepowered:mixin:0.8.5"
+	annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 	compileOnly fg.deobf("curse.maven:renderlib-624967:4168831")
 }
 
@@ -118,4 +118,10 @@ dependencies {
 		def version = basename.substring(versionSep + 1)
 		implementation fg.deobf("extra-mods:$artifactId:$version")
 	}
+}
+
+def hostLdPath = System.getenv('LD_LIBRARY_PATH') ?: ''
+tasks.withType(JavaExec).configureEach { JavaExec exec ->
+	exec.environment 'LD_LIBRARY_PATH', hostLdPath + ":/run/current-system/sw/lib"
+	exec.environment '__GL_THREADED_OPTIMIZATIONS', '0'
 }

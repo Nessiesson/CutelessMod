@@ -16,7 +16,7 @@ public enum Zoomer {
 
 	public float changeFovBasedOnZoom(final float fov) {
 		final float mouseSensitivitySetting = options.mouseSensitivity;
-		if (!CutelessMod.zoomerKey.isKeyDown()) {
+		if (!KeyBindings.zoomerKey.isKeyDown()) {
 			this.currentLevel = defaultLevel;
 			if (this.defaultMouseSensitivity != null) {
 				options.mouseSensitivity = this.defaultMouseSensitivity;
@@ -38,7 +38,7 @@ public enum Zoomer {
 	}
 
 	public void onMouseScroll() {
-		if (!CutelessMod.zoomerKey.isKeyDown()) {
+		if (!KeyBindings.zoomerKey.isKeyDown()) {
 			return;
 		}
 

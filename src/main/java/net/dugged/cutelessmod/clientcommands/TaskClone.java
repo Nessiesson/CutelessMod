@@ -93,7 +93,7 @@ public class TaskClone extends TaskChunk {
 	}
 
 	public enum Mode {
-		FORCE("force"), MASKED("masked"), MOVE("move");
+		FORCE("replace force"), MASKED("masked force"), MOVE("replace move");
 
 		private final String commandArg;
 

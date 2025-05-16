@@ -2,6 +2,7 @@ package net.dugged.cutelessmod.mixins;
 
 import net.dugged.cutelessmod.Configuration;
 import net.dugged.cutelessmod.CutelessMod;
+import net.dugged.cutelessmod.KeyBindings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -68,7 +69,7 @@ public class MixinInventoryPlayer {
 
 	@Inject(method = "changeCurrentItem", at = @At("HEAD"), cancellable = true)
 	private void onScrollInHotbar(final int direction, final CallbackInfo ci) {
-		if (CutelessMod.zoomerKey.isKeyDown()) {
+		if (KeyBindings.zoomerKey.isKeyDown()) {
 			ci.cancel();
 		}
 	}

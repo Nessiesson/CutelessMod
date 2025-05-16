@@ -10,6 +10,7 @@ public class Configuration {
 	public static boolean alwaysRenderTileEntities = false;
 	public static boolean alwaysShowPing = false;
 	public static boolean alwaysSingleplayerCheats = false;
+	public static boolean autoGenKeybinds = false;
 	public static boolean carpetAccurateBlockPlacement = false;
 	@Config.RequiresMcRestart
 	public static boolean chestWithoutTESR = false;

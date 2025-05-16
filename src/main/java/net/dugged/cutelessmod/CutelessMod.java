@@ -31,25 +31,18 @@ import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.Style;
-import net.minecraft.util.text.TextComponentString;
-import net.minecraft.util.text.TextComponentTranslation;
-import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.*;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
-import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -61,13 +54,9 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -77,25 +66,8 @@ import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection
 @Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION, clientSideOnly = true)
 public class CutelessMod {
 	public static final Logger LOGGER = LogManager.getLogger(Reference.NAME);
-	public static final KeyBinding carpetFaceIntoKey = new KeyBinding("key.cutelessmod.face_into", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
-	public static final KeyBinding carpetFlipFaceKey = new KeyBinding("key.cutelessmod.flip_face", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
-	public static final KeyBinding highlightEntitiesKey = new KeyBinding("key.cutelessmod.highlight_entities", KeyConflictContext.IN_GAME, Keyboard.KEY_C, Reference.NAME);
-	private static final KeyBinding emptyScreenKey = new KeyBinding("key.cutelessmod.emptyscreen", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
-	private static final KeyBinding gammaHaxKey = new KeyBinding("key.cutelessmod.gammahax", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
-	private static final KeyBinding reloadAudioEngineKey = new KeyBinding("key.cutelessmod.reload_audio", KeyConflictContext.IN_GAME, Keyboard.KEY_B, Reference.NAME);
-	private static final KeyBinding repeatLastCommandKey = new KeyBinding("key.cutelessmod.repeat_last_command", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
-	private static final KeyBinding spyKey = new KeyBinding("key.cutelessmod.spy", KeyConflictContext.IN_GAME, Keyboard.KEY_Y, Reference.NAME);
-	private static final KeyBinding toggleBeaconAreaKey = new KeyBinding("key.cutelessmod.toggle_beacon_area", KeyConflictContext.IN_GAME, Keyboard.KEY_J, Reference.NAME);
-	private static final KeyBinding chunkDebug = new KeyBinding("key.cutelessmod.chunk_debug", KeyConflictContext.IN_GAME, Keyboard.KEY_F6, Reference.NAME);
-	private static final KeyBinding putItemCounterKey = new KeyBinding("key.cutelessmod.put_item_counter", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
-	private static final KeyBinding resetItemCounterKey = new KeyBinding("key.cutelessmod.reset_item_counter", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
-	private static final KeyBinding putFrequencyAnalyzerKey = new KeyBinding("key.cutelessmod.put_frequency_analyzer", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
-	private static final KeyBinding putRandomTickAreaKey = new KeyBinding("key.cutelessmod.put_random_tick_area", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
-	private static final KeyBinding snapaimKey = new KeyBinding("key.cutelessmod.snapaim", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
-	public static final KeyBinding zoomerKey = new KeyBinding("key.cutelessmod.zoomer", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 	private static final Minecraft mc = Minecraft.getMinecraft();
 	private static final StepAssistHelper stepAssistHelper = new StepAssistHelper();
-	private static final List<KeyBinding> keybinds = new ArrayList<>();
 	public static Map<String, List<ChatLine>> chatHistory = new HashMap<>();
 	public static Map<String, List<String>> tabCompleteHistory = new HashMap<>();
 	public static int toggleBeaconArea = 0;
@@ -135,31 +107,7 @@ public class CutelessMod {
 
 	@Mod.EventHandler
 	public void init(final FMLInitializationEvent event) {
-		Arrays.stream(Configuration.class.getDeclaredFields())
-				.filter(f -> boolean.class.equals(f.getType()))
-				.filter(f -> !(f.isAnnotationPresent(Config.RequiresMcRestart.class) || f.isAnnotationPresent(Config.RequiresWorldRestart.class)))
-				.map(f -> new KeyBinding(f.getName(), Keyboard.KEY_NONE, Reference.NAME + " Autogenerated"))
-				.peek(keybinds::add)
-				.forEach(ClientRegistry::registerKeyBinding);
-
-		ClientRegistry.registerKeyBinding(carpetFaceIntoKey);
-		ClientRegistry.registerKeyBinding(carpetFlipFaceKey);
-		ClientRegistry.registerKeyBinding(highlightEntitiesKey);
-		ClientRegistry.registerKeyBinding(emptyScreenKey);
-		ClientRegistry.registerKeyBinding(gammaHaxKey);
-		ClientRegistry.registerKeyBinding(reloadAudioEngineKey);
-		ClientRegistry.registerKeyBinding(repeatLastCommandKey);
-		ClientRegistry.registerKeyBinding(spyKey);
-		ClientRegistry.registerKeyBinding(toggleBeaconAreaKey);
-		ClientRegistry.registerKeyBinding(chunkDebug);
-		ClientRegistry.registerKeyBinding(putItemCounterKey);
-		ClientRegistry.registerKeyBinding(resetItemCounterKey);
-		ClientRegistry.registerKeyBinding(putFrequencyAnalyzerKey);
-		ClientRegistry.registerKeyBinding(putRandomTickAreaKey);
-		ClientRegistry.registerKeyBinding(snapaimKey);
-		ClientRegistry.registerKeyBinding(zoomerKey);
-
-		spy = new ContainerSpy();
+		KeyBindings.init();
 		ClientCommandHandler.getInstance().init();
 		GuiChunkGrid.instance = new GuiChunkGrid();
 		if (Configuration.chestWithoutTESR) {
@@ -182,31 +130,12 @@ public class CutelessMod {
 
 	@SubscribeEvent
 	public void onKeyPressed(final InputEvent.KeyInputEvent event) {
-		for (final KeyBinding key : keybinds) {
-			if (key.isPressed()) {
-				try {
-					final Field field = Configuration.class.getField(key.getKeyDescription());
-					final boolean state = !field.getBoolean(Configuration.class);
-					field.setBoolean(Configuration.class, state);
-					ConfigManager.sync(Reference.MODID, Config.Type.INSTANCE);
-					mc.ingameGUI.setOverlayMessage(String.format("%s %s.", field.getName(), state ? "enabled" : "disabled"), false);
-
-					// Super ugly place to put this code, but It Works:tm:.
-					if ("showScoreboards".equals(field.getName())) {
-						GuiIngameForge.renderObjective = state;
-					}
-				} catch (NoSuchFieldException | IllegalAccessException ignored) {
-					// noop
-				}
-			}
-		}
-
-		if (reloadAudioEngineKey.isPressed()) {
+		if (KeyBindings.reloadAudioEngineKey.isPressed()) {
 			((ISoundHandler) mc.getSoundHandler()).getSoundManager().reloadSoundSystem();
 			this.debugFeedback();
 		}
 
-		if (toggleBeaconAreaKey.isPressed()) {
+		if (KeyBindings.toggleBeaconAreaKey.isPressed()) {
 			toggleBeaconArea++;
 			switch (toggleBeaconArea) {
 				case 1:
@@ -224,27 +153,19 @@ public class CutelessMod {
 			}
 		}
 
-		if (spyKey.isPressed()) {
-			if (mc.player.isSneaking()) {
-				spy.resetChests();
-			} else {
-				spy.startFindingInventories();
-			}
-		}
-
-		if (emptyScreenKey.isPressed()) {
+		if (KeyBindings.emptyScreenKey.isPressed()) {
 			mc.displayGuiScreen(new GuiEmptyScreen());
 		}
 
-		if (repeatLastCommandKey.isPressed() && !lastCommand.isEmpty()) {
+		if (KeyBindings.repeatLastCommandKey.isPressed() && !lastCommand.isEmpty()) {
 			mc.player.sendChatMessage(CutelessMod.lastCommand);
 		}
 
-		if (chunkDebug.isPressed()) {
+		if (KeyBindings.chunkDebug.isPressed()) {
 			mc.displayGuiScreen(GuiChunkGrid.instance);
 		}
 
-		if (putItemCounterKey.isPressed()) {
+		if (KeyBindings.putItemCounterKey.isPressed()) {
 			if (ItemCounter.position != null) {
 				ItemCounter.reset();
 				ItemCounter.position = null;
@@ -253,7 +174,7 @@ public class CutelessMod {
 			}
 		}
 
-		if (putFrequencyAnalyzerKey.isPressed()) {
+		if (KeyBindings.putFrequencyAnalyzerKey.isPressed()) {
 			if (FrequencyAnalyzer.position != null) {
 				FrequencyAnalyzer.reset();
 				FrequencyAnalyzer.position = null;
@@ -263,15 +184,19 @@ public class CutelessMod {
 			}
 		}
 
-		if (putRandomTickAreaKey.isPressed()) {
-			RandomTickHelper.updatePosition(mc.player);
+		if (KeyBindings.putRandomTickAreaKey.isPressed()) {
+			RandomTickRenderer.getInstance().updatePosition(mc.player);
 		}
 
-		if (highlightEntitiesKey.isPressed()) {
+		if (KeyBindings.putDespawnSphereKey.isPressed()) {
+			DespawnSphereRenderer.getInstance().updatePosition(mc.player);
+		}
+
+		if (KeyBindings.highlightEntitiesKey.isPressed()) {
 			highlightEntities = !highlightEntities;
 		}
 
-		if (resetItemCounterKey.isPressed()) {
+		if (KeyBindings.resetItemCounterKey.isPressed()) {
 			mc.ingameGUI.setOverlayMessage("Reset Item Counter", false);
 			ItemCounter.reset();
 		}
@@ -307,13 +232,13 @@ public class CutelessMod {
 			}
 		}
 
-		if (gammaHaxKey.isPressed()) {
+		if (KeyBindings.gammaHaxKey.isPressed()) {
 			mc.gameSettings.gammaSetting = 1000;
 			mc.gameSettings.saveOptions();
 			mc.ingameGUI.setOverlayMessage("Enabled fullbright gammahax.", false);
 		}
 
-		if (snapaimKey.isPressed()) {
+		if (KeyBindings.snapaimKey.isPressed()) {
 			final EntityPlayerSP player = mc.player;
 			player.rotationYaw = (int) (Math.round(player.rotationYaw / 45F) * 45F);
 			mc.ingameGUI.setOverlayMessage("Thanos'd.", false);
@@ -383,9 +308,6 @@ public class CutelessMod {
 					base.appendSibling(tMSPT).appendSibling(MSPT).appendSibling(new TextComponentString(" ")).appendSibling(tTPS).appendSibling(TPS);
 					mc.ingameGUI.getTabList().setFooter(base);
 				}
-			}
-			if (!mc.player.isSneaking() && spyKey.isKeyDown() && mc.world.getTotalWorldTime() % 10 == 0) {
-				spy.startFindingInventories();
 			}
 			for (int i = sendPackets.length - 1; i > 0; --i) {
 				sendPackets[i] = sendPackets[i - 1];
