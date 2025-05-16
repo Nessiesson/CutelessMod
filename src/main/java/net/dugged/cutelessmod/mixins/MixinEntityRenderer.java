@@ -1,11 +1,6 @@
 package net.dugged.cutelessmod.mixins;
 
-import net.dugged.cutelessmod.AreaSelectionRenderer;
-import net.dugged.cutelessmod.Configuration;
-import net.dugged.cutelessmod.FrequencyAnalyzer;
-import net.dugged.cutelessmod.ItemCounter;
-import net.dugged.cutelessmod.PistonHelper;
-import net.dugged.cutelessmod.RandomTickHelper;
+import net.dugged.cutelessmod.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -36,9 +31,10 @@ public abstract class MixinEntityRenderer {
 	@Inject(method = "renderWorldPass", at = @At(value = "INVOKE_STRING", target = "Lnet/minecraft/profiler/Profiler;endStartSection(Ljava/lang/String;)V", args = "ldc=litParticles"))
 	private void onPostRenderEntities(final int pass, final float partialTicks, final long finishTimeNano, final CallbackInfo ci) {
 		AreaSelectionRenderer.render(partialTicks);
-		ItemCounter.renderPos(partialTicks);
+		DespawnSphereRenderer.getInstance().render(partialTicks);
 		FrequencyAnalyzer.render(partialTicks);
-		RandomTickHelper.render(partialTicks);
+		ItemCounter.renderPos(partialTicks);
+		RandomTickRenderer.getInstance().render(partialTicks);
 		PistonHelper.draw(partialTicks);
 	}
 
