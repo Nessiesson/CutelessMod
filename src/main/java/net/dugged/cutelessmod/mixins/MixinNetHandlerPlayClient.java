@@ -77,25 +77,6 @@ public abstract class MixinNetHandlerPlayClient {
 		// noop
 	}
 
-	@Inject(method = "handleOpenWindow", at = @At(value = "INVOKE", target = START_OF_PACKET, shift = At.Shift.AFTER), cancellable = true)
-	private void onHandleOpenWindow(SPacketOpenWindow packet, CallbackInfo ci) {
-		if (CutelessMod.spy.onOpenWindow(packet.getWindowId(), packet.getSlotCount())) {
-			ci.cancel();
-		}
-	}
-
-	@Inject(method = "handleWindowItems", at = @At(value = "INVOKE", target = START_OF_PACKET, shift = At.Shift.AFTER))
-	private void onHandleWindowItems(SPacketWindowItems packet, CallbackInfo ci) {
-		CutelessMod.spy.onGetContent(packet.getWindowId(), packet.getItemStacks());
-	}
-
-	@Inject(method = "handleChat", at = @At(value = "INVOKE", target = START_OF_PACKET, shift = At.Shift.AFTER), cancellable = true)
-	private void onHandleChat(SPacketChat packet, CallbackInfo ci) {
-		if (packet.isSystem() && CutelessMod.spy.onChatReceived(packet.getChatComponent())) {
-			ci.cancel();
-		}
-	}
-
 	@Inject(method = "handleJoinGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/NetworkManager;sendPacket(Lnet/minecraft/network/Packet;)V"), cancellable = true)
 	private void addChatHistory(SPacketJoinGame packetIn, CallbackInfo ci) {
 		final Minecraft mc = Minecraft.getMinecraft();

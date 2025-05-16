@@ -40,9 +40,6 @@ public class Configuration {
 	public static boolean performanceImprovements = false;
 	public static boolean respawnOnDeath = false;
 	public static boolean rocketCooldown = false;
-	public static boolean selfhostedYggdrasil = false;
-	@Config.Comment("File or direct string, make long enough so you cant leak entire string on stream. Support for generating hash from BEGIN OPENSSH PRIVATE KEY file")
-	public static String selfhostedYggdrasilKey = "~/.ssh/id_rsa";
 	public static boolean showArmor = true;
 	@Config.RequiresMcRestart
 	public static boolean showBarrierBlocks = false;

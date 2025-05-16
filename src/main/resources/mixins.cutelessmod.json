@@ -111,13 +111,11 @@
 		"MixinSpectatorMenu",
 		"MixinTeleportToPlayer",
 		"MixinTileEntityBeaconRenderer",
-		"MixinTileEntityChestRenderer",
 		"MixinTileEntityPiston",
 		"MixinTileEntityPistonRenderer",
 		"MixinTileEntityRendererDispatcher",
 		"MixinTileEntityStructure",
 		"MixinWorld",
-		"MixinWorldClient",
-		"MixinYggdrasilMinecraftSessionService"
+		"MixinWorldClient"
 	]
 }

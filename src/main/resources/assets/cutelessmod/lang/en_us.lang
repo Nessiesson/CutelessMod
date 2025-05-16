@@ -3,7 +3,6 @@ key.cutelessmod.gammahax=Enable fullbright gammahax.
 key.cutelessmod.highlight_entities=Highlight Entities (Spectators)
 key.cutelessmod.reload_audio=Reload audio engine
 key.cutelessmod.repeat_last_command=Repeat last /command
-key.cutelessmod.spy=Enable container spy functionality (WIP)
 key.cutelessmod.toggle_beacon_area=Toggle to show beacon area of effect
 key.cutelessmod.chunk_debug=Chunk Debug Tool
 key.cutelessmod.put_item_counter=Place Item Counter

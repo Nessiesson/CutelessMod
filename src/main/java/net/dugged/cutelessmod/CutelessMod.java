@@ -98,10 +98,8 @@ public class CutelessMod {
 	private static final List<KeyBinding> keybinds = new ArrayList<>();
 	public static Map<String, List<ChatLine>> chatHistory = new HashMap<>();
 	public static Map<String, List<String>> tabCompleteHistory = new HashMap<>();
-	public static Map<BlockPos, ChunkPos> dungeonPositions = new ConcurrentHashMap<>();
 	public static int toggleBeaconArea = 0;
 	public static long lastTimeUpdate;
-	public static ContainerSpy spy;
 	public static int mspt;
 	public static int overlayTimer = 0;
 	public static ITextComponent tabFooter;
