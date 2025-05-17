@@ -18,7 +18,7 @@ public class CommandStone extends ClientCommand {
 
 	@Override
 	public void execute(final MinecraftServer server, final ICommandSender sender,
-		final String[] args) {
+						final String[] args) {
 		if (sender instanceof EntityPlayerSP) {
 			((EntityPlayerSP) sender).sendChatMessage("/setblock ~ ~-1 ~ stone");
 		}

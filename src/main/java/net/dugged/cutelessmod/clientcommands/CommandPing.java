@@ -27,9 +27,9 @@ public class CommandPing extends ClientCommand {
 		if (sender instanceof EntityPlayerSP) {
 			Minecraft mc = Minecraft.getMinecraft();
 			int ping = mc.player.connection.getPlayerInfo(mc.getSession().getUsername())
-				.getResponseTime();
+					.getResponseTime();
 			sender.sendMessage(
-				new TextComponentTranslation("text.cutelessmod.clientcommands.ping", ping));
+					new TextComponentTranslation("text.cutelessmod.clientcommands.ping", ping));
 		}
 	}
 }

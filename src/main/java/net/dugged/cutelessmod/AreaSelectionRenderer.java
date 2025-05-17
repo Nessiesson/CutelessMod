@@ -54,7 +54,7 @@ public class AreaSelectionRenderer {
 		GlStateManager.disableBlend();
 		GlStateManager.glLineWidth(3F);
 
-		if (Stream.of("/clone", "/fill", "/setblock", "/randomize").anyMatch(s -> args[0].equals(s))) {
+		if (Stream.of("/clone", "/fill", "/setblock").anyMatch(s -> args[0].equals(s))) {
 			boolean setblock = false;
 			if (args[0].equals("/setblock")) {
 				p1 = p0;

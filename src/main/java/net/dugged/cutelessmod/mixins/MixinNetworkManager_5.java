@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 @Mixin(targets = "net/minecraft/network/NetworkManager$5")
 public abstract class MixinNetworkManager_5 {
 	@ModifyConstant(method = "initChannel", constant = @Constant(intValue = 30), remap = false)
-	private static int noClientTimeout(final int timeout) {
+	private int noClientTimeout(final int timeout) {
 		return 0;
 	}
 }

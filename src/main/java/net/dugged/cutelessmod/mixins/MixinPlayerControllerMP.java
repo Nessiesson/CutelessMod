@@ -43,7 +43,7 @@ public abstract class MixinPlayerControllerMP {
 		}
 	}
 
-	@Inject(method = "processRightClick", at = @At(value = "INVOKE"), cancellable = true)
+	@Inject(method = "processRightClick", at = @At(value = "HEAD"), cancellable = true)
 	private void onRightClick(EntityPlayer player, World worldIn, EnumHand hand, CallbackInfoReturnable<EnumActionResult> cir) {
 		if (!player.isSpectator() && Configuration.rocketCooldown && player.getHeldItem(hand).getItem() instanceof ItemFirework && player.getCooldownTracker().hasCooldown(player.getHeldItem(hand).getItem())) {
 			cir.cancel();

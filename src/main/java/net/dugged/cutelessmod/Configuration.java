@@ -51,7 +51,6 @@ public class Configuration {
 	public static boolean showDamageTilt = false;
 	public static boolean showDeathAnimations = true;
 	public static boolean showDeathParticles = true;
-	public static boolean saveDungeonLocations = false;
 	public static boolean showGuiBackGround = true;
 	public static boolean showHand = true;
 	public static boolean showIdealToolMarker = false;
@@ -80,7 +79,7 @@ public class Configuration {
 	public static boolean stepAssist = false;
 	public static boolean waterModifiesFoV = true;
 	public static boolean weirdShift2Shift6LinuxBug = false;
-	public static boolean worldeditCompass = false;
+	public static boolean worldEditCompass = false;
 
 	// Ints
 	@Config.RangeInt(min = 0)

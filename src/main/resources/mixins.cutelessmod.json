@@ -39,7 +39,6 @@
 		"MixinBlockSlime",
 		"MixinBlockSnow",
 		"MixinChunk",
-		"MixinChunkGeneratorOverworld",
 		"MixinCommandBase",
 		"MixinCommandFill",
 		"MixinCPacketChatMessage",

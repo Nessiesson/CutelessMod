@@ -67,7 +67,7 @@ public abstract class MixinGuiIngame extends Gui {
 	@Inject(method = "renderHotbar", at = @At("RETURN"))
 	public void renderCompassMenu(ScaledResolution scaledResolution, float partialTicks, CallbackInfo ci) {
 		final Minecraft mc = Minecraft.getMinecraft();
-		if (Configuration.worldeditCompass && mc.player.isCreative() && mc.player.getHeldItemMainhand().getItem() instanceof ItemCompass) {
+		if (Configuration.worldEditCompass && mc.player.isCreative() && mc.player.getHeldItemMainhand().getItem() instanceof ItemCompass) {
 			CutelessMod.guiCompass.renderTooltip(scaledResolution);
 			CutelessMod.guiCompass.renderSelectedItem(scaledResolution);
 		} else if (CutelessMod.guiCompass.isMenuActive()) {

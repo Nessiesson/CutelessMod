@@ -4,9 +4,6 @@ import net.dugged.cutelessmod.chunk_display.CarpetPluginChannel;
 import net.dugged.cutelessmod.chunk_display.gui.Controller;
 import net.dugged.cutelessmod.chunk_display.gui.GuiChunkGrid;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.clientcommands.mixins.IItemSword;
-import net.dugged.cutelessmod.clientcommands.worldedit.BrushBase;
-import net.dugged.cutelessmod.clientcommands.worldedit.WorldEdit;
 import net.dugged.cutelessmod.mixins.ISoundHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -21,7 +18,6 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemCompass;
-import net.minecraft.item.ItemSword;
 import net.minecraft.network.play.client.CPacketChatMessage;
 import net.minecraft.network.play.client.CPacketClientStatus;
 import net.minecraft.network.play.client.CPacketPlayer;
@@ -60,9 +56,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.A;
-import static net.dugged.cutelessmod.clientcommands.worldedit.WorldEditSelection.Position.B;
-
 @Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION, clientSideOnly = true)
 public class CutelessMod {
 	public static final Logger LOGGER = LogManager.getLogger(Reference.NAME);
@@ -90,7 +83,6 @@ public class CutelessMod {
 	public static boolean highlightEntities = false;
 	private final CarpetPluginChannel carpetPluginChannel = new CarpetPluginChannel();
 	private String originalTitle;
-	private long swordCooldown = 0;
 	private boolean loggedOut;
 
 	public static boolean shouldHaveSounds() {
@@ -265,9 +257,7 @@ public class CutelessMod {
 		if (event.phase != TickEvent.Phase.END) {
 			return;
 		}
-		ClientCommandHandler.getInstance().tick();
 		tickCounter++;
-		swordCooldown--;
 		if (overlayTimer > 0) {
 			overlayTimer--;
 		}
@@ -349,53 +339,8 @@ public class CutelessMod {
 	}
 
 	@SubscribeEvent
-	public void onleftClickBlock(final PlayerInteractEvent.LeftClickBlock event) {
-		Item itemInHand = mc.player.getHeldItemMainhand().getItem();
-		if (mc.player.isCreative() && itemInHand instanceof ItemSword) {
-			Item.ToolMaterial material = ((IItemSword) itemInHand).getMaterial();
-			if (swordCooldown > tickCounter) {
-				event.setCanceled(true);
-			} else if (mc.player instanceof EntityPlayerSP) {
-				if (WorldEdit.getPos(material, A) == null || !WorldEdit.getPos(material, A).equals(event.getPos())) {
-					WorldEdit.setPos(material, A, event.getPos());
-				} else {
-					WorldEdit.setPos(material, A, null);
-				}
-				swordCooldown = tickCounter + 10;
-				event.setCanceled(true);
-			}
-		}
-	}
-
-	@SubscribeEvent
-	public void onRighClickBlock(final PlayerInteractEvent.RightClickBlock event) {
-		Item itemInHand = mc.player.getHeldItemMainhand().getItem();
-		if (mc.player.isCreative() && itemInHand instanceof ItemSword) {
-			Item.ToolMaterial material = ((IItemSword) itemInHand).getMaterial();
-			if (swordCooldown > tickCounter) {
-				event.setCanceled(true);
-			} else if (mc.player != null) {
-				if (WorldEdit.getPos(material, B) == null || !WorldEdit.getPos(material, B).equals(event.getPos())) {
-					WorldEdit.setPos(material, B, event.getPos());
-				} else {
-					WorldEdit.setPos(material, B, null);
-				}
-				swordCooldown = tickCounter + 10;
-				event.setCanceled(true);
-			}
-		} else if (mc.player.isCreative() && WorldEdit.currentBrushes.containsKey(itemInHand)) {
-			BrushBase brush = WorldEdit.currentBrushes.get(itemInHand);
-			if (brush.getUseCooldown() <= tickCounter) {
-				brush.execute(mc.world, event.getPos());
-				brush.setUseCooldown(tickCounter + 2);
-			}
-			event.setCanceled(true);
-		}
-	}
-
-	@SubscribeEvent
 	public void onLeftClickEmpty(final PlayerInteractEvent.LeftClickEmpty event) {
-		if (Configuration.worldeditCompass && mc.world != null && mc.player.isCreative() && mc.player.getHeldItemMainhand().getItem() instanceof ItemCompass) {
+		if (Configuration.worldEditCompass && mc.world != null && mc.player.isCreative() && mc.player.getHeldItemMainhand().getItem() instanceof ItemCompass) {
 			boolean teleported = false;
 			boolean stopInAir = CutelessModUtils.isShiftKeyDown();
 			int distance = stopInAir ? 50 : 500;
@@ -455,23 +400,11 @@ public class CutelessMod {
 	@SubscribeEvent
 	public void onRightClickEmpty(final PlayerInteractEvent.RightClickEmpty event) {
 		Item itemInHand = mc.player.getHeldItemMainhand().getItem();
-		if (Configuration.worldeditCompass && mc.world != null && mc.player.isCreative() && itemInHand instanceof ItemCompass && guiCompass != null) {
+		if (Configuration.worldEditCompass && mc.world != null && mc.player.isCreative() && itemInHand instanceof ItemCompass && guiCompass != null) {
 			if (guiCompass.isMenuActive()) {
 				guiCompass.exit();
 			} else {
 				guiCompass.onRightClick();
-			}
-		} else if (mc.player.isCreative() && WorldEdit.currentBrushes.containsKey(itemInHand)) {
-			BrushBase brush = WorldEdit.currentBrushes.get(itemInHand);
-			if (brush.getUseCooldown() <= tickCounter) {
-				Vec3d vec3d = mc.player.getPositionEyes(mc.getRenderPartialTicks());
-				Vec3d vec3d1 = mc.player.getLook(mc.getRenderPartialTicks());
-				Vec3d vec3d2 = vec3d.add(vec3d1.x * 500, vec3d1.y * 500, vec3d1.z * 500);
-				RayTraceResult rayTraceResult = CutelessModUtils.rayTrace(vec3d, vec3d2, 500, true, false);
-				if (rayTraceResult.typeOfHit == RayTraceResult.Type.BLOCK) {
-					brush.execute(mc.world, rayTraceResult.getBlockPos());
-					brush.setUseCooldown(tickCounter + 2);
-				}
 			}
 		}
 	}
