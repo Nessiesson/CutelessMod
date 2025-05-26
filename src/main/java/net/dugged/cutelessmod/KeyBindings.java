@@ -7,8 +7,10 @@ import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
+import net.minecraftforge.fml.relauncher.Side;
 import org.lwjgl.input.Keyboard;
 
 import java.lang.reflect.Field;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Mod.EventBusSubscriber(Side.CLIENT)
 public class KeyBindings {
     public static final List<KeyBinding> autoGenKeybinds = new ArrayList<>();
 
@@ -65,7 +68,7 @@ public class KeyBindings {
     }
 
     @SubscribeEvent
-    public void onKeyPressed(final InputEvent.KeyInputEvent event) {
+    public static void onKeyPressed(final InputEvent.KeyInputEvent event) {
         for (final KeyBinding key : autoGenKeybinds) {
             if (key.isPressed()) {
                 try {
