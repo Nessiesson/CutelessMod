@@ -113,4 +113,9 @@ public abstract class MixinNetHandlerPlayClient {
 			ci.cancel();
 		}
 	}
+
+	@Redirect(method = "handleRecipeBook", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/play/server/SPacketRecipeBook;isFilteringCraftable()Z"))
+	private boolean cutelessmod$makeFilteringCraftableByDefault(final SPacketRecipeBook instance) {
+		return true;
+	}
 }
