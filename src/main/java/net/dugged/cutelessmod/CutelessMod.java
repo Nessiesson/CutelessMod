@@ -12,6 +12,7 @@ import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiScreenOptionsSounds;
 import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.settings.GameSettings;
@@ -425,6 +426,15 @@ public class CutelessMod {
 	public void replaceBlockMidair(final PlayerInteractEvent.LeftClickBlock event) {
 		if (mc.player.isCreative() && GuiScreen.isAltKeyDown() && event.getWorld().isRemote) {
 			mc.getConnection().sendPacket(new CPacketPlayerTryUseItemOnBlock(event.getPos(), event.getFace(), EnumHand.MAIN_HAND, (float) event.getHitVec().x, (float) event.getHitVec().y, (float) event.getHitVec().z));
+		}
+	}
+
+	@SubscribeEvent
+	public void showWorldFog(final EntityViewRenderEvent.RenderFogEvent event) {
+		if (!Configuration.showWorldFog) {
+			final float renderDistance = 16F * Minecraft.getMinecraft().gameSettings.renderDistanceChunks;
+			GlStateManager.setFogStart(renderDistance * 1.6F);
+			GlStateManager.setFogEnd(renderDistance * 2F);
 		}
 	}
 

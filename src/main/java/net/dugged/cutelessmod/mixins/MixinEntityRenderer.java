@@ -8,21 +8,16 @@ import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
-import net.minecraft.world.WorldProvider;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityRenderer.class)
 public abstract class MixinEntityRenderer {
-	@Shadow
-	private float farPlaneDistance;
 	@Unique
 	private float cutelessmodEyeHeight;
 	@Unique
@@ -75,28 +70,5 @@ public abstract class MixinEntityRenderer {
 	@Redirect(method = "renderWorldPass", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isInsideOfMaterial(Lnet/minecraft/block/material/Material;)Z"))
 	private boolean renderBlockSelectorUnderwater(final Entity entity, final Material material) {
 		return !Configuration.showBlockSelectorUnderwater && entity.isInsideOfMaterial(material);
-	}
-
-	// Definitely not stolen from masa's tweakeroo. :)))
-	// https://github.com/maruohon/tweakeroo/blob/0253bdd40bbe774f2fa781adb3dc0b89128c451d/src/main/java/tweakeroo/mixin/MixinEntityRenderer.java#L93
-	@Inject(method = "setupFog",
-			slice = @Slice(
-					from = @At(value = "FIELD", ordinal = 1,
-							target = "Lnet/minecraft/client/renderer/EntityRenderer;farPlaneDistance:F"),
-					to = @At(value = "FIELD", ordinal = 1,
-							target = "Lorg/lwjgl/opengl/ContextCapabilities;GL_NV_fog_distance:Z", remap = false)),
-			at = @At(value = "INVOKE", shift = At.Shift.AFTER,
-					target = "Lnet/minecraft/client/renderer/GlStateManager;setFogEnd(F)V"))
-	private void disableRenderDistanceFog(final int startCoords, final float partialTicks, final CallbackInfo ci) {
-		if (!Configuration.showWorldFog) {
-			float renderDistance = this.farPlaneDistance;
-			GlStateManager.setFogStart(renderDistance * 1.6F);
-			GlStateManager.setFogEnd(renderDistance * 2F);
-		}
-	}
-
-	@Redirect(method = "setupFog", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/WorldProvider;doesXZShowFog(II)Z"))
-	public boolean disableDimensionFog(final WorldProvider instance, final int x, final int z) {
-		return Configuration.showWorldFog && instance.doesXZShowFog(x, z);
 	}
 }
