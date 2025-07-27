@@ -17,6 +17,8 @@ import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher;
 import net.minecraft.client.resources.IReloadableResourceManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.passive.EntityChicken;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemCompass;
 import net.minecraft.network.play.client.CPacketChatMessage;
@@ -27,16 +29,19 @@ import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.text.*;
+import net.minecraft.world.World;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -436,6 +441,28 @@ public class CutelessMod {
 			GlStateManager.setFogStart(renderDistance * 1.6F);
 			GlStateManager.setFogEnd(renderDistance * 2F);
 		}
+	}
+
+	@SubscribeEvent
+	public void chickenAlert(final EntityJoinWorldEvent event) {
+		final World world = event.getWorld();
+		if (!world.isRemote) {
+			return;
+		}
+
+		final Entity entity = event.getEntity();
+		if (!(entity instanceof EntityChicken)) {
+			return;
+		}
+		final BlockPos pos = entity.getPosition();
+		if(!world.isAnyPlayerWithinRangeAt(pos.getX(), pos.getY(), pos.getZ(), 8D)) {
+			return;
+		}
+
+		if(world.getEntitiesWithinAABB(EntityChicken.class, new AxisAlignedBB(-3D, -1D, -3D, 3D, 1D, 3D).offset(pos)).size() > 1) {
+			mc.ingameGUI.displayTitle("Duplicate chicken", "", -1, -1, -1);
+		}
+
 	}
 
 	private void updateTitle() {
