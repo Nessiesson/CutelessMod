@@ -24,9 +24,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Mixin(GuiIngame.class)
 public abstract class MixinGuiIngame extends Gui {
+	private static final Pattern cutelessmod$duggedmspt = Pattern.compile("^§(?<code>[4a])(?<mspt>\\d*)§r");
 
 	private static final ResourceLocation EXTENDED_HOTBAR_PATH = new ResourceLocation(Reference.MODID, "textures/extended_hotbar.png");
 
@@ -42,12 +45,19 @@ public abstract class MixinGuiIngame extends Gui {
 	private long lastTick = 0;
 
 	@Inject(method = "setOverlayMessage(Ljava/lang/String;Z)V", at = @At("HEAD"), cancellable = true)
-	private void parseDuggedMSPT(String message, final boolean animateColor, final CallbackInfo ci) {
-		final String s = message.replaceAll("(\u00A7a|\u00A7r)", "");
-		if (message.matches("\u00A7a\\d*\u00A7r") && StringUtils.isNumeric(s)) {
+	private void parseDuggedMSPT(final String message, final boolean animateColor, final CallbackInfo ci) {
+		final Matcher matcher = cutelessmod$duggedmspt.matcher(message);
+		if (!matcher.matches()) {
+			return;
+		}
+
+		final String mspt = matcher.group("mspt");
+		if (StringUtils.isNumeric(mspt)) {
 			CutelessMod.overlayTimer = 60;
-			CutelessMod.mspt = Integer.parseInt(s);
-			ci.cancel();
+			CutelessMod.mspt = Integer.parseInt(mspt);
+			if ("a".matches(matcher.group("code"))) {
+				ci.cancel();
+			}
 		}
 	}
 
