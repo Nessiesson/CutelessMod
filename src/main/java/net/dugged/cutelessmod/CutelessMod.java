@@ -451,15 +451,12 @@ public class CutelessMod {
 		}
 
 		final Entity entity = event.getEntity();
-		if (!(entity instanceof EntityChicken)) {
-			return;
-		}
 		final BlockPos pos = entity.getPosition();
-		if(!world.isAnyPlayerWithinRangeAt(pos.getX(), pos.getY(), pos.getZ(), 8D)) {
+		if (!(entity instanceof EntityChicken) || !world.isAnyPlayerWithinRangeAt(pos.getX(), pos.getY(), pos.getZ(), 8D)) {
 			return;
 		}
 
-		if(world.getEntitiesWithinAABB(EntityChicken.class, new AxisAlignedBB(-3D, -1D, -3D, 3D, 1D, 3D).offset(pos)).size() > 1) {
+		if (!world.getEntitiesWithinAABB(EntityChicken.class, entity.getEntityBoundingBox().grow(3D, 1.5D, 3D)).isEmpty()) {
 			mc.ingameGUI.displayTitle("Duplicate chicken", "", -1, -1, -1);
 		}
 
