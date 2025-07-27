@@ -1,6 +1,7 @@
 package net.dugged.cutelessmod.mixins;
 
 import net.dugged.cutelessmod.Configuration;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.culling.ICamera;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
@@ -31,5 +32,10 @@ public abstract class MixinRenderManager {
 		if (entity instanceof EntityFireworkRocket && ((EntityFireworkRocket) entity).isAttachedToEntity()) {
 			cir.setReturnValue(false);
 		}
+	}
+
+	@Inject(method = "renderDebugBoundingBox", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;disableBlend()V", ordinal = 0))
+	private void cutelessmod$mc93479(final Entity entityIn, final double x, final double y, final double z, final float entityYaw, final float partialTicks, final CallbackInfo ci) {
+		GlStateManager.glLineWidth(2);
 	}
 }
