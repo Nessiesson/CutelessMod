@@ -10,6 +10,7 @@ import java.util.List;
 
 @Mixin(GuiListWorldSelection.class)
 public interface IGuiListWorldSelection {
+	@Mutable
 	@Accessor
 	List<GuiListWorldSelectionEntry> getEntries();
 
