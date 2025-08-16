@@ -13,4 +13,11 @@ public interface IGuiNewChat {
 	@Mutable
 	@Accessor
 	List<ChatLine> getChatLines();
+
+	@Mutable
+	@Accessor
+	List<ChatLine> getDrawnChatLines();
+
+	@Accessor
+	int getScrollPos();
 }

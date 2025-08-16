@@ -16,6 +16,7 @@ public class Configuration {
 	public static boolean chestWithoutTESR = false;
 	public static boolean clickBlockMining = false;
 	public static boolean clientEntityUpdates = true;
+	public static boolean clickToCopyChat = false;
 	public static boolean colouredFireworksTrail = false;
 	public static boolean craftingHax = true;
 	public static boolean deathLocation = false;
