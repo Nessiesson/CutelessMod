@@ -42,7 +42,7 @@ public abstract class MixinGuiChat {
 				if (GuiScreen.isShiftKeyDown()) {
 					final String text = GuiScreen.isCtrlKeyDown() ? component.getFormattedText() : component.getUnformattedText();
 					Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(text), null);
-					Minecraft.getMinecraft().ingameGUI.setOverlayMessage("Copied chat message to clipboard!", false);
+					Minecraft.getMinecraft().ingameGUI.setOverlayMessage("Copied chat message to clipboard!" + (GuiScreen.isCtrlKeyDown() ? " (With formatting)" : ""), false);
 					ci.cancel();
 				}
 			}
