@@ -100,7 +100,8 @@ public class AreaSelectionRenderer {
 					final AxisAlignedBB target = new AxisAlignedBB(p2, p2.add(origin.maxX - origin.minX + 1, origin.maxY - origin.minY + 1, origin.maxZ - origin.minZ + 1));
 					GlStateManager.depthFunc(GL11.GL_ALWAYS);
 					RenderGlobal.drawSelectionBoundingBox(target.grow(0.005F).offset(-d0, -d1, -d2), 0.99F, 0.99F, 0.99F, 1F);
-				}	GlStateManager.depthFunc(GL11.GL_LEQUAL);
+					GlStateManager.depthFunc(GL11.GL_LEQUAL);
+				}
 			}
 		}
 
