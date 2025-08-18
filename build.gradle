@@ -65,7 +65,7 @@ repositories {
 dependencies {
 	minecraft "net.minecraftforge:forge:1.12.2-14.23.5.2860"
 
-	jarLibs "org.spongepowered:mixin:0.8.5"
+	implementation "org.spongepowered:mixin:0.8.5"
 	annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
 	compileOnly fg.deobf("curse.maven:renderlib-624967:4168831")
 }
