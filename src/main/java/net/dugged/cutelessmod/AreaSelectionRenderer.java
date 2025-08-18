@@ -9,6 +9,7 @@ import net.minecraft.client.renderer.RenderGlobal;
 import net.minecraft.command.CommandBase;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
+import org.lwjgl.opengl.GL11;
 
 import java.util.stream.Stream;
 
@@ -36,15 +37,9 @@ public class AreaSelectionRenderer {
 		BlockPos p2 = null;
 
 		// @formatter:off
-		try {
-			p0 = CommandBase.parseBlockPos(player, args, 1, false);
-		} catch (Exception ignored) { /*noop*/ }
-		try {
-			p1 = CommandBase.parseBlockPos(player, args, 4, false);
-		} catch (Exception ignored) { /*noop*/ }
-		try {
-			p2 = CommandBase.parseBlockPos(player, args, 7, false);
-		} catch (Exception ignored) { /*noop*/ }
+		try { p0 = CommandBase.parseBlockPos(player, args, 1, false); } catch (Exception ignored) { /*noop*/ }
+		try { p1 = CommandBase.parseBlockPos(player, args, 4, false); } catch (Exception ignored) { /*noop*/ }
+		try { p2 = CommandBase.parseBlockPos(player, args, 7, false); } catch (Exception ignored) { /*noop*/ }
 		// @formatter:on
 
 		GlStateManager.depthMask(false);
@@ -85,7 +80,9 @@ public class AreaSelectionRenderer {
 					}
 				}
 				origin = new AxisAlignedBB(p0, p1);
+				GlStateManager.depthFunc(GL11.GL_ALWAYS);
 				RenderGlobal.drawSelectionBoundingBox(origin.expand(1F, 1F, 1F).offset(-d0, -d1, -d2), 0.9F, 0.9F, 0.9F, 1F);
+				GlStateManager.depthFunc(GL11.GL_LEQUAL);
 			}
 
 			if (args[0].equals("/clone")) {
@@ -101,8 +98,9 @@ public class AreaSelectionRenderer {
 						}
 					}
 					final AxisAlignedBB target = new AxisAlignedBB(p2, p2.add(origin.maxX - origin.minX + 1, origin.maxY - origin.minY + 1, origin.maxZ - origin.minZ + 1));
+					GlStateManager.depthFunc(GL11.GL_ALWAYS);
 					RenderGlobal.drawSelectionBoundingBox(target.grow(0.005F).offset(-d0, -d1, -d2), 0.99F, 0.99F, 0.99F, 1F);
-				}
+				}	GlStateManager.depthFunc(GL11.GL_LEQUAL);
 			}
 		}
 
