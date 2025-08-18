@@ -343,7 +343,7 @@ public class CutelessMod {
 	public void onLeftClickEmpty(final PlayerInteractEvent.LeftClickEmpty event) {
 		if (Configuration.worldEditCompass && mc.world != null && mc.player.isCreative() && mc.player.getHeldItemMainhand().getItem() instanceof ItemCompass) {
 			boolean teleported = false;
-			boolean stopInAir = CutelessModUtils.isShiftKeyDown();
+			boolean stopInAir = GuiScreen.isShiftKeyDown();
 			int distance = stopInAir ? 50 : 500;
 			Vec3d vec3d = mc.player.getPositionEyes(mc.getRenderPartialTicks());
 			Vec3d vec3d1 = mc.player.getLook(mc.getRenderPartialTicks());
@@ -425,7 +425,9 @@ public class CutelessMod {
 	@SubscribeEvent
 	public void replaceBlockMidair(final PlayerInteractEvent.LeftClickBlock event) {
 		if (mc.player.isCreative() && GuiScreen.isAltKeyDown() && event.getWorld().isRemote) {
-			mc.getConnection().sendPacket(new CPacketPlayerTryUseItemOnBlock(event.getPos(), event.getFace(), EnumHand.MAIN_HAND, (float) event.getHitVec().x, (float) event.getHitVec().y, (float) event.getHitVec().z));
+			if (mc.getConnection() != null && event.getFace() != null) {
+				mc.getConnection().sendPacket(new CPacketPlayerTryUseItemOnBlock(event.getPos(), event.getFace(), EnumHand.MAIN_HAND, (float) event.getHitVec().x, (float) event.getHitVec().y, (float) event.getHitVec().z));
+			}
 		}
 	}
 

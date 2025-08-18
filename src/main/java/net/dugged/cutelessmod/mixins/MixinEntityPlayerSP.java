@@ -58,7 +58,7 @@ public abstract class MixinEntityPlayerSP extends AbstractClientPlayer {
 
 	@Inject(method = "onLivingUpdate", at = @At("HEAD"))
 	private void enableElytraCancelation(final CallbackInfo ci) {
-		if (Configuration.elytraCancellation && this.getFlag(7) && CutelessModUtils.isShiftKeyDown() && Keyboard.isKeyDown(57)) {
+		if (Configuration.elytraCancellation && this.getFlag(7) && GuiScreen.isShiftKeyDown() && Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
 			this.setFlag(7, false);
 		}
 	}

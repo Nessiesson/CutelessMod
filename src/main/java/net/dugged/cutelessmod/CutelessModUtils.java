@@ -14,7 +14,6 @@ import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.*;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import java.util.Arrays;
@@ -42,10 +41,6 @@ public class CutelessModUtils {
 		} else {
 			return TextFormatting.RED;
 		}
-	}
-
-	public static boolean isShiftKeyDown() {
-		return Keyboard.isKeyDown(42) || Keyboard.isKeyDown(54);
 	}
 
 	public static RayTraceResult rayTrace(Vec3d vec31, Vec3d vec32, int dist, boolean displayRaytrace, boolean stopMidAir) {
