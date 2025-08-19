@@ -113,6 +113,7 @@
 		"MixinTileEntityPiston",
 		"MixinTileEntityPistonRenderer",
 		"MixinTileEntityRendererDispatcher",
+		"MixinTileEntityShulkerBoxRenderer",
 		"MixinTileEntityStructure",
 		"MixinWorld",
 		"MixinWorldClient"
