@@ -56,7 +56,7 @@ public class PistonHelper {
 	public static void updatePistonMovement(World worldIn) {
 		if (activated) {
 			IBlockState blockState = worldIn.getBlockState(pistonPos);
-			if (blockState.getBlock() instanceof BlockPistonBase || blockState.getBlock() instanceof BlockSlime) {
+			if (blockState.getBlock() instanceof BlockPistonBase) {
 				setPistonMovement(worldIn, blockState, pistonPos, !blockState.getValue(BlockPistonBase.EXTENDED));
 			} else if (!(blockState.getBlock() instanceof BlockPistonMoving)) {
 				activated = false;
