@@ -1,77 +1,54 @@
-import org.apache.tools.ant.filters.ReplaceTokens
-
-buildscript {
-	repositories {
-		maven { url = "https://maven.minecraftforge.net" }
-		maven { url = "https://repo.spongepowered.org/repository/maven-public" }
-	}
-	dependencies {
-		//TODO: Proper dependency fix somehow that does not depend FG versions prior to 5.1.70..
-		classpath group: "net.minecraftforge.gradle", name: "ForgeGradle", version: "5.1.69"//, changing: true
-		classpath group: "org.spongepowered", name: "mixingradle", version: "0.7-SNAPSHOT"
-	}
+plugins {
+	id "java"
+	id "xyz.wagyourtail.unimined" version "1.4.1"
 }
-
-apply plugin: "net.minecraftforge.gradle"
-apply plugin: "org.spongepowered.mixin"
 
 def modId = project.modName.toLowerCase()
 group = "${project.groupName}.${modId}"
 def loadingPlugin = "${group}.${project.modName}LoadingPlugin"
-archivesBaseName = project.modName
+base.archivesName = project.modName
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(8)
-compileJava.options.encoding = "UTF-8"
-
-def copyDir = "$compileJava.temporaryDir/replaced"
-task tokenReplace(type: Sync) {
-	from(sourceSets.main.java.sourceDirectories)
-	into copyDir
-	filter(ReplaceTokens, tokens: [
-			VERSION: project.version,
-			MODNAME: project.modName,
-			MODID  : modId,
-	])
-}
-compileJava.setSource(copyDir)
-compileJava.dependsOn(tokenReplace)
-
-sourceSets.main.output.resourcesDir = sourceSets.main.java.outputDir
-
-minecraft {
-	mappings channel: "stable", version: "39-1.12"
-	accessTransformer = file("src/main/resources/at.conf")
-	runs {
-		client {
-			workingDirectory project.file("run")
-
-			property "fml.coreMods.load", loadingPlugin
-			property "mixin.debug.export", "true"
-			property "mixin.debug.verbose", "true"
-		}
-	}
-}
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
 
 configurations {
 	jarLibs
 	implementation.extendsFrom jarLibs
 }
 
+unimined.minecraft {
+	version "1.12.2"
+	mappings {
+		searge()
+		mcp("stable", "39-1.12")
+	}
+
+	minecraftForge {
+		loader "14.23.5.2860"
+		mixinConfig "mixins.${modId}.json", "mixins.${modId}.chunk_display.json", "mixins.${modId}.clientcommands.json", "mixins.${modId}.nothirium.json", "mixins.${modId}.optifine.json"
+		accessTransformer file("src/main/resources/at.conf")
+	}
+
+	runs.config("client") {
+		systemProperty "fml.coreMods.load", loadingPlugin
+		systemProperty "mixin.debug.export", "true"
+		systemProperty "mixin.debug.verbose", "true"
+	}
+
+	runs.config("server") {
+		enabled = false
+	}
+}
+
 repositories {
+	maven { url = "https://maven.wagyourtail.xyz/releases" }
 	maven { url = "https://repo.spongepowered.org/repository/maven-public" }
 	maven { url = "https://cursemaven.com"; content { includeGroup "curse.maven" } }
+	mavenCentral()
 }
 
 dependencies {
-	minecraft "net.minecraftforge:forge:1.12.2-14.23.5.2860"
-
-	implementation "org.spongepowered:mixin:0.8.5"
-	annotationProcessor "org.spongepowered:mixin:0.8.5:processor"
-	compileOnly fg.deobf("curse.maven:renderlib-624967:4168831")
-}
-
-mixin {
-	add sourceSets.main, "mixins.${modId}.refmap.json"
+	implementation "org.spongepowered:mixin:0.8.7"
+	modImplementation("curse.maven:renderlib-624967:4168831")
 }
 
 jar {
@@ -89,39 +66,16 @@ jar {
 
 processResources {
 	duplicatesStrategy = DuplicatesStrategy.INCLUDE
-	inputs.property "modName", project.modName
-	inputs.property "modId", modId
 	inputs.property "version", project.version
 
 	from(sourceSets.main.resources.srcDirs) {
 		include "mcmod.info"
-		expand "modName": project.modName, "modId": modId, "version": project.version
+		expand "version": project.version
 	}
 }
 
-def extraModsDir = "libs"
-
-repositories {
-	flatDir {
-		dir file(extraModsDir)
-		content(s -> s.includeGroup "extra-mods")
-	}
-}
-
-dependencies {
-	// runtime remapping at home - stolen from embeddedt
-	for (extraModJar in fileTree(dir: extraModsDir, include: '*.jar')) {
-		def basename = extraModJar.name.substring(0, extraModJar.name.length() - ".jar".length())
-		def versionSep = basename.lastIndexOf('-')
-		assert versionSep != -1
-		def artifactId = basename.substring(0, versionSep)
-		def version = basename.substring(versionSep + 1)
-		implementation fg.deobf("extra-mods:$artifactId:$version")
-	}
-}
-
-def hostLdPath = System.getenv('LD_LIBRARY_PATH') ?: ''
+def hostLdPath = System.getenv("LD_LIBRARY_PATH") ?: ""
 tasks.withType(JavaExec).configureEach { JavaExec exec ->
-	exec.environment 'LD_LIBRARY_PATH', hostLdPath + ":/run/current-system/sw/lib"
-	exec.environment '__GL_THREADED_OPTIMIZATIONS', '0'
+	exec.environment "LD_LIBRARY_PATH", hostLdPath + ":/run/current-system/sw/lib"
+	exec.environment "__GL_THREADED_OPTIMIZATIONS", "0"
 }

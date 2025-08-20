@@ -1,7 +1,7 @@
 [
 	{
-		"modid": "${modId}",
-		"name": "${modName}",
+		"modid": "cutelessmod",
+		"name": "CutelessMod",
 		"description": "Hyperuseful features.",
 		"version": "${version}",
 		"mcversion": "1.12.2",

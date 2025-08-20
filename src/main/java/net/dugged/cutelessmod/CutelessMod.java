@@ -57,7 +57,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Mod(modid = Reference.MODID, name = Reference.NAME, version = Reference.VERSION, clientSideOnly = true)
+@Mod(modid = Reference.MODID, name = Reference.NAME, clientSideOnly = true)
 public class CutelessMod {
 	public static final Logger LOGGER = LogManager.getLogger(Reference.NAME);
 	private static final Minecraft mc = Minecraft.getMinecraft();

@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(TileEntityPistonRenderer.class)
 public abstract class MixinTileEntityPistonRenderer {
 	//TODO: Fix piston Z-fighting
-	@Redirect(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;disableCull()V"))
+	@Redirect(method = "render(Lnet/minecraft/tileentity/TileEntityPiston;DDDFIF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;disableCull()V"))
 	private void cullMovingBlocks(final TileEntityPiston te, final double x, final double y, final double z, final float partialTicks, final int destroyStage, final float alpha) {
 		if (Configuration.smootherPistons) {
 			GlStateManager.enableCull();
@@ -26,7 +26,7 @@ public abstract class MixinTileEntityPistonRenderer {
 		}
 	}
 
-	@Inject(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderHelper;enableStandardItemLighting()V"))
+	@Inject(method = "render(Lnet/minecraft/tileentity/TileEntityPiston;DDDFIF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/RenderHelper;enableStandardItemLighting()V"))
 	private void uncullMovingBlocks(CallbackInfo ci) {
 		if (Configuration.smootherPistons) {
 			GlStateManager.disableCull();
@@ -34,12 +34,12 @@ public abstract class MixinTileEntityPistonRenderer {
 		}
 	}
 
-	@ModifyConstant(method = "render", constant = @Constant(floatValue = 0.25F))
+	@ModifyConstant(method = "render(Lnet/minecraft/tileentity/TileEntityPiston;DDDFIF)V", constant = @Constant(floatValue = 0.25F))
 	private float fixShortArm(final float value) {
 		return 0.5F;
 	}
 
-	@ModifyConstant(method = "render", constant = @Constant(floatValue = 1F))
+	@ModifyConstant(method = "render(Lnet/minecraft/tileentity/TileEntityPiston;DDDFIF)V", constant = @Constant(floatValue = 1F))
 	private float fixPistonBlink(final float value) {
 		return Float.MAX_VALUE;
 	}

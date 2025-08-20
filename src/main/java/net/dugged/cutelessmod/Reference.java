@@ -3,8 +3,8 @@ package net.dugged.cutelessmod;
 import java.util.function.Supplier;
 
 public class Reference {
-	public static final String MODID = "@MODID@";
-	public static final String NAME = "@MODNAME@";
+	public static final String MODID = "cutelessmod";
+	public static final String NAME = "CutelessMod";
 	public static final String VERSION = "@VERSION@";
 	public static final boolean isForge = ((Supplier<Boolean>) () -> {
 		try {
