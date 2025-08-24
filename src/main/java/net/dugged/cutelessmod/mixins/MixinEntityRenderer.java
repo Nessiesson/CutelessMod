@@ -1,5 +1,7 @@
 package net.dugged.cutelessmod.mixins;
 
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import net.dugged.cutelessmod.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -8,6 +10,7 @@ import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
+import net.minecraft.util.EntitySelectors;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -70,5 +73,10 @@ public abstract class MixinEntityRenderer {
 	@Redirect(method = "renderWorldPass", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;isInsideOfMaterial(Lnet/minecraft/block/material/Material;)Z"))
 	private boolean renderBlockSelectorUnderwater(final Entity entity, final Material material) {
 		return !Configuration.showBlockSelectorUnderwater && entity.isInsideOfMaterial(material);
+	}
+
+	@Redirect(method = "getMouseOver", at = @At(value = "FIELD", target = "Lnet/minecraft/util/EntitySelectors;NOT_SPECTATING:Lcom/google/common/base/Predicate;"))
+	private Predicate<Entity> cutelessmod$clickableSpectators() {
+		return Minecraft.getMinecraft().player.isSpectator() ? Predicates.alwaysTrue() : EntitySelectors.NOT_SPECTATING;
 	}
 }
