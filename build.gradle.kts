@@ -7,7 +7,7 @@ val groupName: String by project
 val version: String by project
 val modName: String by project
 val modId = modName.lowercase()
-val loadingPlugin = "$group.${modName}LoadingPlugin"
+val loadingPlugin = "$groupName.$modId.${modName}LoadingPlugin"
 
 project.version = version
 project.group = "$groupName.$modId"
