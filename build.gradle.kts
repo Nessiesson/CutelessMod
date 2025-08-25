@@ -99,6 +99,8 @@ tasks {
 		}
 	}
 
+	withType<JavaCompile>().configureEach { options.compilerArgs.add("-Xlint:-options") }
+
 	withType<JavaExec>().configureEach {
 		environment("LD_LIBRARY_PATH", "${System.getenv("LD_LIBRARY_PATH").orEmpty()}:/run/current-system/sw/lib")
 		environment("__GL_THREADED_OPTIMIZATIONS", "0")
