@@ -12,6 +12,7 @@ key.cutelessmod.put_random_tick_area=Place Random Tick Renderer
 key.cutelessmod.put_despawn_sphere=Place Despawn Sphere Renderer
 key.cutelessmod.snapaim=Snap to nearest 45° angle
 key.cutelessmod.zoomer=Zoom key
+key.cutelessmod.xray.toggle=Toggle X-Ray
 text.cutelessmod.relog=Relog
 text.cutelessmod.options.gamma.fullbright=Fullbright
 text.cutelessmod.reload_audio=Reloaded audio engine

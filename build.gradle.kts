@@ -43,7 +43,8 @@ unimined.minecraft {
 			"mixins.$modId.chunk_display.json",
 			"mixins.$modId.clientcommands.json",
 			"mixins.$modId.nothirium.json",
-			"mixins.$modId.optifine.json"
+			"mixins.$modId.optifine.json",
+			"mixins.$modId.xray.json",
 		)
 		accessTransformer(file("src/main/resources/at.conf"))
 	}
@@ -61,7 +62,7 @@ unimined.minecraft {
 
 dependencies {
 	implementation("org.spongepowered:mixin:0.8.7")
-	"modImplementation"("curse.maven:renderlib-624967:4168831")
+	//"modImplementation"("curse.maven:renderlib-624967:4168831")
 
 	// runtime remapping at home - stolen from embeddedt
 	for (extraModJar in fileTree(mapOf("dir" to "libs", "include" to "*.jar"))) {

@@ -5,6 +5,7 @@ import net.dugged.cutelessmod.chunk_display.gui.Controller;
 import net.dugged.cutelessmod.chunk_display.gui.GuiChunkGrid;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
 import net.dugged.cutelessmod.mixins.ISoundHandler;
+import net.dugged.cutelessmod.xray.XRay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.ChatLine;
@@ -62,6 +63,7 @@ public class CutelessMod {
 	public static final Logger LOGGER = LogManager.getLogger(Reference.NAME);
 	private static final Minecraft mc = Minecraft.getMinecraft();
 	private static final StepAssistHelper stepAssistHelper = new StepAssistHelper();
+	public static final XRay xray = new XRay();
 	public static Map<String, List<ChatLine>> chatHistory = new HashMap<>();
 	public static Map<String, List<String>> tabCompleteHistory = new HashMap<>();
 	public static int toggleBeaconArea = 0;
@@ -235,6 +237,12 @@ public class CutelessMod {
 			final EntityPlayerSP player = mc.player;
 			player.rotationYaw = (int) (Math.round(player.rotationYaw / 45F) * 45F);
 			mc.ingameGUI.setOverlayMessage("Thanos'd.", false);
+		}
+
+		if (KeyBindings.xrayToggleKey.isPressed()) {
+			CutelessMod.xray.enabled = !CutelessMod.xray.enabled;
+			mc.ingameGUI.setOverlayMessage(String.format("X-Ray %s.", CutelessMod.xray.enabled ? "enabled" : "disabled"), false);
+			mc.renderGlobal.loadRenderers();
 		}
 	}
 

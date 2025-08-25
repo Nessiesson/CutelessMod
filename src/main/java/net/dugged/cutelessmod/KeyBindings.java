@@ -38,6 +38,7 @@ public class KeyBindings {
     public static final KeyBinding snapaimKey = new KeyBinding("key.cutelessmod.snapaim", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
     public static final KeyBinding toggleBeaconAreaKey = new KeyBinding("key.cutelessmod.toggle_beacon_area", KeyConflictContext.IN_GAME, Keyboard.KEY_J, Reference.NAME);
     public static final KeyBinding zoomerKey = new KeyBinding("key.cutelessmod.zoomer", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
+    public static final KeyBinding xrayToggleKey = new KeyBinding("key.cutelessmod.xray.toggle", KeyConflictContext.IN_GAME, Keyboard.KEY_NONE, Reference.NAME);
 
     public static void init() {
         if (Configuration.autoGenKeybinds) {
@@ -65,6 +66,7 @@ public class KeyBindings {
         ClientRegistry.registerKeyBinding(snapaimKey);
         ClientRegistry.registerKeyBinding(toggleBeaconAreaKey);
         ClientRegistry.registerKeyBinding(zoomerKey);
+        ClientRegistry.registerKeyBinding(xrayToggleKey);
     }
 
     @SubscribeEvent
