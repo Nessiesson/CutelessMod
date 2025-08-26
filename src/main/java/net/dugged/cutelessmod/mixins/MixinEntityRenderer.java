@@ -2,7 +2,13 @@ package net.dugged.cutelessmod.mixins;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import net.dugged.cutelessmod.*;
+import net.dugged.cutelessmod.AreaSelectionRenderer;
+import net.dugged.cutelessmod.Configuration;
+import net.dugged.cutelessmod.DespawnSphereRenderer;
+import net.dugged.cutelessmod.FrequencyAnalyzer;
+import net.dugged.cutelessmod.ItemCounter;
+import net.dugged.cutelessmod.PistonHelper;
+import net.dugged.cutelessmod.RandomTickRenderer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -13,6 +19,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.util.EntitySelectors;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -21,6 +28,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(EntityRenderer.class)
 public abstract class MixinEntityRenderer {
+	@Shadow
+	private float farPlaneDistance;
+
 	@Unique
 	private float cutelessmodEyeHeight;
 	@Unique
@@ -78,5 +88,12 @@ public abstract class MixinEntityRenderer {
 	@Redirect(method = "getMouseOver", at = @At(value = "FIELD", target = "Lnet/minecraft/util/EntitySelectors;NOT_SPECTATING:Lcom/google/common/base/Predicate;"))
 	private Predicate<Entity> cutelessmod$clickableSpectators() {
 		return Minecraft.getMinecraft().player.isSpectator() ? Predicates.alwaysTrue() : EntitySelectors.NOT_SPECTATING;
+	}
+
+	@Inject(method = "setupCameraTransform", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;matrixMode(I)V", ordinal = 0))
+	private void cutelessmod$increaseFarPlane(final float partialTicks, final int pass, final CallbackInfo ci) {
+		if (!Configuration.showWorldFog) {
+			this.farPlaneDistance = Minecraft.getMinecraft().gameSettings.renderDistanceChunks * 512;
+		}
 	}
 }

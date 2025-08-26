@@ -443,11 +443,10 @@ public class CutelessMod {
 	public void showWorldFog(final EntityViewRenderEvent.RenderFogEvent event) {
 		if (!Configuration.showWorldFog) {
 			final float renderDistance = 16F * Minecraft.getMinecraft().gameSettings.renderDistanceChunks;
-			GlStateManager.setFogStart(renderDistance * 1.6F);
-			GlStateManager.setFogEnd(renderDistance * 2F);
+			GlStateManager.setFogStart(renderDistance * 511F);
+			GlStateManager.setFogEnd(renderDistance * 512F);
 		}
 	}
-
 
 	private void updateTitle() {
 		Display.setTitle(this.originalTitle + " - " + mc.getSession().getUsername());
