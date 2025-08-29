@@ -4,7 +4,6 @@ import net.dugged.cutelessmod.chunk_display.CarpetPluginChannel;
 import net.dugged.cutelessmod.chunk_display.gui.Controller;
 import net.dugged.cutelessmod.chunk_display.gui.GuiChunkGrid;
 import net.dugged.cutelessmod.clientcommands.ClientCommandHandler;
-import net.dugged.cutelessmod.mixins.ISoundHandler;
 import net.dugged.cutelessmod.xray.XRay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -125,77 +124,6 @@ public class CutelessMod {
 
 	@SubscribeEvent
 	public void onKeyPressed(final InputEvent.KeyInputEvent event) {
-		if (KeyBindings.reloadAudioEngineKey.isPressed()) {
-			((ISoundHandler) mc.getSoundHandler()).getSoundManager().reloadSoundSystem();
-			this.debugFeedback();
-		}
-
-		if (KeyBindings.toggleBeaconAreaKey.isPressed()) {
-			toggleBeaconArea++;
-			switch (toggleBeaconArea) {
-				case 1:
-					mc.ingameGUI.setOverlayMessage("Showing area outlines", false);
-					break;
-				case 2:
-					mc.ingameGUI.setOverlayMessage("Showing beacon areas", false);
-					break;
-				case 3:
-					mc.ingameGUI.setOverlayMessage("Showing next beacon positions", false);
-					break;
-			}
-			if (toggleBeaconArea > 3) {
-				toggleBeaconArea = 0;
-			}
-		}
-
-		if (KeyBindings.emptyScreenKey.isPressed()) {
-			mc.displayGuiScreen(new GuiEmptyScreen());
-		}
-
-		if (KeyBindings.repeatLastCommandKey.isPressed() && !lastCommand.isEmpty()) {
-			mc.player.sendChatMessage(CutelessMod.lastCommand);
-		}
-
-		if (KeyBindings.chunkDebug.isPressed()) {
-			mc.displayGuiScreen(GuiChunkGrid.instance);
-		}
-
-		if (KeyBindings.putItemCounterKey.isPressed()) {
-			if (ItemCounter.position != null) {
-				ItemCounter.reset();
-				ItemCounter.position = null;
-			} else {
-				ItemCounter.position = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
-			}
-		}
-
-		if (KeyBindings.putFrequencyAnalyzerKey.isPressed()) {
-			if (FrequencyAnalyzer.position != null) {
-				FrequencyAnalyzer.reset();
-				FrequencyAnalyzer.position = null;
-			} else {
-				mc.ingameGUI.setOverlayMessage("Analyzer might be inaccurate depending on server TPS", false);
-				FrequencyAnalyzer.position = new BlockPos(mc.player.posX, mc.player.posY, mc.player.posZ);
-			}
-		}
-
-		if (KeyBindings.putRandomTickAreaKey.isPressed()) {
-			RandomTickRenderer.getInstance().updatePosition(mc.player);
-		}
-
-		if (KeyBindings.putDespawnSphereKey.isPressed()) {
-			DespawnSphereRenderer.getInstance().updatePosition(mc.player);
-		}
-
-		if (KeyBindings.highlightEntitiesKey.isPressed()) {
-			highlightEntities = !highlightEntities;
-		}
-
-		if (KeyBindings.resetItemCounterKey.isPressed()) {
-			mc.ingameGUI.setOverlayMessage("Reset Item Counter", false);
-			ItemCounter.reset();
-		}
-
 		/*
 		 Fixes the issue where Shift-2 and Shift-6 are not working on Linux.
 		 Stolen from https://github.com/Leo3418/mckeyboardfix
@@ -225,24 +153,6 @@ public class CutelessMod {
 					KeyBinding.onTick(Keyboard.KEY_2);
 					KeyBinding.onTick(Keyboard.KEY_1);
 			}
-		}
-
-		if (KeyBindings.gammaHaxKey.isPressed()) {
-			mc.gameSettings.gammaSetting = 1000;
-			mc.gameSettings.saveOptions();
-			mc.ingameGUI.setOverlayMessage("Enabled fullbright gammahax.", false);
-		}
-
-		if (KeyBindings.snapaimKey.isPressed()) {
-			final EntityPlayerSP player = mc.player;
-			player.rotationYaw = (int) (Math.round(player.rotationYaw / 45F) * 45F);
-			mc.ingameGUI.setOverlayMessage("Thanos'd.", false);
-		}
-
-		if (KeyBindings.xrayToggleKey.isPressed()) {
-			CutelessMod.xray.enabled = !CutelessMod.xray.enabled;
-			mc.ingameGUI.setOverlayMessage(String.format("X-Ray %s.", CutelessMod.xray.enabled ? "enabled" : "disabled"), false);
-			mc.renderGlobal.loadRenderers();
 		}
 	}
 
@@ -450,13 +360,5 @@ public class CutelessMod {
 
 	private void updateTitle() {
 		Display.setTitle(this.originalTitle + " - " + mc.getSession().getUsername());
-	}
-
-	private void debugFeedback() {
-		final ITextComponent tag = new TextComponentTranslation("debug.prefix");
-		final ITextComponent text = new TextComponentTranslation("text.cutelessmod.reload_audio");
-		tag.setStyle(new Style().setColor(TextFormatting.YELLOW).setBold(true));
-		final ITextComponent message = new TextComponentString("").appendSibling(tag).appendText(" ").appendSibling(text);
-		mc.ingameGUI.getChatGUI().printChatMessage(message);
 	}
 }
