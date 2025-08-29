@@ -140,7 +140,7 @@ public class KeyBindings {
 					final boolean state = !field.getBoolean(Configuration.class);
 					field.setBoolean(Configuration.class, state);
 					ConfigManager.sync(Reference.MODID, Config.Type.INSTANCE);
-					sendOverlayMessage(String.format("%s %s.", field.getName(), state ? "enabled" : "disabled"), false);
+					sendOverlayMessage(String.format("%s %s.", field.getName(), state ? "enabled" : "disabled"));
 
 					// Super ugly place to put this code, but It Works:tm:.
 					if ("showScoreboards".equals(field.getName())) {
