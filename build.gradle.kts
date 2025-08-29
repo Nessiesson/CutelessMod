@@ -50,9 +50,11 @@ unimined.minecraft {
 	}
 
 	runs.config("client") {
-		systemProperty("fml.coreMods.load", loadingPlugin)
-		systemProperty("mixin.debug.export", "true")
-		systemProperty("mixin.debug.verbose", "true")
+		jvmArgs(
+			"-Dfml.coreMods.load=$loadingPlugin",
+			"-Dmixin.debug.export=true",
+			"-Dmixin.debug.verbose=true"
+		)
 	}
 
 	runs.config("server") {
