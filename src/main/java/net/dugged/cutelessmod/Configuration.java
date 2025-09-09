@@ -82,6 +82,7 @@ public class Configuration {
 	public static boolean waterModifiesFoV = true;
 	public static boolean weirdShift2Shift6LinuxBug = false;
 	public static boolean worldEditCompass = false;
+	public static boolean zzzSlightlyBetterItemStitchingMaybeKindaNotReally = false;
 
 	// Ints
 	@Config.RangeInt(min = 0)

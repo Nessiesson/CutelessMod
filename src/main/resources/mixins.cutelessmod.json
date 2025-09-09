@@ -82,6 +82,7 @@
 		"MixinInventoryPlayer",
 		"MixinItemFirework",
 		"MixinItemFlintAndSteel",
+		"MixinItemLayerModel",
 		"MixinItemRenderer",
 		"MixinItemStack",
 		"MixinLayerArmorBase",
