@@ -39,17 +39,20 @@ public abstract class MixinItemLayerModel {
 		--u;
 
 		// some smol number, chosen at random (trial/error idek)
-		final float eps = 1F / 4096F;
+		final float eps = 1F / 8192;
 
 		final float uMin = (1 - eps) * (u + 0F) / width;
 		final float uMax = (1 + eps) * (u + 1F) / width;
 		final float vMin = (1 - eps) * (v + 0F) / height;
 		final float vMax = (1 + eps) * (v + 1F) / height;
 
-		final float uMini = sprite.getInterpolatedU((u + 0));
-		final float uMaxi = sprite.getInterpolatedU((u + 1));
-		final float vMini = sprite.getInterpolatedV((16 - v));
-		final float vMaxi = sprite.getInterpolatedV((16 - v - 1));
+		final float uScale = 16F / width;
+		final float vScale = 16F / height;
+
+		final float uMini = sprite.getInterpolatedU(uScale * (u + 0));
+		final float uMaxi = sprite.getInterpolatedU(uScale * (u + 1));
+		final float vMini = sprite.getInterpolatedV(vScale * (height - v));
+		final float vMaxi = sprite.getInterpolatedV(vScale * (height - v - 1));
 
 		// front
 		builder.add(buildQuad(format, transform, EnumFacing.NORTH, sprite, tint,
