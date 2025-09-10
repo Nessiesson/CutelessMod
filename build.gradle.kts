@@ -14,6 +14,8 @@ project.group = "$groupName.$modId"
 base.archivesName = modName
 
 tasks.withType<JavaCompile>().configureEach {
+	options.compilerArgs.add("-Xlint:-options")
+	sourceCompatibility = "21"
 	options.release = 8
 }
 
@@ -64,6 +66,8 @@ unimined.minecraft {
 
 dependencies {
 	implementation("org.spongepowered:mixin:0.8.7")
+	annotationProcessor("com.pkware.jabel:jabel-javac-plugin:1.0.1-1")
+	compileOnly("com.pkware.jabel:jabel-javac-plugin:1.0.1-1")
 	//"modImplementation"("curse.maven:renderlib-624967:4168831")
 
 	// runtime remapping at home - stolen from embeddedt
