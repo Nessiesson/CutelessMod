@@ -12,6 +12,7 @@
 		"CMixinNoClip$MixinEntityPlayer",
 		"CMixinNoClip$MixinEntityRenderer",
 		"CMixinNoClip$MixinWorld",
+		"CMixinNoRandomTextures$MixinWeightedBakedModel",
 		"CMixinRelaxedBlockPlacement",
 		"IBlockRedstoneDiode",
 		"IEntityBeacon",
