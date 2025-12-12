@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinBlock {
 	@Redirect(method = "shouldSideBeRendered", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/state/IBlockState;doesSideBlockRendering(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/EnumFacing;)Z"))
 	private boolean cutelessmod$xray(final IBlockState instance, final IBlockAccess world, final BlockPos pos, final EnumFacing face) {
-		return !CutelessMod.xray.isHiddenByXray(instance.getBlock()) && instance.doesSideBlockRendering(world, pos, face);
+		return !CutelessMod.xray.isHiddenByXray(instance) && instance.doesSideBlockRendering(world, pos, face);
 	}
 
 	@Inject(method = "getAmbientOcclusionLightValue", at = @At("HEAD"), cancellable = true)

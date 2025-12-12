@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MixinBlockRendererDispatcher {
 	@Inject(method = "renderBlock", at = @At("HEAD"), cancellable = true)
 	private void cutelessmod$xray$stopBlockRender(final IBlockState state, final BlockPos pos, final IBlockAccess world, final BufferBuilder buffer, final CallbackInfoReturnable<Boolean> cir) {
-		if (CutelessMod.xray.isHiddenByXray(state.getBlock())) {
+		if (CutelessMod.xray.isHiddenByXray(state)) {
 			cir.setReturnValue(false);
 		}
 	}
