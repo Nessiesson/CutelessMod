@@ -112,6 +112,7 @@
 		"MixinSpectatorMenu",
 		"MixinTeleportToPlayer",
 		"MixinTileEntityBeaconRenderer",
+		"MixinTileEntityEndPortal",
 		"MixinTileEntityPiston",
 		"MixinTileEntityPistonRenderer",
 		"MixinTileEntityRendererDispatcher",
