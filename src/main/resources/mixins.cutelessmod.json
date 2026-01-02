@@ -113,6 +113,7 @@
 		"MixinTeleportToPlayer",
 		"MixinTileEntityBeaconRenderer",
 		"MixinTileEntityEndPortal",
+		"MixinTileEntityEndPortalRenderer",
 		"MixinTileEntityPiston",
 		"MixinTileEntityPistonRenderer",
 		"MixinTileEntityRendererDispatcher",
