@@ -12,10 +12,12 @@ import net.dugged.cutelessmod.RandomTickRenderer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.EntitySelectors;
 import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
@@ -87,7 +89,7 @@ public abstract class MixinEntityRenderer {
 
 	@Redirect(method = "getMouseOver", at = @At(value = "FIELD", target = "Lnet/minecraft/util/EntitySelectors;NOT_SPECTATING:Lcom/google/common/base/Predicate;"))
 	private Predicate<Entity> cutelessmod$clickableSpectators() {
-		return Minecraft.getMinecraft().player.isSpectator() ? Predicates.alwaysTrue() : EntitySelectors.NOT_SPECTATING;
+		return Minecraft.getMinecraft().player.isSpectator() ? e -> !(e instanceof EntityPlayerSP) : EntitySelectors.NOT_SPECTATING;
 	}
 
 	@Inject(method = "setupCameraTransform", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;matrixMode(I)V", ordinal = 0))
