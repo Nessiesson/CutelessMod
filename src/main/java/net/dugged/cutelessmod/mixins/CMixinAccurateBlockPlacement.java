@@ -47,14 +47,17 @@ public abstract class CMixinAccurateBlockPlacement {
 				return fX;
 			}
 
-			EnumFacing face = dir;
-			if (KeyBindings.carpetFaceIntoKey.isKeyDown() && uselessmod$isPiston(item)) {
-				face = face.getOpposite();
+			EnumFacing face;
+			if (KeyBindings.carpetFaceIntoKey.isKeyDown()) {
+				face = dir;
+				if (uselessmod$isPiston(item)) {
+					face = face.getOpposite();
+				}
 			} else {
 				if (uselessmod$isRedstoneDiode(item) || uselessmod$isGlazedTerracotta(item)) {
 					face = player.getHorizontalFacing().getOpposite();
 				} else {
-					face = EnumFacing.getDirectionFromEntityLiving(pos.offset(face), player);
+					face = EnumFacing.getDirectionFromEntityLiving(pos.offset(dir), player);
 				}
 
 				if (uselessmod$isObserver(item)) {
