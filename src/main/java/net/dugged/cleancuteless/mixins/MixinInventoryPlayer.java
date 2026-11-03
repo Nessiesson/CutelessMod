@@ -2,7 +2,6 @@ package net.dugged.cleancuteless.mixins;
 
 import net.dugged.cleancuteless.Configuration;
 import net.dugged.cleancuteless.CleanCuteless;
-import net.dugged.cleancuteless.KeyBindings;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -64,13 +63,6 @@ public class MixinInventoryPlayer {
 				}
 				lastSlot = CleanCuteless.hotbarSlot;
 			}
-		}
-	}
-
-	@Inject(method = "changeCurrentItem", at = @At("HEAD"), cancellable = true)
-	private void onScrollInHotbar(final int direction, final CallbackInfo ci) {
-		if (KeyBindings.zoomerKey.isKeyDown()) {
-			ci.cancel();
 		}
 	}
 }

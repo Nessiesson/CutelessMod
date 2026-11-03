@@ -52,7 +52,7 @@ public class GuiChunkGridChunk extends GuiSubWindow {
 		int y = getSubWindowTop() + 25;
 
 		for (String prop : properties) {
-			fontRenderer.drawString(prop, x - fontRenderer.getStringWidth(prop) / 2, y, 0);
+			fontRenderer.drawString(prop, x - fontRenderer.getStringWidth(prop) / 2, y, 0xFFE6E6E6);
 			y += fontRenderer.FONT_HEIGHT + 2;
 		}
 	}

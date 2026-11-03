@@ -3,7 +3,6 @@ package net.dugged.cleancuteless.chunk_display.gui;
 import com.google.common.base.Splitter;
 import net.dugged.cleancuteless.chunk_display.Chunkdata;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.math.BlockPos;
 import org.lwjgl.util.Point;
 
@@ -242,9 +241,17 @@ public class Controller {
 		setMinimap(lastGametick);
 	}
 
+	public boolean isRecording() {
+		return this.start;
+	}
+
+	public boolean hasData() {
+		return this.chunkData.getFirstGametick() >= 0;
+	}
+
 	private void setMinimap(int time) {
 		if (Minecraft.getMinecraft() == null || Minecraft.getMinecraft().player == null) return;
-		ChunkGrid canvas = debug.getChunkGrid();
+		ChunkGrid canvas = debug.getMinimapGrid();
 		int x = 0;
 		int y = 0;
 		int playerX = 0;
@@ -279,15 +286,15 @@ public class Controller {
 		mapViewMinimap.seekTime(time);
 
 		if (playerDrawn) {
-			debug.getChunkGrid().playerChunk(playerX - minX, playerY - minZ);
+			canvas.playerChunk(playerX - minX, playerY - minZ);
 		} else {
-			debug.getChunkGrid().playerChunk(Integer.MAX_VALUE, 0);
+			canvas.playerChunk(Integer.MAX_VALUE, 0);
 		}
 
 		if (selectionBox != null && selectionDimention == dimention) {
-			debug.getChunkGrid().setSelectionBox(selectionBox.getX() - minX, selectionBox.getY() - minZ);
+			canvas.setSelectionBox(selectionBox.getX() - minX, selectionBox.getY() - minZ);
 		} else {
-			debug.getChunkGrid().setSelectionBox(Integer.MAX_VALUE, 0);
+			canvas.setSelectionBox(Integer.MAX_VALUE, 0);
 		}
 
 		lastGametick = time;
@@ -419,15 +426,8 @@ public class Controller {
 		if (!panning && dx * dx + dy * dy > 5 * 5) {
 			panning = true;
 		} else if (button == 0 && panning) {
-			int dragX = 0;
-			int dragY = 0;
-			if (GuiScreen.isCtrlKeyDown()) {
-				dragX = dragView.getX() - dx;
-				dragY = dragView.getY() - dy;
-			} else {
-				dragX = dragView.getX() - debug.getChunkGrid().getGridY(dx);
-				dragY = dragView.getY() - debug.getChunkGrid().getGridY(dy);
-			}
+			final int dragX = dragView.getX() - debug.getChunkGrid().getGridX(dx);
+			final int dragY = dragView.getY() - debug.getChunkGrid().getGridY(dy);
 			view.setLocation(dragX, dragY);
 			setTick(lastGametick);
 		}

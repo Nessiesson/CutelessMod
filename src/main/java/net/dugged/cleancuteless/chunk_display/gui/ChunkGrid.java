@@ -21,6 +21,25 @@ public class ChunkGrid {
 	private int scale = 10;
 	private int scrollIndex = 8;
 
+	public ChunkGrid() {
+		this(10);
+	}
+
+	public ChunkGrid(final int initialScale) {
+		int closest = 0;
+		int distance = Integer.MAX_VALUE;
+		for (int i = 0; i < this.scrollValues.length; i++) {
+			final int delta = Math.abs(this.scrollValues[i] - initialScale);
+			if (delta < distance) {
+				distance = delta;
+				closest = i;
+			}
+		}
+
+		this.scrollIndex = closest;
+		this.scale = this.scrollValues[closest];
+	}
+
 	private static int brighten(int col, float factor) {
 		int alpha = (col & 0xff000000) >>> 24;
 		int red = (col & 0xff0000) >> 16;
@@ -210,18 +229,17 @@ public class ChunkGrid {
 	}
 
 	public void setScale(int width, int height, int value) {
-		scale += value;
-		scrollIndex += value;
-		if (scrollIndex < 2 && !GuiScreen.isCtrlKeyDown()) {
-			scrollIndex = 2;
-		} else if (scrollIndex < 0) {
-			scrollIndex = 0;
-		} else if (scrollIndex >= scrollValues.length) {
-			scrollIndex = scrollValues.length - 1;
+		final int direction = value == 0 ? 0 : (value > 0 ? 1 : -1);
+		this.scrollIndex += GuiScreen.isCtrlKeyDown() ? direction * 2 : direction;
+		if (this.scrollIndex < 0) {
+			this.scrollIndex = 0;
+		} else if (this.scrollIndex >= this.scrollValues.length) {
+			this.scrollIndex = this.scrollValues.length - 1;
 		}
-		scale = scrollValues[scrollIndex];
-		rowCount = height / scale;
-		columnCount = width / scale;
+
+		this.scale = this.scrollValues[this.scrollIndex];
+		this.rowCount = height / this.scale;
+		this.columnCount = width / this.scale;
 	}
 
 	public void setSelectionBox(int x, int y) {

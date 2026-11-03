@@ -41,7 +41,7 @@ public class KeyBindings {
 
 	public static final KeyBinding carpetFaceIntoKey = register("face_into");
 	public static final KeyBinding carpetFlipFaceKey = register("flip_face");
-	public static final KeyBinding zoomerKey = register("zoomer");
+	public static final KeyBinding zoomerKey = register("zoomer", Keyboard.KEY_LCONTROL);
 
 	public static final KeyBinding chunkDebug = register("chunk_debug", Keyboard.KEY_F6, () -> mc.displayGuiScreen(GuiChunkGrid.instance));
 	public static final KeyBinding emptyScreenKey = register("emptyscreen", () -> mc.displayGuiScreen(new GuiEmptyScreen()));

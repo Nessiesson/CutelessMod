@@ -1,0 +1,14 @@
+{
+	"package": "net.dugged.cleancuteless.mixins.celeritas",
+	"required": true,
+	"refmap": ${mixin_refmap},
+	"target": "@env(DEFAULT)",
+	"minVersion": "0.8.5",
+	"compatibilityLevel": "JAVA_25",
+	"plugin": "net.dugged.cleancuteless.mixins.celeritas.CleanCutelessCeleritasLoadingPlugin",
+	"mixins": [],
+	"server": [],
+	"client": [
+		"MixinOptionImpl"
+	]
+}

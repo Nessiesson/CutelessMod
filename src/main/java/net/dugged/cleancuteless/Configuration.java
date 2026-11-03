@@ -87,6 +87,25 @@ public final class Configuration {
 		@Config.Comment("Apply the field-of-view change while underwater.")
 		public boolean waterAffectsFov = true;
 		@Config.SlidingOption
+		@Config.RangeDouble(min = 1D, max = 50D)
+		@Config.Comment("Default zoom factor while holding the zoom key.")
+		public double zoomAmount = 4D;
+		@Config.RangeInt(min = 0, max = 1000)
+		@Config.Comment("Time in milliseconds for zoom transitions; 0 disables smoothing.")
+		public int zoomSmoothnessMs = 150;
+		@Config.Comment("Adjust the zoom factor with the mouse wheel while zooming.")
+		public boolean zoomScroll = true;
+		@Config.Comment("Use the smooth cinematic camera while zoomed in.")
+		public boolean zoomCinematic = true;
+		@Config.SlidingOption
+		@Config.RangeDouble(min = 0D, max = 1D)
+		@Config.Comment("Lowest mouse sensitivity multiplier while fully zoomed in.")
+		public double zoomSensitivityFloor = 0.4D;
+		@Config.SlidingOption
+		@Config.RangeDouble(min = 1D, max = 8D)
+		@Config.Comment("Easing exponent for zoom transitions; higher reaches the target faster.")
+		public double zoomAnimationEasing = 4D;
+		@Config.SlidingOption
 		@Config.RangeDouble(min = 0D, max = 3D)
 		@Config.Comment("Scale block-break particle motion and lifetime; 0 removes motion and 1 is vanilla.")
 		public double blockBreakParticleScale = 1D;
@@ -102,8 +121,6 @@ public final class Configuration {
 		public boolean renderChestsWithBlockModels = false;
 		@Config.Comment("Update client lighting when blocks change.")
 		public boolean lightUpdates = true;
-		@Config.Comment("Skip item frames outside the player's line of sight.")
-		public boolean cullHiddenItemFrames = false;
 		@Config.Comment("Disable cave mood sounds and the light checks they trigger.")
 		public boolean disableCaveAmbience = false;
 	}
@@ -117,8 +134,6 @@ public final class Configuration {
 		public boolean cancelElytraFlight = false;
 		@Config.Comment("Stop horizontal drift when releasing flight controls.")
 		public boolean cancelFlightInertia = false;
-		@Config.Comment("Raise step height with the Jump Boost level.")
-		public boolean jumpBoostStepAssist = false;
 		@Config.Comment("Prevent mouse movement from changing yaw.")
 		public boolean lockYaw = false;
 		@Config.Comment("Disable collision while flying in creative mode.")
@@ -133,8 +148,6 @@ public final class Configuration {
 		@Config.RangeDouble(min = 0D, max = 1D)
 		@Config.Comment("Maximum spectator flight speed set by scrolling; 0 stops, 0.2 is vanilla.")
 		public double spectatorFlightSpeed = 0.2;
-		@Config.Comment("Step up blocks up to 1.5 blocks high (0.9 while sneaking).")
-		public boolean stepAssist = false;
 		@Config.Comment("Let the client move item entities out of blocks instead of waiting for server corrections.")
 		public boolean smoothItemMovement = false;
 	}

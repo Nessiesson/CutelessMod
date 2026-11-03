@@ -9,6 +9,7 @@ import net.dugged.cleancuteless.FrequencyAnalyzer;
 import net.dugged.cleancuteless.ItemCounter;
 import net.dugged.cleancuteless.PistonHelper;
 import net.dugged.cleancuteless.RandomTickRenderer;
+import net.dugged.cleancuteless.Zoomer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -70,6 +71,16 @@ public abstract class MixinEntityRenderer {
 		}
 
 		GlStateManager.translate(x, y, z);
+	}
+
+	@Redirect(method = {"updateCameraAndRender", "updateRenderer"}, at = @At(value = "FIELD", target = "Lnet/minecraft/client/settings/GameSettings;mouseSensitivity:F", opcode = Opcodes.GETFIELD))
+	private float cleancuteless$zoomMouseSensitivity(final GameSettings settings) {
+		return Zoomer.INSTANCE.adjustMouseSensitivity(settings.mouseSensitivity);
+	}
+
+	@Redirect(method = {"updateCameraAndRender", "updateRenderer"}, at = @At(value = "FIELD", target = "Lnet/minecraft/client/settings/GameSettings;smoothCamera:Z", opcode = Opcodes.GETFIELD))
+	private boolean cleancuteless$zoomSmoothCamera(final GameSettings settings) {
+		return Zoomer.INSTANCE.adjustSmoothCamera(settings.smoothCamera);
 	}
 
 	@Redirect(method = "getFOVModifier", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/state/IBlockState;getMaterial()Lnet/minecraft/block/material/Material;"))

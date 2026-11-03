@@ -1,7 +1,6 @@
 package net.dugged.cleancuteless.mixins;
 
 import net.dugged.cleancuteless.Configuration;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderItemFrame;
 import net.minecraft.entity.item.EntityItemFrame;
@@ -22,9 +21,6 @@ public abstract class MixinRenderItemFrame {
 
 	@Inject(method = "doRender", at = @At("HEAD"), cancellable = true)
 	private void onDoRender(EntityItemFrame entity, double x, double y, double z, float yaw, float partialTicks, CallbackInfo ci) {
-		if (Configuration.rendering.cullHiddenItemFrames && !Minecraft.getMinecraft().player.canEntityBeSeen(entity)) {
-			ci.cancel();
-		}
 		if (entity.facingDirection != null && !Configuration.visuals.showItemFrameBorder) {
 			ci.cancel();
 			final BlockPos blockpos = entity.getHangingPosition();

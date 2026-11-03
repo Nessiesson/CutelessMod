@@ -33,6 +33,7 @@ import net.minecraft.util.text.*;
 import net.minecraftforge.client.GuiIngameForge;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.event.GuiOpenEvent;
+import net.minecraftforge.client.event.MouseEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
@@ -42,6 +43,7 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
@@ -61,7 +63,6 @@ import java.util.regex.Pattern;
 public class CleanCuteless {
 	public static final Logger LOGGER = LogManager.getLogger(Reference.NAME);
 	private static final Minecraft mc = Minecraft.getMinecraft();
-	private static final StepAssistHelper stepAssistHelper = new StepAssistHelper();
 	public static final XRay xray = new XRay();
 	public static Map<String, List<ChatLine>> chatHistory = new HashMap<>();
 	public static Map<String, List<String>> tabCompleteHistory = new HashMap<>();
@@ -153,9 +154,18 @@ public class CleanCuteless {
 		}
 	}
 
+	@SubscribeEvent(priority = EventPriority.HIGHEST)
+	public void onMouseEvent(final MouseEvent event) {
+		if (Zoomer.INSTANCE.onMouseScroll(event.getDwheel())) {
+			event.setCanceled(true);
+		}
+	}
+
 	@SubscribeEvent
-	public void onMouseEvent(final InputEvent.MouseInputEvent event) {
-		Zoomer.INSTANCE.onMouseScroll();
+	public void onRenderTick(final TickEvent.RenderTickEvent event) {
+		if (event.phase == TickEvent.Phase.START) {
+			Zoomer.INSTANCE.update();
+		}
 	}
 
 	@SubscribeEvent
@@ -235,7 +245,10 @@ public class CleanCuteless {
 			return;
 		}
 
-		stepAssistHelper.update(player);
+		if (GuiChunkGrid.instance != null) {
+			GuiChunkGrid.instance.tickMinimap();
+		}
+
 		if (Configuration.player.noFall && player.fallDistance > 2F && !player.isElytraFlying()) {
 			player.connection.sendPacket(new CPacketPlayer(true));
 		}

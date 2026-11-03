@@ -4,10 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -52,25 +49,14 @@ public abstract class GuiSubWindow extends GuiScreen {
 		backgroundScreen.drawScreen(-1, -1, partialTicks); // Spoof mouse coords so buttons don't highlight
 		GlStateManager.clear(GL11.GL_DEPTH_BUFFER_BIT);
 
-		Gui.drawRect(getSubWindowLeft(), getSubWindowTop(), getSubWindowRight(), getSubWindowBottom(), 0xc0b0b0ff);
+		Gui.drawRect(getSubWindowLeft(), getSubWindowTop(), getSubWindowRight(), getSubWindowBottom(), 0xD8101010);
+		Gui.drawRect(getSubWindowLeft(), getSubWindowTop(), getSubWindowRight(), getSubWindowTop() + 1, 0xFF707070);
+		Gui.drawRect(getSubWindowLeft(), getSubWindowBottom() - 1, getSubWindowRight(), getSubWindowBottom(), 0xFF707070);
+		Gui.drawRect(getSubWindowLeft(), getSubWindowTop(), getSubWindowLeft() + 1, getSubWindowBottom(), 0xFF707070);
+		Gui.drawRect(getSubWindowRight() - 1, getSubWindowTop(), getSubWindowRight(), getSubWindowBottom(), 0xFF707070);
+		Gui.drawRect(getSubWindowLeft(), getSubWindowBottom() - getFooterHeight(), getSubWindowRight(), getSubWindowBottom() - getFooterHeight() + 1, 0xFF3A3A3A);
 
-		GlStateManager.disableTexture2D();
-		GlStateManager.glLineWidth(2);
-		Tessellator tess = Tessellator.getInstance();
-		BufferBuilder buf = tess.getBuffer();
-		buf.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR);
-		buf.pos(getSubWindowRight(), getSubWindowBottom() - getFooterHeight(), 0).color(255, 255, 255, 255).endVertex();
-		buf.pos(getSubWindowLeft(), getSubWindowBottom() - getFooterHeight(), 0).color(255, 255, 255, 255).endVertex();
-		buf.pos(getSubWindowLeft(), getSubWindowTop(), 0).color(255, 255, 255, 255).endVertex();
-		buf.pos(getSubWindowRight(), getSubWindowTop(), 0).color(255, 255, 255, 255).endVertex();
-		buf.pos(getSubWindowRight(), getSubWindowBottom(), 0).color(255, 255, 255, 255).endVertex();
-		buf.pos(getSubWindowLeft(), getSubWindowBottom(), 0).color(255, 255, 255, 255).endVertex();
-		buf.pos(getSubWindowLeft(), getSubWindowBottom() - getFooterHeight(), 0).color(255, 255, 255, 255).endVertex();
-		tess.draw();
-		GlStateManager.glLineWidth(1);
-		GlStateManager.enableTexture2D();
-
-		fontRenderer.drawString(title, (getSubWindowLeft() + getSubWindowRight()) / 2 - fontRenderer.getStringWidth(title) / 2, getSubWindowTop() + 6, 0);
+		fontRenderer.drawStringWithShadow(title, (getSubWindowLeft() + getSubWindowRight()) / 2 - fontRenderer.getStringWidth(title) / 2, getSubWindowTop() + 6, 0xFFFFFFFF);
 
 		super.drawScreen(mouseX, mouseY, partialTicks);
 	}

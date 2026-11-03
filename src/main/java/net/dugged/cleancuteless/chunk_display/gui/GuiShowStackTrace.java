@@ -101,7 +101,7 @@ public class GuiShowStackTrace extends GuiSubWindow {
 				line = "..." + line;
 			}
 			line = TextFormatting.BOLD + line;
-			fontRenderer.drawString(line, getSubWindowLeft() + 5, y, 0);
+			fontRenderer.drawString(line, getSubWindowLeft() + 5, y, 0xFFE6E6E6);
 			y += lineHeight;
 		}
 

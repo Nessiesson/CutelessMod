@@ -14,7 +14,7 @@ Result of the originally developed mod for LiteLoader called UselessMod with a
 later created Forge branch UsefulMod. Adds various tweaks/fixes/improvements
 using Mixin and Forge, features dedicated hotkeys and auto-generates a separate
 list of keybinds for all settings. Ported the chunk display debug tool from
-carpet client used for carpet servers. **Minimap currently not working**
+carpet client used for carpet servers.
 
 ### Client Commands:
 

@@ -1,4 +1,4 @@
-package net.dugged.cleancuteless.mixins.optifine;
+package net.dugged.cleancuteless.mixins.celeritas;
 
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
@@ -7,11 +7,12 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 import java.util.List;
 import java.util.Set;
 
-public class CleanCutelessOptifineLoadingPlugin implements IMixinConfigPlugin {
+public class CleanCutelessCeleritasLoadingPlugin implements IMixinConfigPlugin {
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
 		try {
-			Class.forName("optifine.OptiFineForgeTweaker");
+			// Use a non-mixin target so loading the marker cannot make the mixin miss its target.
+			Class.forName("org.taumc.celeritas.api.options.OptionIdentifier");
 			return true;
 		} catch (final ClassNotFoundException exception) {
 			return false;

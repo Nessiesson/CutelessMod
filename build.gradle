@@ -23,9 +23,21 @@ java {
     toolchain.languageVersion = JavaLanguageVersion.of(25)
 }
 
+repositories {
+    maven {
+        name = 'TauMC'
+        url = 'https://maven.taumc.org/releases'
+    }
+}
+
 dependencies {
     implementation cleanroom.userdev(cleanroomVersion) {
         accessTransformers.from(accessTransformerNames.collect { "src/main/resources/META-INF/$it" })
+    }
+
+    // Optional runtime integration; only needed to resolve the Celeritas mixin target at compile time.
+    compileOnly('org.embeddedt.celeritas:celeritas-common:2.5.0-pre.1') {
+        transitive = false
     }
 }
 

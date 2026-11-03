@@ -1,40 +1,42 @@
 package net.dugged.cleancuteless.chunk_display.gui;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.renderer.BufferBuilder;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.TextComponentString;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
 
 public class GuiChunkGrid extends GuiScreen {
 
-	private static final String[] MINIMAP_NAMES = {"Minimap OFF", "Follow", "Static"};
+	private static final String[] MINIMAP_NAMES = {"Minimap: OFF", "Minimap: Follow", "Minimap: Static"};
 	private static final String[] DIMENSION_NAMES = {"Overworld", "Nether", "End"};
+	private static final int PANEL_BACKGROUND = 0xF0101010;
+	private static final int PANEL_BORDER = 0xFF4F4F4F;
+	private static final int TEXT_COLOR = 0xFFE6E6E6;
+	private static final int TEXT_MUTED = 0xFFA8A8A8;
 	// Footer is a grid, makes stuff easier
-	private static final int HEADER_HEIGHT = 9;
+	private static final int HEADER_HEIGHT = 16;
 	private static final int FOOTER_ROW_HEIGHT = 20;
 	private static final int FOOTER_ROW_PADDING = 5;
 	private static final int FOOTER_ROW_COUNT = 3;
 	private static final int FOOTER_HEIGHT = FOOTER_ROW_HEIGHT * FOOTER_ROW_COUNT + FOOTER_ROW_PADDING * (FOOTER_ROW_COUNT + 1);
 	private static final int FOOTER_COL_PADDING = 5;
 	private static final int FOOTER_COL_COUNT = 5;
-	private static final float MINIMAP_X = 0.7f;
-	private static final float MINIMAP_Y = 0.05f;
-	private static final float MINIMAP_WIDTH = 0.25f;
-	private static final float MINIMAP_HEIGHT = 0.45f;
+	private static final int MINIMAP_MARGIN = 8;
+	private static final int MINIMAP_MIN_SIZE = 120;
+	private static final int MINIMAP_MAX_SIZE = 220;
 	public static GuiChunkGrid instance;
 	public static ChunkGridStyle style = ChunkGridStyle.CHECKERBOARD;
 	//	public static ChunkGridStyle style = ChunkGridStyle.values()[new Random().nextInt(ChunkGridStyle.values().length)];
 	private final Controller controller;
 	private final ChunkGrid chunkgrid = new ChunkGrid();
+	private final ChunkGrid minimapGrid = new ChunkGrid(6);
 	private GuiButton startStopButton;
 	private GuiButton loadButton;
 	private GuiButton saveButton;
@@ -82,7 +84,7 @@ public class GuiChunkGrid extends GuiScreen {
 		addButton(backButton = new GuiButton(5, getFooterX(1), getFooterY(1), getFooterColWidth(), FOOTER_ROW_HEIGHT, "Back"));
 		addButton(forwardButton = new GuiButton(6, getFooterX(2), getFooterY(1), getFooterColWidth(), FOOTER_ROW_HEIGHT, "Forward"));
 
-		addButton(beginingButton = new GuiButton(7, getFooterX(0), getFooterY(1), getFooterColWidth(), FOOTER_ROW_HEIGHT, "Begining"));
+		addButton(beginingButton = new GuiButton(7, getFooterX(0), getFooterY(1), getFooterColWidth(), FOOTER_ROW_HEIGHT, "Beginning"));
 		addButton(endButton = new GuiButton(8, getFooterX(3), getFooterY(1), getFooterColWidth(), FOOTER_ROW_HEIGHT, "End"));
 		addButton(playButton = new GuiButton(9, getFooterX(4), getFooterY(1), getFooterColWidth(), FOOTER_ROW_HEIGHT, controller.play ? "Pause" : "Play"));
 
@@ -131,6 +133,9 @@ public class GuiChunkGrid extends GuiScreen {
 			case 1:
 				selectedMinimap = (selectedMinimap + 1) % MINIMAP_NAMES.length;
 				minimapButton.displayString = MINIMAP_NAMES[selectedMinimap];
+				if (selectedMinimap != 0) {
+					controller.updateMinimap();
+				}
 				break;
 			case 2:
 				controller.load();
@@ -175,8 +180,16 @@ public class GuiChunkGrid extends GuiScreen {
 	@Override
 	public void handleMouseInput() throws IOException {
 		super.handleMouseInput();
-		int scroll = Mouse.getEventDWheel();
-		if (scroll != 0) controller.scroll(scroll / 100);
+		final int scroll = Mouse.getEventDWheel();
+		if (scroll == 0) {
+			return;
+		}
+
+		final int mouseX = Mouse.getEventX() * this.width / this.mc.displayWidth;
+		final int mouseY = this.height - Mouse.getEventY() * this.height / this.mc.displayHeight - 1;
+		if (mouseY >= HEADER_HEIGHT && mouseY < this.height - FOOTER_HEIGHT) {
+			controller.scroll(scroll > 0 ? 1 : -1);
+		}
 	}
 
 	@Override
@@ -217,70 +230,80 @@ public class GuiChunkGrid extends GuiScreen {
 
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float partialTicks) {
-		GlStateManager.disableTexture2D();
+		Gui.drawRect(0, 0, this.width, this.height, PANEL_BACKGROUND);
+		chunkgrid.draw(controller.getView(), 0, HEADER_HEIGHT, this.width, this.height - HEADER_HEIGHT - FOOTER_HEIGHT);
 
-		// Chunk grid
-		chunkgrid.draw(controller.getView(), 0, HEADER_HEIGHT, width, height - HEADER_HEIGHT - FOOTER_HEIGHT);
+		drawPanel(0, 0, this.width, HEADER_HEIGHT);
+		drawPanel(0, this.height - FOOTER_HEIGHT, this.width, this.height);
 
-		mc.getTextureManager().bindTexture(OPTIONS_BACKGROUND);
-		Tessellator tess = Tessellator.getInstance();
-		BufferBuilder buf = tess.getBuffer();
-
-		// Draw 4 pixel high fading transitions
-		GlStateManager.enableBlend();
-		GlStateManager.shadeModel(GL11.GL_SMOOTH);
-
-		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-		buf.pos(0, HEADER_HEIGHT, 0).color(0, 0, 0, 255).endVertex();
-		buf.pos(0, HEADER_HEIGHT + 4, 0).color(0, 0, 0, 0).endVertex();
-		buf.pos(width, HEADER_HEIGHT + 4, 0).color(0, 0, 0, 0).endVertex();
-		buf.pos(width, HEADER_HEIGHT, 0).color(0, 0, 0, 255).endVertex();
-		tess.draw();
-
-		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR);
-		buf.pos(0, height - FOOTER_HEIGHT - 4, 0).color(0, 0, 0, 0).endVertex();
-		buf.pos(0, height - FOOTER_HEIGHT, 0).color(0, 0, 0, 255).endVertex();
-		buf.pos(width, height - FOOTER_HEIGHT, 0).color(0, 0, 0, 255).endVertex();
-		buf.pos(width, height - FOOTER_HEIGHT - 4, 0).color(0, 0, 0, 0).endVertex();
-		tess.draw();
-
-		GlStateManager.enableTexture2D();
-		GlStateManager.disableBlend();
-		GlStateManager.shadeModel(GL11.GL_FLAT);
-
-		// Draw header and footer background
-		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-		buf.pos(0, 0, 0).tex(0, 0).color(64, 64, 64, 255).endVertex();
-		buf.pos(0, HEADER_HEIGHT, 0).tex(0, HEADER_HEIGHT / 32f).color(64, 64, 64, 255).endVertex();
-		buf.pos(width, HEADER_HEIGHT, 0).tex(width / 32f, HEADER_HEIGHT / 32f).color(64, 64, 64, 255).endVertex();
-		buf.pos(width, 0, 0).tex(width / 32f, 0).color(64, 64, 64, 255).endVertex();
-		tess.draw();
-
-		buf.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR);
-		buf.pos(0, height - FOOTER_HEIGHT, 0).tex(0, (height - FOOTER_HEIGHT) / 32f).color(64, 64, 64, 255).endVertex();
-		buf.pos(0, height, 0).tex(0, height / 32f).color(64, 64, 64, 255).endVertex();
-		buf.pos(width, height, 0).tex(width / 32f, height / 32f).color(64, 64, 64, 255).endVertex();
-		buf.pos(width, height - FOOTER_HEIGHT, 0).tex(width / 32f, (height - FOOTER_HEIGHT) / 32f).color(64, 64, 64, 255).endVertex();
-		tess.draw();
-
-		// Text
-		drawCenteredString(fontRenderer, "Chunk Debug Map", width / 2, 2, 0xffffff);
+		drawCenteredString(fontRenderer, "Chunk Debug Map", this.width / 2, 4, TEXT_COLOR);
+		final String status = controller.isRecording() ? "Recording" : "Idle";
+		drawString(fontRenderer, status, this.width - 6 - fontRenderer.getStringWidth(status), 4, controller.isRecording() ? 0xFF55FF55 : TEXT_MUTED);
 
 		if (chunkSelection) {
-			drawCenteredString(fontRenderer, chunkSelectionString, width / 2, HEADER_HEIGHT + 10, 0xffffff); // possible indicator for chunk selected
+			final int textWidth = fontRenderer.getStringWidth(chunkSelectionString);
+			final int x = this.width / 2 - textWidth / 2 - 4;
+			Gui.drawRect(x, HEADER_HEIGHT + 3, x + textWidth + 8, HEADER_HEIGHT + 15, 0xC0000000);
+			drawCenteredString(fontRenderer, chunkSelectionString, this.width / 2, HEADER_HEIGHT + 6, TEXT_COLOR);
 		}
 
-		drawCenteredString(fontRenderer, "X:", getFooterX(2) + 5, getFooterY(2) + FOOTER_ROW_HEIGHT / 2 - 4, 0xffffff);
+		drawCenteredString(fontRenderer, "X:", getFooterX(2) + 5, getFooterY(2) + FOOTER_ROW_HEIGHT / 2 - 4, TEXT_COLOR);
 		textFieldX.drawTextBox();
-		drawCenteredString(fontRenderer, "Z:", getFooterX(3) + 5, getFooterY(2) + FOOTER_ROW_HEIGHT / 2 - 4, 0xffffff);
+		drawCenteredString(fontRenderer, "Z:", getFooterX(3) + 5, getFooterY(2) + FOOTER_ROW_HEIGHT / 2 - 4, TEXT_COLOR);
 		textFieldZ.drawTextBox();
-		drawCenteredString(fontRenderer, "GT:", getFooterX(4) + 4, getFooterY(2) + FOOTER_ROW_HEIGHT / 2 - 4, 0xffffff);
+		drawCenteredString(fontRenderer, "GT:", getFooterX(4) + 4, getFooterY(2) + FOOTER_ROW_HEIGHT / 2 - 4, TEXT_COLOR);
 		textFieldGT.drawTextBox();
 
-//        String posText = "X: " + xText + ", Z: " + zText;
-//        drawCenteredString(fontRenderer, posText, getFooterX(2) + getFooterColWidth() / 2, getFooterY(2) + FOOTER_ROW_HEIGHT / 2, 0xffffff);
-
 		super.drawScreen(mouseX, mouseY, partialTicks);
+
+		for (final GuiButton button : this.buttonList) {
+			if (mouseX >= button.x && mouseY >= button.y && mouseX < button.x + button.width && mouseY < button.y + button.height) {
+				final String tooltip = getButtonTooltip(button.id);
+				if (tooltip != null) {
+					drawHoveringText(tooltip, mouseX, mouseY);
+				}
+				break;
+			}
+		}
+	}
+
+	private static String getButtonTooltip(final int id) {
+		switch (id) {
+			case 0:
+				return "Start or stop recording chunk events.";
+			case 1:
+				return "Cycle the minimap overlay mode.";
+			case 2:
+				return "Load a saved chunk recording.";
+			case 3:
+				return "Save the current chunk recording.";
+			case 4:
+				return "Jump to the latest recorded tick.";
+			case 5:
+				return "Jump to the previous recorded tick.";
+			case 6:
+				return "Jump to the next recorded tick.";
+			case 7:
+				return "Jump to the first recorded tick.";
+			case 8:
+				return "Jump to the last recorded tick.";
+			case 9:
+				return "Play or pause the replay.";
+			case 10:
+				return "Center the map on the player.";
+			case 11:
+				return "Cycle the displayed dimension.";
+			default:
+				return null;
+		}
+	}
+
+	private void drawPanel(final int left, final int top, final int right, final int bottom) {
+		Gui.drawRect(left, top, right, bottom, PANEL_BACKGROUND);
+		Gui.drawRect(left, top, right, top + 1, PANEL_BORDER);
+		Gui.drawRect(left, bottom - 1, right, bottom, PANEL_BORDER);
+		Gui.drawRect(left, top, left + 1, bottom, PANEL_BORDER);
+		Gui.drawRect(right - 1, top, right, bottom, PANEL_BORDER);
 	}
 
 	@Override
@@ -295,13 +318,46 @@ public class GuiChunkGrid extends GuiScreen {
 
 	// Minimap
 
-	public void renderMinimap(int screenWidth, int screenHeight) {
-		minimapWidth = (int) (screenWidth * MINIMAP_WIDTH);
-		minimapHeight = (int) (screenHeight * MINIMAP_HEIGHT);
-		if (isChunkDebugWindowOpen()) return;
-		int minimapX = (int) (screenWidth * MINIMAP_X);
-		int minimapY = (int) (screenHeight * MINIMAP_Y);
-		chunkgrid.draw(controller.getMinimapView(), minimapX, minimapY, minimapWidth, minimapHeight);
+	public void renderMinimap() {
+		if (isChunkDebugWindowOpen()) {
+			return;
+		}
+
+		final ScaledResolution resolution = new ScaledResolution(mc);
+		final int screenWidth = resolution.getScaledWidth();
+		final int screenHeight = resolution.getScaledHeight();
+		final int size = MathHelper.clamp((int) (Math.min(screenWidth, screenHeight) * 0.32F), MINIMAP_MIN_SIZE, MINIMAP_MAX_SIZE);
+		final int x = screenWidth - size - MINIMAP_MARGIN;
+		final int y = MINIMAP_MARGIN;
+		final int gridHeight = size - 12;
+
+		if (minimapWidth != size || minimapHeight != gridHeight) {
+			minimapWidth = size;
+			minimapHeight = gridHeight;
+			controller.updateMinimap();
+		}
+
+		drawMinimapPanel(x, y, size);
+		minimapGrid.draw(controller.getMinimapView(), x, y + 12, size, gridHeight);
+
+		if (!controller.hasData()) {
+			drawCenteredString(fontRenderer, "No chunk data", x + size / 2, y + 12 + gridHeight / 2 - 4, TEXT_MUTED);
+		}
+	}
+
+	private void drawMinimapPanel(final int x, final int y, final int size) {
+		Gui.drawRect(x - 1, y - 1, x + size + 1, y + size + 1, 0xFF000000);
+		Gui.drawRect(x, y, x + size, y + size, 0xE0101010);
+		Gui.drawRect(x, y + 11, x + size, y + 12, PANEL_BORDER);
+		drawString(fontRenderer, "Chunk Map", x + 4, y + 2, TEXT_COLOR);
+		final String mode = selectedMinimap == 1 ? "Follow" : "Static";
+		drawString(fontRenderer, mode, x + size - 4 - fontRenderer.getStringWidth(mode), y + 2, TEXT_MUTED);
+	}
+
+	public void tickMinimap() {
+		if (selectedMinimap != 0 && !isChunkDebugWindowOpen()) {
+			controller.updateMinimap();
+		}
 	}
 
 	private int getFooterColWidth() {
@@ -332,6 +388,10 @@ public class GuiChunkGrid extends GuiScreen {
 
 	public ChunkGrid getChunkGrid() {
 		return chunkgrid;
+	}
+
+	public ChunkGrid getMinimapGrid() {
+		return minimapGrid;
 	}
 
 	public int getSelectedDimension() {
