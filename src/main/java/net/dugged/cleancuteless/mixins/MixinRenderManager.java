@@ -7,9 +7,11 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityFireworkRocket;
+import net.minecraft.entity.player.EntityPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -37,5 +39,10 @@ public abstract class MixinRenderManager {
 	@Inject(method = "renderDebugBoundingBox", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;disableBlend()V", ordinal = 0))
 	private void cleancleancuteless$mc93479(final Entity entityIn, final double x, final double y, final double z, final float entityYaw, final float partialTicks, final CallbackInfo ci) {
 		GlStateManager.glLineWidth(2);
+	}
+
+	@ModifyVariable(method = "renderEntity", at = @At("HEAD"), argsOnly = true, ordinal = 1)
+	private float cleancleancuteless$test(final float partialTicks, final Entity entity) {
+		return Configuration.player.updateClientEntities || entity instanceof EntityPlayer || entity instanceof EntityFireworkRocket ? partialTicks : 0F;
 	}
 }
