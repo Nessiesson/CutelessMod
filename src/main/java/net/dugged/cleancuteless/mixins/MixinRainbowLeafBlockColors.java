@@ -16,7 +16,7 @@ import java.awt.*;
 public abstract class MixinRainbowLeafBlockColors {
 	@Inject(method = "colorMultiplier(Lnet/minecraft/block/state/IBlockState;Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/math/BlockPos;I)I", at = @At("HEAD"), cancellable = true)
 	private void rainbowLeaves(final IBlockState state, final IBlockAccess world, final BlockPos pos, final int tintIndex, final CallbackInfoReturnable<Integer> cir) {
-		if (!Configuration.visuals.showRainbowLeaves || pos == null) {
+		if (!Configuration.visuals.showRainbowLeaves || pos == null || pos == BlockPos.ORIGIN) {
 			return;
 		}
 
