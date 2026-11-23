@@ -167,6 +167,8 @@ public final class Configuration {
 		public boolean showPistonOrder = false;
 		@Config.Comment("Smooth piston movement on the client.")
 		public boolean smoothPistons = false;
+		@Config.Comment("Cache tessellated piston models instead of rebuilding their lighting and geometry every frame.")
+		public boolean cachePistonModels = false;
 		@Config.Comment("Enable the creative-mode WorldEdit compass menu and click-to-teleport.")
 		public boolean worldEditCompass = false;
 		@Config.RangeInt(min = 0)
