@@ -1,11 +1,15 @@
 package net.dugged.cleancuteless;
 
-import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
+import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Caches the tessellated vertices of moving piston models.
@@ -15,23 +19,21 @@ import net.minecraft.world.World;
  * lighting pass) for every visible piston on every frame. The raw vertex data produced by that
  * pipeline is identical for a given position/block state, so we keep the quads and replay them
  * with the current translation instead.</p>
- *
- * <p>Entries are short lived so that lighting changes around a piston eventually invalidate them.</p>
  */
 public final class PistonModelCache {
 	// Large enough to hold every distinct (position, state) pair in a typical piston contraption.
 	private static final int MAX_ENTRIES = 16384;
-	private static final long TTL_NANOS = 10_000_000_000L; // 10 seconds
 
-	private static final Object2ObjectLinkedOpenHashMap<Key, Entry> CACHE = new Object2ObjectLinkedOpenHashMap<>(256, 0.75F);
+	private static final Cache<Key, int[][]> CACHE = CacheBuilder.newBuilder()
+		.maximumSize(MAX_ENTRIES)
+		.expireAfterWrite(10, TimeUnit.SECONDS)
+		.build();
 
 	private PistonModelCache() {
 	}
 
 	public static void clear() {
-		synchronized (CACHE) {
-			CACHE.clear();
-		}
+		CACHE.invalidateAll();
 	}
 
 	/**
@@ -43,14 +45,14 @@ public final class PistonModelCache {
 	public static boolean emit(final BufferBuilder buffer, final World world, final BlockPos pos, final IBlockState state, final boolean checkSides) {
 		final int light = world.getCombinedLight(pos, 0);
 		final Key key = new Key(world, pos.toImmutable(), state, checkSides, light);
-		final Entry entry;
-		synchronized (CACHE) {
-			entry = CACHE.getAndMoveToLast(key);
-		}
-		if (entry == null || entry.isExpired()) {
+		final int[][] quads = CACHE.getIfPresent(key);
+		if (quads == null) {
 			return false;
 		}
-		entry.emit(buffer);
+		for (final int[] quad : quads) {
+			buffer.addVertexData(quad);
+			buffer.putPosition(0D, 0D, 0D); // applies the buffer's current translation
+		}
 		return true;
 	}
 
@@ -73,32 +75,7 @@ public final class PistonModelCache {
 
 		final int light = world.getCombinedLight(pos, 0);
 		final Key key = new Key(world, pos.toImmutable(), state, checkSides, light);
-		synchronized (CACHE) {
-			CACHE.putAndMoveToLast(key, new Entry(quads));
-			while (CACHE.size() > MAX_ENTRIES) {
-				CACHE.removeFirst();
-			}
-		}
-	}
-
-	private static final class Entry {
-		private final int[][] quads;
-		private final long createdAt = System.nanoTime();
-
-		private Entry(final int[][] quads) {
-			this.quads = quads;
-		}
-
-		private boolean isExpired() {
-			return System.nanoTime() - this.createdAt > TTL_NANOS;
-		}
-
-		private void emit(final BufferBuilder buffer) {
-			for (final int[] quad : this.quads) {
-				buffer.addVertexData(quad);
-				buffer.putPosition(0D, 0D, 0D); // applies the buffer's current translation
-			}
-		}
+		CACHE.put(key, quads);
 	}
 
 	private static final class Key {
