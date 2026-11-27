@@ -111,6 +111,8 @@ public final class Configuration {
 		public double blockBreakParticleScale = 1D;
 		@Config.Comment("Show one entity per block with a stacked count label.")
 		public boolean stackedEntityCounts = false;
+		@Config.Comment("Make lava (and all other liquids) transparent. (Requires custom texture pack)")
+		public boolean transparentLiquids = false;
 	}
 
 	public static final class Rendering {
